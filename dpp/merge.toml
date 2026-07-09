@@ -1,9 +1,0 @@
-# hooks_file = "$NVIM_CONFIG_HOME/rc/ft.vim"
-
-#[[plugins]]
-#repo = "cespare/vim-toml"
-
-# JP doc
-[[plugins]]
-repo = 'vim-jp/vimdoc-ja'
-
