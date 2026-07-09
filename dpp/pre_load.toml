@@ -1,0 +1,16 @@
+# hooks_file = "$NVIM_CONFIG_HOME/rc/ft.vim"
+
+[[plugins]]
+name = "default_runtime"
+local = true
+path = '$HOME/.local/share/nvim/'
+
+[[plugins]]
+repo = 'nvim-lua/plenary.nvim'
+merged = false
+
+[[plugins]]
+repo = 'tani/vim-artemis'
+merged = false
+lazy = false
+

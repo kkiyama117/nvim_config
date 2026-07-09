@@ -1,0 +1,45 @@
+[[plugins]]
+repo = 'vim-denops/denops.vim'
+lazy = false
+lua_source = '''
+  require("hooks.denops").setup {}
+'''
+
+# ---------------------------------------------------------------------------
+# denops utils
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = 'vim-denops/denops-startup-recorder.vim'
+depends = ['denops.vim']
+on_event = 'BufEnter'
+
+# ---------------------------------------------------------------------------
+# skkeleton
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = 'vim-skk/skkeleton'
+depends = ['denops.vim']
+on_map = { ict = '<Plug>(skkeleton-'}
+denops_wait = false
+lua_source = '''
+  require("hooks.skkeleton_add").setup {}
+'''
+
+[[plugins]]
+repo = 'delphinus/skkeleton_indicator.nvim'
+on_source = 'skkeleton'
+lua_source = '''
+  require('skkeleton_indicator').setup {}
+'''
+
+# ---------------------------------------------------------------------------
+# Used with dpp
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = 'lambdalisue/kensaku.vim'
+depends = 'denops.vim'
+denops_wait = false
+
+[[plugins]]
+repo = 'lambdalisue/mr.vim'
+depends = 'denops.vim'
