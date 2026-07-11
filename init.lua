@@ -1,8 +1,12 @@
 -- $VIMRUNTIME/defaults.vim is skipped in /etc/vimrc
--- new vim loader
+
+-- new vim loader for bite code cache
 if vim.loader then
   vim.loader.enable()
 end
+
+-- Debug mode
+vim.g["denops#debug"] = 1
 
 -----------------------------------------------------------------------------
 -- General ENVIRONMENT VARIABLES
@@ -31,3 +35,13 @@ end
 --vim.fn.language(vim.env.LANG)
 vim.opt.langmenu = vim.env.LANG
 
+-----------------------------------------------------------------------------
+-- LOAD OTHER SETTING FILES (ex. loader of dpp.vim):
+-----------------------------------------------------------------------------
+-- Use `dpp` as a default
+require('dpp_loader')
+-- TODO: load it by `dpp`
+require('visual')
+
+vim.cmd("filetype indent plugin on")
+vim.cmd("syntax on")
