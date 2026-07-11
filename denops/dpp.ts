@@ -39,19 +39,32 @@ import * as fn from "@denops/std/function";
 import { expandGlob } from "@std/fs";
 import { join } from "@std/path";
 
+// --------------------------------------------------------------------------
 // consts
+// --------------------------------------------------------------------------
 // TODO: define in the other file to use in multiple files
 const home = Deno.env.get("HOME") ?? "~";
-const configHome = Deno.env.get("XDG_CONFIG_HOME") ?? `${home}/.config`;
-const nvimHome = Deno.env.get("NVIM_CONFIG_HOME") ?? `${configHome}/nvim`;
+const xdgConfigHome = Deno.env.get("XDG_CONFIG_HOME") ?? `${home}/.config`;
+const xdgCacheHome = Deno.env.get("XDG_CACHE_HOME") ?? `${home}/.cache`;
+const nvimHome = Deno.env.get("NVIM_CONFIG_HOME") ?? `${xdgConfigHome}/nvim`;
+const dppCacheHome= join(xdgCacheHome, "dpp");
 
+// --------------------------------------------------------------------------
+// Config file/folder path
+// --------------------------------------------------------------------------
 // Where plugin definition TOMLs live.
-const dppTomlDir = join(configHome, "nvim", "dpp");
+const dppTomlDir = join(nvimHome, "deps", "dpp");
+
+// denops TypeScript files
+const dppTSDir = join(nvimHome, "denops");
 
 // Where inline vimrc fragments live.
 // Files under `$nvimHome/lua` is autoloaded by neovim as a default.
 const neovimLuaDir = join(nvimHome, "lua");
 
+// --------------------------------------------------------------------------
+// Dpp Config
+// --------------------------------------------------------------------------
 // dpp loads the module named export `Config` (see dpp.vim app.ts: `new mod.Config()`).
 export class Config extends BaseConfig{
   override async config(args:{
@@ -65,14 +78,107 @@ export class Config extends BaseConfig{
     const hasGui = await fn.has(args.denops, "gui_running");
     // TODO: inline lua
     const inlineVimrcs = [];
+    const inlineLuaFiles = [
+      join(neovimLuaDir, "visual.lua")
+    ];
+    args.contextBuilder.setGlobal({
+      inlineLuaFiles,
+      extParams: {
+        installer: {
+          checkDiff: true,
+          logFilePath: join(dppCacheHome, "installer-log.txt"),
+          minCommitDays: 1,
+          minTrustScore: 50,
+          githubAPIToken: Deno.env.get("GITHUB_API_TOKEN"),
+      },
+      protocols: [
+	// TODO: setup `git` and `http`
+      ],
+    });
+
+    const [context, options] = await args.contextBuilder.get(args.denops);
+    const protocols = await args.denops.dispatcher.getProtocols() as Record<
+      ProtocolName,
+      Protocol
+    >;
+    
     // TODO: implement
+    const recordPlugins: Record<string, Plugin> = {};
+    // TODO: implement
+    const ftplugins: Record<string, string> = {};
+    // TODO: implement
+    const hooksFiles: string[] = [];
+    // TODO: implement
+    let multipleHooks: MultipleHook[] = [];
+
+    // Toml config
+    //const [tomlExt, tomlOptions, tomlParams]: [
+    //  TomlExt | undefined,
+    //  ExtOptions,
+    //  TomlParams,
+    //] = await args.denops.dispatcher.getExt(
+    //  "toml",
+    //) as [TomlExt | undefined, ExtOptions, TomlParams];
+    //if (tomlExt){
+    //  // TODO: implement
+    //}
+
+    // Local plugins
+    //const [localExt, localOptions, localParams]: [
+    //  LocalExt | undefined,
+    //  ExtOptions,
+    //  LocalParams,
+    //] = await args.denops.dispatcher.getExt(
+    //  "local",
+    //) as [LocalExt | undefined, ExtOptions, LocalParams];
+
+    // TODO: search what is `packspec`
+    //const [packspecExt, packspecOptions, packspecParams]: [
+    //  PackspecExt | undefined,
+    //  ExtOptions,
+    //  PackspecParams,
+    //] = await args.denops.dispatcher.getExt(
+    //  "packspec",
+    //) as [PackspecExt | undefined, ExtOptions, PackspecParams];
+
+    const [lazyExt, lazyOptions, lazyParams]: [
+      LazyExt | undefined,
+      ExtOptions,
+      LazyParams,
+    ] = await args.denops.dispatcher.getExt(
+      "lazy",
+    ) as [LazyExt | undefined, ExtOptions, LazyParams];
+    let lazyResult: LazyMakeStateResult | undefined = undefined;
+    if (lazyExt) {
+      const action = lazyExt.actions.makeState;
+
+      lazyResult = await action.callback({
+        denops: args.denops,
+        context,
+        options,
+        protocols,
+        extOptions: lazyOptions,
+        extParams: lazyParams,
+        actionParams: {
+          plugins: Object.values(recordPlugins),
+        },
+      });
+    }
+
+    // check if config files are updated
+    const checkFiles = [];
+    checkFiles.push(await expandGlob(`${join(nvimHome, "init.lua")}`));
+    for await (config file of expandGlob(`${dppTomldir}/*`)){
+      checkFiles.push(file.path);
+    }
+    for await (config file of expandGlob(`${dppTSDir}/*`)){
+      checkFiles.push(file.path);
+    }
+    for await (config file of expandGlob(`${neovimLuaDir}/*`)){
+      checkFiles.push(file.path);
+    }
+
     const checkFiles = undefined;
-    // TODO: implement
-    const ftplugins = undefined;
-    // TODO: implement
-    const hooksFiles = undefined;
-    // TODO: implement
-    const multipleHooks = [];
     // TODO: implement
     const groups = undefined;
     // TODO: implement
