@@ -25,11 +25,11 @@ import { mergeFtplugins } from "@shougo/dpp-vim/utils";
 //  Ext as PackspecExt,
 //  Params as PackspecParams,
 //} from "@shougo/dpp-ext-packspec";
-//import type {
-//  Ext as LazyExt,
-//  LazyMakeStateResult,
-//  Params as LazyParams,
-//} from "@shougo/dpp-ext-lazy";
+import type {
+  Ext as LazyExt,
+  LazyMakeStateResult,
+  Params as LazyParams,
+} from "@shougo/dpp-ext-lazy";
 
 // Denops
 import type { Denops } from "@denops/std";
@@ -90,9 +90,10 @@ export class Config extends BaseConfig{
           minCommitDays: 1,
           minTrustScore: 50,
           githubAPIToken: Deno.env.get("GITHUB_API_TOKEN"),
+        },
       },
       protocols: [
-	// TODO: setup `git` and `http`
+        // TODO: setup `git` and `http`
       ],
     });
 
@@ -168,17 +169,15 @@ export class Config extends BaseConfig{
     // check if config files are updated
     const checkFiles = [];
     checkFiles.push(await expandGlob(`${join(nvimHome, "init.lua")}`));
-    for await (config file of expandGlob(`${dppTomldir}/*`)){
+    for await (const file of expandGlob(`${dppTomlDir}/*`)) {
       checkFiles.push(file.path);
     }
-    for await (config file of expandGlob(`${dppTSDir}/*`)){
+    for await (const file of expandGlob(`${dppTSDir}/*`)) {
       checkFiles.push(file.path);
     }
-    for await (config file of expandGlob(`${neovimLuaDir}/*`)){
+    for await (const file of expandGlob(`${neovimLuaDir}/*`)) {
       checkFiles.push(file.path);
     }
-
-    const checkFiles = undefined;
     // TODO: implement
     const groups = undefined;
     // TODO: implement
