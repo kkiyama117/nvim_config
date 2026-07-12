@@ -36,7 +36,6 @@ import type { Denops } from "@denops/std";
 import * as fn from "@denops/std/function";
 
 // std
-import { expandGlob } from "@std/fs";
 import { join } from "@std/path";
 
 // --------------------------------------------------------------------------
@@ -61,6 +60,19 @@ const dppTSDir = join(nvimHome, "denops");
 // Where inline vimrc fragments live.
 // Files under `$nvimHome/lua` is autoloaded by neovim as a default.
 const neovimLuaDir = join(nvimHome, "lua");
+
+async function gatherCheckFiles(
+  denops: Denops,
+  path: string,
+  globs: string[],
+): Promise<string[]> {
+  const checkFiles: string[] = [];
+  for (const glob of globs) {
+    checkFiles.push(await fn.globpath(denops, path, glob, true, true));
+  }
+
+  return checkFiles.flat();
+}
 
 // --------------------------------------------------------------------------
 // Dpp Config
@@ -166,18 +178,12 @@ export class Config extends BaseConfig{
       });
     }
 
-    // check if config files are updated
-    const checkFiles = [];
-    checkFiles.push(await expandGlob(`${join(nvimHome, "init.lua")}`));
-    for await (const file of expandGlob(`${dppTomlDir}/*`)) {
-      checkFiles.push(file.path);
-    }
-    for await (const file of expandGlob(`${dppTSDir}/*`)) {
-      checkFiles.push(file.path);
-    }
-    for await (const file of expandGlob(`${neovimLuaDir}/*`)) {
-      checkFiles.push(file.path);
-    }
+    const checkFiles = await gatherCheckFiles(args.denops, nvimHome, [
+      "**/*.lua",
+      "**/*.toml",
+      "**/*.ts",
+      "**/*.vim",
+    ]);
     // TODO: implement
     const groups = undefined;
     // TODO: implement
