@@ -19,11 +19,13 @@ local dpp_cache_local = vim.fs.joinpath(dpp_cache_home, "local")
 local dpp_denops_script = vim.fs.joinpath(vim.g.nvim_config_home, "denops", "dpp.ts")
 
 -- Minimum plugins to load dpp
+-- That should included in `deps/dpp.toml`
 local minimum_deps = {
   "Shougo/dpp.vim",
   "Shougo/dpp-ext-lazy",
 }
 -- plugins used to install plugins with dpp
+-- That should included in `deps/dpp.toml` except `denops.vim`
 local normal_deps = {
   "Shougo/dpp-ext-installer",
   "Shougo/dpp-ext-local",
@@ -87,7 +89,7 @@ local function initialize_dpp()
 
   -- call `dpp#min#load_state` and check it works
   if dpp.load_state(dpp_cache_home) then
-    -- install and load `denops.vim` and `dpp plugins`
+    -- install and load `denops.vim` and `dpp plugins` to load dpp
     load_plugins(normal_deps)
     -- Manual load is needed
     if vim.fn.has("nvim") == 1 then
@@ -103,6 +105,7 @@ local function initialize_dpp()
       end,
     })
   else
+    -- check config is updated and update cache
     vim.api.nvim_create_autocmd("BufWritePost", {
       pattern = "*.lua,*.vim,*.toml,*.ts,vimrc,.vimrc",
       group = my_autocmds,
@@ -113,6 +116,7 @@ local function initialize_dpp()
         end
       end,
     })
+    -- check toml deps are updated and new plugins are needed
     vim.api.nvim_create_autocmd("BufWritePost", {
       pattern = "*.toml",
       group = my_autocmds,
@@ -124,6 +128,7 @@ local function initialize_dpp()
       end,
     })
   end
+
   vim.api.nvim_create_autocmd("User", {
     pattern = "Dpp:makeStatePost",
     group = my_autocmds,
