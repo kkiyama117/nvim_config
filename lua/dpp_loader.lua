@@ -136,11 +136,6 @@ local function initialize_dpp()
       vim.notify("dpp make_state() is done", vim.log.levels.INFO)
     end,
   })
-  -- Add user command of alias `dpp: update`
-  -- TODO: move to other place
-  vim.api.nvim_create_user_command("DppUpdate", function()
-    vim.fn["dpp#async_ext_action"]("installer", "update")
-  end, {})
 end
 
 -----------------------------------------------------------------------------

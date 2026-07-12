@@ -90,9 +90,9 @@ export class Config extends BaseConfig{
   }):Promise<ConfigReturn>{
     // List up vimrc/lua files
     console.debug("Load Dpp Config");
-    const hasNvim = args.denops.meta.host === "nvim"
-    const hasWindows = await fn.has(args.denops, "win32");
-    const hasGui = await fn.has(args.denops, "gui_running");
+    //const hasNvim = args.denops.meta.host === "nvim"
+    //const hasWindows = await fn.has(args.denops, "win32");
+    //const hasGui = await fn.has(args.denops, "gui_running");
     const inlineVimrcs = [
       join(neovimLuaDir, "visual.lua"),
     ];
@@ -142,8 +142,8 @@ export class Config extends BaseConfig{
     ) as [TomlExt | undefined, ExtOptions, TomlParams];
 
     if (tomlExt) {
-      // Load Dpp toml files
       const tomls: Toml[] = [];
+      // Load Dpp toml files and push into `tomls`
       for (const tomlFile of Deno.readDirSync(dppTomlDir)) {
         if (!tomlFile.isFile || !tomlFile.name.endsWith(".toml")) continue;
         const isLazy = !noLazyTomls.includes(tomlFile.name);
@@ -164,6 +164,8 @@ export class Config extends BaseConfig{
           }) as Toml,
         );
       }
+      
+      // Merge toml results
       for (const toml of tomls) {
         if (!toml) continue;
         if (toml.plugins) {
@@ -171,7 +173,6 @@ export class Config extends BaseConfig{
             recordPlugins[plugin.name] = plugin;
           }
         }
-        if (toml.hooks_file) hooksFiles.push(toml.hooks_file);
         if (toml.ftplugins) {
           for (const filetype of Object.keys(toml.ftplugins)) {
             ftplugins[filetype] = ftplugins[filetype]
@@ -182,6 +183,9 @@ export class Config extends BaseConfig{
         if (toml.multiple_hooks) {
           multipleHooks = multipleHooks.concat(toml.multiple_hooks);
         }
+        if (toml.hooks_file) {
+	  hooksFiles.push(toml.hooks_file);
+	}
       }
     }
 
@@ -193,6 +197,8 @@ export class Config extends BaseConfig{
     //] = await args.denops.dispatcher.getExt(
     //  "local",
     //) as [LocalExt | undefined, ExtOptions, LocalParams];
+    // TODO: Use this if we use `local plugin`. And we need to overwrite url like 
+    // https://github.com/Shougo/shougo-s-github/blob/b10f7172e39731a1e54f086258b5c6a6ac055aa6/vim/rc/dpp.ts#L228
 
     // TODO: search what is `packspec`
     //const [packspecExt, packspecOptions, packspecParams]: [
@@ -234,7 +240,8 @@ export class Config extends BaseConfig{
       "**/*.vim",
     ]);
     // TODO: implement
-    const groups = undefined;
+    const groups = {
+    };
     const result: ConfigReturn = {
       checkFiles,
       ftplugins,
