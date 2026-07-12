@@ -82,7 +82,7 @@ export class Config extends BaseConfig{
       join(neovimLuaDir, "visual.lua")
     ];
     args.contextBuilder.setGlobal({
-      inlineLuaFiles,
+      inlineVimrcs: inlineLuaFiles,
       extParams: {
         installer: {
           checkDiff: true,
@@ -196,8 +196,8 @@ export class Config extends BaseConfig{
       plugins: plugins ?? [],
       stateLines: stateLines ?? [],
     };
-    console.log("Dpp ConfigReturn is");
-    console.log(result);
+    console.debug("Dpp ConfigReturn is");
+    console.debug(result);
     return result;
   }
 }

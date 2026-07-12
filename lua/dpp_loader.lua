@@ -106,9 +106,23 @@ local function initialize_dpp()
       pattern = "*.lua,*.vim,*.toml,*.ts,vimrc,.vimrc",
       group = my_autocmds,
       callback = function()
-        dpp.check_files()
+	if not #dpp.check_files(dpp_cache_home) == 0 then
+	  dpp.make_state(dpp_cache_home, dpp_denops_script)
+	end
       end,
     })
+    -- Install new plugins if not exist
+    vim.api.nvim_create_autocmd("BufWritePost", {
+      pattern = "*.toml",
+      group = my_autocmds,
+      callback = function()
+	-- We need `dpp-ext-installer`
+	if not #dpp.sync_ext_action("installer", "getNotInstalled") == 0 then
+	  dpp.async_ext_action("installer", "install")
+	end
+      end,
+    })
+
   end
   -- If dpp.make_state() is finished, notify (with AutoCmd)
   vim.api.nvim_create_autocmd("User", {
