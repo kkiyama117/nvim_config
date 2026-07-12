@@ -77,6 +77,12 @@ local function load_plugins(list_of_plugin)
   end
 end
 
+local function ensure_denops_plugin()
+  if vim.fn.has("nvim") == 1 and not vim.g.loaded_denops then
+    vim.cmd([[runtime! plugin/denops.vim]])
+  end
+end
+
 -----------------------------------------------------------------------------
 -- Main
 -----------------------------------------------------------------------------
@@ -91,10 +97,7 @@ local function initialize_dpp()
   if dpp.load_state(dpp_cache_home) then
     -- install and load `denops.vim` and `dpp plugins` to load dpp
     load_plugins(normal_deps)
-    -- Manual load is needed
-    if vim.fn.has("nvim") == 1 then
-      vim.cmd([[runtime! plugin/denops.vim]])
-    end
+    ensure_denops_plugin()
     vim.api.nvim_create_autocmd("User", {
       pattern = "DenopsReady",
       group = my_autocmds,
@@ -105,6 +108,7 @@ local function initialize_dpp()
       end,
     })
   else
+    ensure_denops_plugin()
     -- check config is updated and update cache
     vim.api.nvim_create_autocmd("BufWritePost", {
       pattern = "*.lua,*.vim,*.toml,*.ts,vimrc,.vimrc",
