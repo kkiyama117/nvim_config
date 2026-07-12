@@ -88,13 +88,11 @@ export class Config extends BaseConfig{
     const hasNvim = args.denops.meta.host === "nvim"
     const hasWindows = await fn.has(args.denops, "win32");
     const hasGui = await fn.has(args.denops, "gui_running");
-    // TODO: inline lua
-    const inlineVimrcs = [];
-    const inlineLuaFiles = [
-      join(neovimLuaDir, "visual.lua")
+    const inlineVimrcs = [
+      join(neovimLuaDir, "visual.lua"),
     ];
     args.contextBuilder.setGlobal({
-      inlineVimrcs: inlineLuaFiles,
+      inlineVimrcs,
       extParams: {
         installer: {
           checkDiff: true,
@@ -186,21 +184,14 @@ export class Config extends BaseConfig{
     ]);
     // TODO: implement
     const groups = undefined;
-    // TODO: implement
-    const plugins = [];
-    // TODO: implement
-    const stateLines = [];
-    
-    // Return `ConfigReturn`
-    // TODO: ONLY IF DEBUG
     const result: ConfigReturn = {
       checkFiles,
       ftplugins,
       hooksFiles,
       multipleHooks,
       groups,
-      plugins: plugins ?? [],
-      stateLines: stateLines ?? [],
+      plugins: lazyResult?.plugins ?? [],
+      stateLines: lazyResult?.stateLines ?? [],
     };
     console.debug("Dpp ConfigReturn is");
     console.debug(result);
