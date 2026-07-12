@@ -4,7 +4,7 @@ Reference of the `ConfigReturn` type exposed by dpp.vim (`Shougo/dpp.vim`, `main
 
 Status: reference (stable).
 
-Related: [`denops-dpp.md`](./denops-dpp.md) (upstream reading list), [`dpp-context-builder.md`](./dpp-context-builder.md) (`ContextBuilder` / `setGlobal`).
+Related: [`denops-dpp.md`](./denops-dpp.md) (upstream reading list), [`dpp-context-builder.md`](./dpp-context-builder.md) (`ContextBuilder` / `setGlobal`), [`dpp-hooks-file.md`](./dpp-hooks-file.md) (`hooks_file` / `hooksFiles` / file format).
 
 ## Source location
 
@@ -34,7 +34,6 @@ export type ConfigReturn = {
 ```ts
 export type MultipleHook = {
   hook_add?: string;
-  hooks_file?: string;
   hook_post_source?: string;
   hook_source?: string;
   plugins: string[];
@@ -48,7 +47,7 @@ export type MultipleHook = {
 | `plugins` | `Plugin[]` | **Yes** | Plugins to register. Each element is the `Plugin` type from `types.ts` | Iterated; `detectPlugin()` is run per plugin, then `groups` and `hooks_file` are merged |
 | `ftplugins` | `Record<string, string>` | No | filetype → script map | Merged by `mergeFtplugins()` |
 | `groups` | `Record<string, Partial<Plugin>>` | No | Group-common settings referenced by `plugin.group` | Resolved against `convert2List(plugin.group)`; unknown group → `printError` and skip; merged as `{...groups[group], ...plugin}` (group first, plugin overrides) |
-| `hooksFiles` | `string[]` | No | Hooks file paths to read | Read via `readHooksFile()` and parsed by `parseHooksFile()` with `options.hooksFileMarker` |
+| `hooksFiles` | `string[]` | No | Global hooks file paths | Parsed by `parseHooksFile()`; **ftplugin sections only** merged into `ftplugins` (see [`dpp-hooks-file.md`](./dpp-hooks-file.md)) |
 | `multipleHooks` | `MultipleHook[]` | No | Hooks applied to multiple plugins at once | Defaulted to `[]`; applied to the plugins listed in `MultipleHook.plugins` |
 | `checkFiles` | `string[]` | No | File paths whose existence is checked after state generation | Used in the check phase of `makeState()` |
 | `stateLines` | `string[]` | No | Lines appended verbatim to the state file | Written into the generated state |

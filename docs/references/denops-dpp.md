@@ -30,6 +30,7 @@ Status: reference (stable).
 | Source — dpp base | repo `denops/dpp/base/dpp.ts` | `Dpp` interface |
 | Source — types | repo `denops/dpp/types.ts` | `Context`, `ContextBuilder`, `DppOptions`, `Plugin`, `BaseParams` |
 | Source — utils | repo `denops/dpp/utils.ts` | `getLazyPlugins`, `mergeFtplugins`, `parseHooksFile`, … |
+| Local reference — hooks files | [`dpp-hooks-file.md`](./dpp-hooks-file.md) | `hooks_file`, `hooksFiles`, `hooksFileMarker`, TOML mapping |
 | Package exports map | repo `denops/dpp/deno.json` | `exports`: `./config`, `./dpp`, `./ext`, `./protocol`, `./types`, `./utils` |
 | Workspace root | repo `deno.jsonc` | workspace + tasks (`deno check denops/**/*.ts`) |
 
