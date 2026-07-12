@@ -177,9 +177,9 @@ export class Config extends BaseConfig{
     }
 
     const checkFiles = await gatherCheckFiles(args.denops, nvimHome, [
-      "**/*.lua",
+      "lua/**/*.lua",
       "**/*.toml",
-      "**/*.ts",
+      "denops/**/*.ts",
       "**/*.vim",
     ]);
     // TODO: implement

@@ -1,0 +1,3 @@
+# Minimum plugins not to load lazy.
+# It should be the same as `lua/dpp_loader.lua`'s one.
+
