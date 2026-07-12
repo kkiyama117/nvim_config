@@ -3,7 +3,7 @@
 repo = 'vim-denops/denops.vim'
 # TODO: write it by lua
 hook_source = '''
-  let g:denops#debug = v:false
+  let g:denops#debug = v:true
 
   let g:denops#server#deno_args = [
       \   '-q',

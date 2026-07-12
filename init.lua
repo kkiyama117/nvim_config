@@ -6,7 +6,6 @@ if vim.loader then
 end
 
 -- Debug mode
-vim.g["denops#debug"] = 1
 
 -----------------------------------------------------------------------------
 -- General ENVIRONMENT VARIABLES
