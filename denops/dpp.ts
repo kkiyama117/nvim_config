@@ -142,6 +142,7 @@ export class Config extends BaseConfig{
     ) as [TomlExt | undefined, ExtOptions, TomlParams];
 
     if (tomlExt) {
+      // Load Dpp toml files
       const tomls: Toml[] = [];
       for (const tomlFile of Deno.readDirSync(dppTomlDir)) {
         if (!tomlFile.isFile || !tomlFile.name.endsWith(".toml")) continue;
