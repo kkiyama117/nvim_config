@@ -16,16 +16,16 @@ local dpp_cache_home = vim.fs.joinpath(xdg_cache_home, "dpp")
 local dpp_cache_github = vim.fs.joinpath(dpp_cache_home, "repos", "github.com")
 local dpp_cache_local = vim.fs.joinpath(dpp_cache_home, "local")
 -- 
-local dpp_denops_script = vim.fs.joinpath(xdg_config_home,"nvim", "denops", "dpp.ts")
+local dpp_denops_script = vim.fs.joinpath(xdg_config_home, "nvim", "denops", "dpp.ts")
 
 -- Minimum plugins to load dpp
 local minimum_deps = {
   "Shougo/dpp.vim",
   "Shougo/dpp-ext-lazy",
-  "Shougo/dpp-ext-toml",
 }
 -- plugins used to install plugins with dpp
 local normal_deps = {
+  "Shougo/dpp-ext-toml",
   "Shougo/dpp-ext-installer",
   "vim-denops/denops.vim",
 }
@@ -64,7 +64,7 @@ end
 -- load (and install if not exist) all plugins
 local function load_plugins(list_of_plugin)
   for _, name in ipairs(list_of_plugin) do
-    plugin_dest_path = dest_path(name)
+    local plugin_dest_path = dest_path(name)
     if not is_plugin_ready(name, plugin_dest_path) then
       local _installed_path = install_github_plugin(name, plugin_dest_path)
     end
@@ -107,7 +107,7 @@ local function initialize_dpp()
       pattern = "*.lua,*.vim,*.toml,*.ts,vimrc,.vimrc",
       group = my_autocmds,
       callback = function()
-	if not #dpp.check_files(dpp_cache_home) == 0 then
+	if #dpp.check_files(dpp_cache_home) ~= 0 then
 	  dpp.make_state(dpp_cache_home, dpp_denops_script)
 	end
       end,
@@ -118,7 +118,7 @@ local function initialize_dpp()
       group = my_autocmds,
       callback = function()
 	-- We need `dpp-ext-installer`
-	if not #dpp.sync_ext_action("installer", "getNotInstalled") == 0 then
+	if #dpp.sync_ext_action("installer", "getNotInstalled") ~= 0 then
 	  dpp.async_ext_action("installer", "install")
 	end
       end,

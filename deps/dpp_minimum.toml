@@ -2,7 +2,4 @@
 # Same role as lua/dpp_loader.lua minimum_deps.
 
 [[plugins]]
-repo = "Shougo/dpp-ext-toml"
-
-[[plugins]]
 repo = "Shougo/dpp-ext-lazy"
