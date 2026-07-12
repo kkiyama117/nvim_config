@@ -1,5 +1,4 @@
 import type {
-  Context,
   ContextBuilder,
   ExtOptions,
   Plugin,
@@ -66,43 +65,6 @@ const neovimLuaDir = join(nvimHome, "lua");
 // --------------------------------------------------------------------------
 // Util functions
 // --------------------------------------------------------------------------
-async function gatherTomls(
-  denops: Denops,
-  context: Context,
-  options: Awaited<ReturnType<ContextBuilder["get"]>>[1],
-  protocols: Record<ProtocolName, Protocol>,
-  tomlExt: TomlExt,
-  tomlOptions: ExtOptions,
-  tomlParams: TomlParams,
-  path: string,
-  noLazyTomlNames: string[],
-): Promise<Toml[]> {
-  const tomls: Toml[] = [];
-
-  for (const tomlFile of Deno.readDirSync(path)) {
-    if (!tomlFile.isFile || !tomlFile.name.endsWith(".toml")) continue;
-    const isLazy = !noLazyTomlNames.includes(tomlFile.name);
-    tomls.push(
-      await tomlExt.actions.load.callback({
-        denops,
-        context,
-        options,
-        protocols,
-        extOptions: tomlOptions,
-        extParams: tomlParams,
-        actionParams: {
-          path: join(path, tomlFile.name),
-          options: {
-            lazy: isLazy,
-          },
-        },
-      }) as Toml,
-    );
-  }
-
-  return tomls;
-}
-
 async function gatherCheckFiles(
   denops: Denops,
   path: string,
@@ -180,17 +142,27 @@ export class Config extends BaseConfig{
     ) as [TomlExt | undefined, ExtOptions, TomlParams];
 
     if (tomlExt) {
-      const tomls = await gatherTomls(
-        args.denops,
-        context,
-        options,
-        protocols,
-        tomlExt,
-        tomlOptions,
-        tomlParams,
-        dppTomlDir,
-        noLazyTomls,
-      );
+      const tomls: Toml[] = [];
+      for (const tomlFile of Deno.readDirSync(dppTomlDir)) {
+        if (!tomlFile.isFile || !tomlFile.name.endsWith(".toml")) continue;
+        const isLazy = !noLazyTomls.includes(tomlFile.name);
+        tomls.push(
+          await tomlExt.actions.load.callback({
+            denops: args.denops,
+            context,
+            options,
+            protocols,
+            extOptions: tomlOptions,
+            extParams: tomlParams,
+            actionParams: {
+              path: join(dppTomlDir, tomlFile.name),
+              options: {
+                lazy: isLazy,
+              },
+            },
+          }) as Toml,
+        );
+      }
       for (const toml of tomls) {
         if (!toml) continue;
         if (toml.plugins) {
