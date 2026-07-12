@@ -1,3 +1,8 @@
-# Minimum plugins (and may not to load lazy).
-# It should be the same as `lua/dpp_loader.lua`'s one.
+# Minimum plugins (and may not load lazy).
+# Same role as lua/dpp_loader.lua minimum_deps.
 
+[[plugins]]
+repo = "Shougo/dpp-ext-toml"
+
+[[plugins]]
+repo = "Shougo/dpp-ext-lazy"

@@ -1,4 +1,5 @@
 import type {
+  Context,
   ContextBuilder,
   ExtOptions,
   Plugin,
@@ -13,10 +14,11 @@ import {
 import { Protocol } from "@shougo/dpp-vim/protocol";
 import { mergeFtplugins } from "@shougo/dpp-vim/utils";
 
-//import type {
-//  Ext as TomlExt,
-//  Params as TomlParams,
-//} from "@shougo/dpp-ext-toml";
+import type {
+  Ext as TomlExt,
+  Params as TomlParams,
+  Toml,
+} from "@shougo/dpp-ext-toml";
 //import type {
 //  Ext as LocalExt,
 //  Params as LocalParams,
@@ -52,7 +54,7 @@ const dppCacheHome= join(xdgCacheHome, "dpp");
 // Config file/folder path
 // --------------------------------------------------------------------------
 // Where plugin definition TOMLs live.
-const dppTomlDir = join(nvimHome, "deps", "dpp");
+const dppTomlDir = join(nvimHome, "deps");
 
 // denops TypeScript files
 const dppTSDir = join(nvimHome, "denops");
@@ -60,6 +62,43 @@ const dppTSDir = join(nvimHome, "denops");
 // Where inline vimrc fragments live.
 // Files under `$nvimHome/lua` is autoloaded by neovim as a default.
 const neovimLuaDir = join(nvimHome, "lua");
+
+async function gatherTomls(
+  denops: Denops,
+  context: Context,
+  options: Awaited<ReturnType<ContextBuilder["get"]>>[1],
+  protocols: Record<ProtocolName, Protocol>,
+  tomlExt: TomlExt,
+  tomlOptions: ExtOptions,
+  tomlParams: TomlParams,
+  path: string,
+  noLazyTomlNames: string[],
+): Promise<Toml[]> {
+  const tomls: Toml[] = [];
+
+  for (const tomlFile of Deno.readDirSync(path)) {
+    if (!tomlFile.isFile || !tomlFile.name.endsWith(".toml")) continue;
+    const isLazy = !noLazyTomlNames.includes(tomlFile.name);
+    tomls.push(
+      await tomlExt.actions.load.callback({
+        denops,
+        context,
+        options,
+        protocols,
+        extOptions: tomlOptions,
+        extParams: tomlParams,
+        actionParams: {
+          path: join(path, tomlFile.name),
+          options: {
+            lazy: isLazy,
+          },
+        },
+      }) as Toml,
+    );
+  }
+
+  return tomls;
+}
 
 async function gatherCheckFiles(
   denops: Denops,
@@ -102,9 +141,10 @@ export class Config extends BaseConfig{
           githubAPIToken: Deno.env.get("GITHUB_API_TOKEN"),
         },
       },
-      protocols: [
-        // TODO: setup `git` and `http`
-      ],
+      protocols: ["git"],
+      protocolParams: {
+        git: { enablePartialClone: true },
+      },
     });
 
     const [context, options] = await args.contextBuilder.get(args.denops);
@@ -122,17 +162,47 @@ export class Config extends BaseConfig{
     // TODO: implement
     let multipleHooks: MultipleHook[] = [];
 
-    // Toml config
-    //const [tomlExt, tomlOptions, tomlParams]: [
-    //  TomlExt | undefined,
-    //  ExtOptions,
-    //  TomlParams,
-    //] = await args.denops.dispatcher.getExt(
-    //  "toml",
-    //) as [TomlExt | undefined, ExtOptions, TomlParams];
-    //if (tomlExt){
-    //  // TODO: implement
-    //}
+    const noLazyTomls = ["dpp_minimum.toml"];
+
+    const [tomlExt, tomlOptions, tomlParams]: [
+      TomlExt | undefined,
+      ExtOptions,
+      TomlParams,
+    ] = await args.denops.dispatcher.getExt(
+      "toml",
+    ) as [TomlExt | undefined, ExtOptions, TomlParams];
+    if (tomlExt) {
+      const tomls = await gatherTomls(
+        args.denops,
+        context,
+        options,
+        protocols,
+        tomlExt,
+        tomlOptions,
+        tomlParams,
+        dppTomlDir,
+        noLazyTomls,
+      );
+      for (const toml of tomls) {
+        if (!toml) continue;
+        if (toml.plugins) {
+          for (const plugin of toml.plugins) {
+            recordPlugins[plugin.name] = plugin;
+          }
+        }
+        if (toml.hooks_file) hooksFiles.push(toml.hooks_file);
+        if (toml.ftplugins) {
+          for (const filetype of Object.keys(toml.ftplugins)) {
+            ftplugins[filetype] = ftplugins[filetype]
+              ? `${ftplugins[filetype]}\n${toml.ftplugins[filetype]}`
+              : toml.ftplugins[filetype];
+          }
+        }
+        if (toml.multiple_hooks) {
+          multipleHooks = multipleHooks.concat(toml.multiple_hooks);
+        }
+      }
+    }
 
     // Local plugins
     //const [localExt, localOptions, localParams]: [

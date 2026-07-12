@@ -21,7 +21,8 @@ local dpp_denops_script = vim.fs.joinpath(xdg_config_home,"nvim", "denops", "dpp
 -- Minimum plugins to load dpp
 local minimum_deps = {
   "Shougo/dpp.vim",
-  "Shougo/dpp-ext-lazy"
+  "Shougo/dpp-ext-lazy",
+  "Shougo/dpp-ext-toml",
 }
 -- plugins used to install plugins with dpp
 local normal_deps = {

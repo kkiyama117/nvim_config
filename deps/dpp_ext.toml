@@ -1,0 +1,4 @@
+# dpp protocol/extension plugins
+
+[[plugins]]
+repo = "Shougo/dpp-protocol-git"
