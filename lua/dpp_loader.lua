@@ -118,7 +118,7 @@ local function initialize_dpp()
     })
     -- check toml deps are updated and new plugins are needed
     vim.api.nvim_create_autocmd("BufWritePost", {
-      pattern = "*.toml",
+      pattern = "*.toml,*.lua",
       group = my_autocmds,
       callback = function()
         local not_installed = vim.fn["dpp#sync_ext_action"]("installer", "getNotInstalled")
