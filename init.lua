@@ -40,8 +40,6 @@ vim.opt.langmenu = vim.env.LANG
 -----------------------------------------------------------------------------
 -- Use `dpp` as a default
 require('dpp_loader')
--- TODO: load it by `dpp`
-require('visual')
 
 vim.cmd("filetype indent plugin on")
 vim.cmd("syntax on")

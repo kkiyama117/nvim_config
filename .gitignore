@@ -1,5 +1,12 @@
+# Vim swap
 *.swp
 *.swo
+# Vim netrw
 .netrwhist
 tmp/
 bak/
+
+# Deno/Denops files
+**/deno.lock
+
+
