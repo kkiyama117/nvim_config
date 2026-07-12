@@ -63,6 +63,9 @@ const dppTSDir = join(nvimHome, "denops");
 // Files under `$nvimHome/lua` is autoloaded by neovim as a default.
 const neovimLuaDir = join(nvimHome, "lua");
 
+// --------------------------------------------------------------------------
+// Util functions
+// --------------------------------------------------------------------------
 async function gatherTomls(
   denops: Denops,
   context: Context,
@@ -123,6 +126,7 @@ export class Config extends BaseConfig{
     contextBuilder: ContextBuilder;
     basePath: string;
   }):Promise<ConfigReturn>{
+    // List up vimrc/lua files
     console.debug("Load Dpp Config");
     const hasNvim = args.denops.meta.host === "nvim"
     const hasWindows = await fn.has(args.denops, "win32");
@@ -130,6 +134,8 @@ export class Config extends BaseConfig{
     const inlineVimrcs = [
       join(neovimLuaDir, "visual.lua"),
     ];
+
+    // Dpp ContextBuilder
     args.contextBuilder.setGlobal({
       inlineVimrcs,
       extParams: {
@@ -162,7 +168,8 @@ export class Config extends BaseConfig{
     // TODO: implement
     let multipleHooks: MultipleHook[] = [];
 
-    const noLazyTomls = ["dpp_minimum.toml"];
+    // avoid lazy loading 
+    const noLazyTomls = ["dpp.toml"];
 
     const [tomlExt, tomlOptions, tomlParams]: [
       TomlExt | undefined,
@@ -171,6 +178,7 @@ export class Config extends BaseConfig{
     ] = await args.denops.dispatcher.getExt(
       "toml",
     ) as [TomlExt | undefined, ExtOptions, TomlParams];
+
     if (tomlExt) {
       const tomls = await gatherTomls(
         args.denops,
