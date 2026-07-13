@@ -1,8 +1,8 @@
 # Dependency docs auto-generation drift
 
 **Date:** 2026-07-13
-**Status:** open
-**Related:** [design](../specifications/implementation/2026-07-13-deps-docs-auto-gen-design.md), [plan](../plans/2026-07-13-deps-docs-auto-gen-impl.md), [pass-1 review](../reviews/2026-07-13-deps-docs-auto-gen-review-pass1.md), [pass-2 review](../reviews/2026-07-13-deps-docs-auto-gen-review-pass2.md)
+**Status:** closed (2026-07-13)
+**Related:** [design](../specifications/implementation/2026-07-13-deps-docs-auto-gen-design.md), [plan](../plans/2026-07-13-deps-docs-auto-gen-impl.md), [pass-1 review](../reviews/2026-07-13-deps-docs-auto-gen-review-pass1.md), [pass-2 review](../reviews/2026-07-13-deps-docs-auto-gen-review-pass2.md), [Phase 0 result-log](2026-07-13-phase0-deps-docs-auto-gen.md), [Phase 1 result-log](2026-07-13-phase1-deps-docs-auto-gen.md), [Phase 2 result-log](2026-07-13-phase2-deps-docs-auto-gen.md), [Phase 3 result-log](2026-07-13-phase3-deps-docs-auto-gen.md)
 
 ## Context
 
@@ -52,3 +52,31 @@ In summary:
 - Decisions resolved upfront (see design §7 Q1/Q2/Q6/Q7): Deno + JSR `@std/toml` via `scripts/deno.json` import map; no date prefix in `docs/references/deps-list.md` filename; explicit "every `dpp.toml` repo is classified into exactly one bucket" assertion in the script.
 - Pass-1 review (2026-07-13) raised 5 blocking + 12 non-blocking findings; all 17 applied in one revision pass. Blocking: A1 (Lua require path → `lua/dpp_min_deps.lua`), D1 (full generator, scope widened above), A2/C2 (Phase 0 pre-refactor drift fix added), A3/D8 (in-body date line dropped), D4 (`09-dev-workflow.md` slimmed to 5 cross-cutting rules).
 - Pass-2 review (2026-07-13) with same letters (A + C + D): all 5 pass-1 blocking findings verified RESOLVED, no new CRITICAL/HIGH. 1 MEDIUM (D-pass2-2: deferred-rules mapping inaccuracy in `09-dev-workflow.md`) + 4 polish items, all applied. R1 re-elevated to spec as 6th cross-cutting rule; H4 removed (negated by D7). **Design promoted to `Approved`** — see [design §8a + pass-2 findings table](../specifications/implementation/2026-07-13-deps-docs-auto-gen-design.md). Plan phase may begin.
+
+## Closure (2026-07-13)
+
+All 4 phases executed (plan status: `executed`). S1–S7 met, verified by per-phase result-logs and the final smoke matrix:
+
+| Criterion | Phase | Result-log | Evidence |
+|-----------|-------|------------|----------|
+| S1 — `deps/README.md` sentinel block with minimum/normal/other tables | Phase 2 | [Phase 2](2026-07-13-phase2-deps-docs-auto-gen.md) | 2 + 7 entries + 3 per-TOML counts |
+| S2 — generated files git-tracked | Phase 1 + 2 | [Phase 1](2026-07-13-phase1-deps-docs-auto-gen.md), [Phase 2](2026-07-13-phase2-deps-docs-auto-gen.md) | `lua/dpp_min_deps.lua` + `deps/README.md` + `docs/references/deps-list.md` tracked |
+| S3 — `lua/dpp_loader.lua` requires generated module | Phase 1 | [Phase 1](2026-07-13-phase1-deps-docs-auto-gen.md) | `require("dpp_min_deps")` + assert at lines 24–27 |
+| S4 — `docs/references/deps-list.md` per-plugin table + index | Phase 2 | [Phase 2](2026-07-13-phase2-deps-docs-auto-gen.md) | 11 rows = 11 `[[plugins]]` entries; `docs/README.md` index line |
+| S5 — pre-commit hook refuses stale generated files | Phase 3 | [Phase 3](2026-07-13-phase3-deps-docs-auto-gen.md) | positive + negative tests pass |
+| S6 — single Deno command, JSR `@std/toml` via import map | Phase 1 | [Phase 1](2026-07-13-phase1-deps-docs-auto-gen.md) | `deno task gen`; `@std/toml@^1` in `deno.json` imports |
+| S7 — no plugin-runtime behavior change in Phase 1 | Phase 0 + 1 | [Phase 0](2026-07-13-phase0-deps-docs-auto-gen.md), [Phase 1](2026-07-13-phase1-deps-docs-auto-gen.md) | `vim.inspect(require("dpp_min_deps"))` matches post-Phase-0 tables; `nvim --headless -c 'qa'` exit 0 |
+
+**Final smoke matrix (2026-07-13):**
+- `nvim --headless -c 'qa'` → exit 0
+- `deno task gen` → exit 0 (no-op, idempotent)
+- `git diff --exit-code -- deps/README.md lua/dpp_min_deps.lua docs/references/deps-list.md docs/README.md` → exit 0 (no diff)
+
+**Open questions carried forward (non-blocking):**
+- Q3 (CI integration) — deferred until CI is set up; pre-commit hook is the only enforcement surface for now.
+- Q5 (`@std/toml` newline preservation in `''' … '''` strings) — non-issue for current scope (hooks omitted from reference table, only `✓` marker rendered).
+
+**Plan revision suggestions (recorded in result-logs, non-blocking):**
+- Phase 0 step 2 sample: use single quotes (not double) to match design §5.5 + Acceptance diff.
+- Phase 1 step 1: `deno.json` at repo root (not `scripts/`) — Deno config discovery walks up from cwd.
+- Phase 3 step 7 negative test: use an output-affecting TOML change (e.g. `description` field), not a TOML comment (`# ...` is ignored by `@std/toml`).
