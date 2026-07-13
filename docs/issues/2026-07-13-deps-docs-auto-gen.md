@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-13
 **Status:** open
-**Related:** [design](../specifications/implementation/2026-07-13-deps-docs-auto-gen-design.md), _(plan and reviews TBD)_
+**Related:** [design](../specifications/implementation/2026-07-13-deps-docs-auto-gen-design.md), [plan](../plans/2026-07-13-deps-docs-auto-gen-impl.md), [pass-1 review](../reviews/2026-07-13-deps-docs-auto-gen-review-pass1.md), [pass-2 review](../reviews/2026-07-13-deps-docs-auto-gen-review-pass2.md)
 
 ## Context
 
