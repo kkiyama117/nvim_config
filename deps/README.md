@@ -16,6 +16,29 @@ This subdirectory has a data of the dependencies of vimrc
 
 ## Minimum loaded
 
+| repo | description |
+|------|-------------|
+| `Shougo/dpp.vim` | Dark powered plugin manager for Vim/Neovim |
+| `Shougo/dpp-ext-lazy` | _(no description in toml)_ |
+
+## Normal dpp deps (loaded before denops ready)
+
+| repo | description |
+|------|-------------|
+| `Shougo/dpp-ext-toml` | _(no description in toml)_ |
+| `Shougo/dpp-ext-local` | _(no description in toml)_ |
+| `Shougo/dpp-ext-installer` | _(no description in toml)_ |
+| `Shougo/dpp-ext-packspec` | _(no description in toml)_ |
+| `Shougo/dpp-protocol-git` | _(no description in toml)_ |
+| `Shougo/dpp-protocol-http` | _(no description in toml)_ |
+| `vim-denops/denops.vim` | _(no description in toml)_ |
+
+## Other TOMLs
+
+- `deps/denops.toml`: 1 plugin — see [docs/references/deps-list.md](../docs/references/deps-list.md) for the full table.
+- `deps/neovim.toml`: 1 plugin
+- `deps/merge.toml`: 1 plugin
+
 -----------------------------------------------------------------------------
 -- AUTO GENERATED PLUGIN LIST END
 -----------------------------------------------------------------------------
