@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+deno task gen
+
+# Diff only the generated files; if any changed, the user forgot to regen.
+if ! git diff --exit-code -- \
+    deps/README.md \
+    lua/dpp_min_deps.lua \
+    docs/references/deps-list.md \
+    docs/README.md; then
+  echo "Generated dependency docs are stale." >&2
+  echo "Run \`deno task gen\` and \`git add\` the updated files, then re-run your commit." >&2
+  exit 1
+fi

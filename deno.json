@@ -1,0 +1,8 @@
+{
+  "tasks": {
+    "gen": "deno run --allow-read=. --allow-write=deps/README.md,lua/dpp_min_deps.lua,docs/references/deps-list.md,docs/README.md scripts/gen_deps.ts"
+  },
+  "imports": {
+    "@std/toml": "jsr:@std/toml@^1"
+  }
+}

@@ -17,6 +17,7 @@ numbered as 00 to 09.
 | Name | Contents |
 |-----------|----------|
 | `00-document-management.md` | Issues + result-logs (GitHub Issues substitute) |
+| `09-dev-workflow.md` | Generators, generated-file discipline, pre-commit hook |
 
 
 ## Directories
@@ -32,3 +33,6 @@ numbered as 00 to 09.
 
 See [AGENTS.md](../AGENTS.md) §3 for the summary and §4 for the review letter set.
 
+## Generated references
+
+- [references/deps-list.md](references/deps-list.md) — Auto-generated plugin list across all `deps/**/*.toml`.
