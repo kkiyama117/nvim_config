@@ -35,4 +35,4 @@ See [AGENTS.md](../AGENTS.md) §3 for the summary and §4 for the review letter 
 
 ## Generated references
 
-- [references/deps-list.md](references/deps-list.md) — Auto-generated plugin list across all `deps/*.toml`.
+- [references/deps-list.md](references/deps-list.md) — Auto-generated plugin list across all `deps/**/*.toml`.

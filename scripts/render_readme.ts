@@ -1,4 +1,10 @@
-import type { DepsModel, PluginEntry, SourceToml } from "./deps_as_json.ts";
+import type { DepsModel, PluginEntry } from "./deps_as_json.ts";
+import {
+  DENOPS_SOURCE,
+  DPP_SOURCE,
+  orderedSources,
+  sourceLabel,
+} from "./deps_as_json.ts";
 
 function desc(p: PluginEntry): string {
   return p.description && p.description.length > 0
@@ -16,12 +22,6 @@ function pluginTable(entries: PluginEntry[]): string {
   }
   return lines.join("\n");
 }
-
-const OTHER_TOMLS: { source: SourceToml; label: string }[] = [
-  { source: "denops", label: "deps/denops.toml" },
-  { source: "neovim", label: "deps/neovim.toml" },
-  { source: "merge", label: "deps/merge.toml" },
-];
 
 export function renderReadmeBlock(model: DepsModel): string {
   const byRepo = new Map(model.plugins.map((p) => [p.repo, p]));
@@ -46,12 +46,13 @@ export function renderReadmeBlock(model: DepsModel): string {
     "",
   ];
 
-  for (const { source, label } of OTHER_TOMLS) {
-    const count = model.by_toml[source].length;
-    const suffix = source === "denops"
+  for (const source of orderedSources(model)) {
+    if (source === DPP_SOURCE) continue;
+    const count = model.by_toml.get(source)?.length ?? 0;
+    const suffix = source === DENOPS_SOURCE
       ? ` — see [docs/references/deps-list.md](../docs/references/deps-list.md) for the full table.`
       : "";
-    sections.push(`- \`${label}\`: ${count} plugin${count === 1 ? "" : "s"}${suffix}`);
+    sections.push(`- \`${sourceLabel(source)}\`: ${count} plugin${count === 1 ? "" : "s"}${suffix}`);
   }
 
   return sections.join("\n");

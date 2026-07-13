@@ -15,7 +15,7 @@ const START_MARKER = /^-- AUTO GENERATED PLUGIN LIST$/;
 const END_MARKER = /^-- AUTO GENERATED PLUGIN LIST END$/;
 
 const DOCS_INDEX_LINE =
-  "- [references/deps-list.md](references/deps-list.md) — Auto-generated plugin list across all `deps/*.toml`.";
+  "- [references/deps-list.md](references/deps-list.md) — Auto-generated plugin list across all `deps/**/*.toml`.";
 const DOCS_INDEX_SECTION = `
 ## Generated references
 

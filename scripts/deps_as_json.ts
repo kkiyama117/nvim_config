@@ -1,6 +1,6 @@
 import { parse } from "@std/toml";
 
-export type SourceToml = "dpp" | "denops" | "neovim" | "merge";
+export type SourceToml = string;
 
 export interface PluginEntry {
   repo: string;
@@ -21,7 +21,7 @@ export interface PluginEntry {
 
 export interface DepsModel {
   plugins: PluginEntry[];
-  by_toml: Record<SourceToml, PluginEntry[]>;
+  by_toml: Map<string, PluginEntry[]>;
   minimum_deps: string[];
   normal_deps: string[];
 }
@@ -38,12 +38,53 @@ export class GenExitError extends Error {
 
 export const MINIMUM_REPOS = new Set(["Shougo/dpp.vim", "Shougo/dpp-ext-lazy"]);
 
-const TOML_FILES: { path: string; source: SourceToml }[] = [
-  { path: "deps/dpp.toml", source: "dpp" },
-  { path: "deps/denops.toml", source: "denops" },
-  { path: "deps/neovim.toml", source: "neovim" },
-  { path: "deps/merge.toml", source: "merge" },
-];
+export const DPP_SOURCE = "dpp";
+export const DENOPS_SOURCE = "denops";
+
+const DEPS_DIR = "deps";
+const TOML_EXT = ".toml";
+
+export function sourceLabel(source: string): string {
+  return `${DEPS_DIR}/${source}${TOML_EXT}`;
+}
+
+async function* walkToml(dir: string): AsyncGenerator<string> {
+  try {
+    for await (const entry of Deno.readDir(dir)) {
+      const full = `${dir}/${entry.name}`;
+      if (entry.isDirectory) {
+        yield* walkToml(full);
+      } else if (entry.isFile && entry.name.endsWith(TOML_EXT)) {
+        yield full;
+      }
+    }
+  } catch (e) {
+    throw new GenExitError(
+      2,
+      `failed to read directory ${dir}: ${e instanceof Error ? e.message : String(e)}`,
+    );
+  }
+}
+
+async function discoverTomlFiles(): Promise<{ path: string; source: string }[]> {
+  const paths: string[] = [];
+  for await (const p of walkToml(DEPS_DIR)) paths.push(p);
+  paths.sort();
+  if (paths.length === 0) {
+    throw new GenExitError(2, `no ${TOML_EXT} files found under ${DEPS_DIR}/`);
+  }
+  const prefix = `${DEPS_DIR}/`;
+  return paths.map((p) => ({
+    path: p,
+    source: p.slice(prefix.length, -TOML_EXT.length),
+  }));
+}
+
+export function orderedSources(model: DepsModel): string[] {
+  const sources = [...model.by_toml.keys()];
+  const withoutDpp = sources.filter((s) => s !== DPP_SOURCE).sort();
+  return sources.includes(DPP_SOURCE) ? [DPP_SOURCE, ...withoutDpp] : withoutDpp;
+}
 
 function asString(value: unknown): string | undefined {
   return typeof value === "string" ? value : undefined;
@@ -65,7 +106,7 @@ function toPluginEntry(
   if (typeof repo !== "string") {
     throw new GenExitError(
       2,
-      `plugin entry missing string "repo" field in ${source}.toml: ${JSON.stringify(raw)}`,
+      `plugin entry missing string "repo" field in ${sourceLabel(source)}: ${JSON.stringify(raw)}`,
     );
   }
   const extAttrs = raw["extAttrs"];
@@ -91,14 +132,20 @@ function toPluginEntry(
 }
 
 function classify(model: DepsModel): void {
-  const dppEntries = model.by_toml.dpp;
+  const dppEntries = model.by_toml.get(DPP_SOURCE);
+  if (dppEntries === undefined) {
+    throw new GenExitError(
+      2,
+      `${sourceLabel(DPP_SOURCE)} not found under ${DEPS_DIR}/; required for minimum_deps classification`,
+    );
+  }
   model.minimum_deps = dppEntries
     .filter((p) => MINIMUM_REPOS.has(p.repo))
     .map((p) => p.repo);
   model.normal_deps = dppEntries
     .filter((p) => !MINIMUM_REPOS.has(p.repo))
     .map((p) => p.repo);
-  const denopsVim = model.by_toml.denops.find(
+  const denopsVim = model.by_toml.get(DENOPS_SOURCE)?.find(
     (p) => p.repo === "vim-denops/denops.vim",
   );
   if (denopsVim) model.normal_deps.push(denopsVim.repo);
@@ -125,15 +172,12 @@ function classify(model: DepsModel): void {
 }
 
 export async function buildModel(): Promise<DepsModel> {
+  const files = await discoverTomlFiles();
   const plugins: PluginEntry[] = [];
-  const by_toml: Record<SourceToml, PluginEntry[]> = {
-    dpp: [],
-    denops: [],
-    neovim: [],
-    merge: [],
-  };
+  const by_toml = new Map<string, PluginEntry[]>();
+  for (const { source } of files) by_toml.set(source, []);
 
-  for (const { path, source } of TOML_FILES) {
+  for (const { path, source } of files) {
     let text: string;
     try {
       text = await Deno.readTextFile(path);
@@ -166,7 +210,7 @@ export async function buildModel(): Promise<DepsModel> {
       }
       const entry = toPluginEntry(raw as Record<string, unknown>, source);
       plugins.push(entry);
-      by_toml[source].push(entry);
+      by_toml.get(source)!.push(entry);
     }
   }
 

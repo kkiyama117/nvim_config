@@ -35,9 +35,11 @@ This subdirectory has a data of the dependencies of vimrc
 
 ## Other TOMLs
 
+- `deps/ddc.toml`: 0 plugins
+- `deps/ddu.toml`: 0 plugins
 - `deps/denops.toml`: 1 plugin — see [docs/references/deps-list.md](../docs/references/deps-list.md) for the full table.
-- `deps/neovim.toml`: 1 plugin
 - `deps/merge.toml`: 1 plugin
+- `deps/neovim.toml`: 1 plugin
 
 -----------------------------------------------------------------------------
 -- AUTO GENERATED PLUGIN LIST END
