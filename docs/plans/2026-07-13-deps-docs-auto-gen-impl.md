@@ -1,6 +1,6 @@
 # deps-docs-auto-gen — Implementation Plan
 
-**Status:** pending
+**Status:** executing (Phase 0 in progress, 2026-07-13)
 **Spec:** [docs/specifications/implementation/2026-07-13-deps-docs-auto-gen-design.md](../specifications/implementation/2026-07-13-deps-docs-auto-gen-design.md) (Approved, 2026-07-13)
 **Parent issue:** [docs/issues/2026-07-13-deps-docs-auto-gen.md](../issues/2026-07-13-deps-docs-auto-gen.md)
 **Review trail:**

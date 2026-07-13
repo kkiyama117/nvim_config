@@ -27,12 +27,13 @@ local minimum_deps = {
 -- plugins used to install plugins with dpp
 -- That should included in `deps/dpp.toml` except `denops.vim`
 local normal_deps = {
-  "Shougo/dpp-ext-installer",
-  "Shougo/dpp-ext-local",
-  "Shougo/dpp-ext-packspec",
-  "Shougo/dpp-ext-toml",
-  "Shougo/dpp-protocol-git",
-  "vim-denops/denops.vim",
+  'Shougo/dpp-ext-toml',
+  'Shougo/dpp-ext-local',
+  'Shougo/dpp-ext-installer',
+  'Shougo/dpp-ext-packspec',
+  'Shougo/dpp-protocol-git',
+  'Shougo/dpp-protocol-http',
+  'vim-denops/denops.vim',
 }
 
 -----------------------------------------------------------------------------
