@@ -17,6 +17,7 @@ numbered as 00 to 09.
 | Name | Contents |
 |-----------|----------|
 | `00-document-management.md` | Issues + result-logs (GitHub Issues substitute) |
+| `09-dev-workflow.md` | Generators, generated-file discipline, pre-commit hook |
 
 
 ## Directories
