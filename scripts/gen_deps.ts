@@ -4,11 +4,13 @@ import { renderReadmeBlock } from "./render_readme.ts";
 import { renderReference } from "./render_reference.ts";
 import { replaceBetween } from "./sentinels.ts";
 
+// Output files of the AUTO-GENERATED deps list
 const LUA_OUT = "lua/dpp_min_deps.lua";
 const README_OUT = "deps/README.md";
 const REFERENCE_OUT = "docs/references/deps-list.md";
 const DOCS_INDEX = "docs/README.md";
 
+// Marker of the rendering start and end
 const START_MARKER = /^-- AUTO GENERATED PLUGIN LIST$/;
 const END_MARKER = /^-- AUTO GENERATED PLUGIN LIST END$/;
 
