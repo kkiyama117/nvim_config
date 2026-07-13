@@ -18,23 +18,13 @@ local dpp_cache_local = vim.fs.joinpath(dpp_cache_home, "local")
 --
 local dpp_denops_script = vim.fs.joinpath(vim.g.nvim_config_home, "denops", "dpp.ts")
 
--- Minimum plugins to load dpp
--- That should included in `deps/dpp.toml`
-local minimum_deps = {
-  "Shougo/dpp.vim",
-  "Shougo/dpp-ext-lazy",
-}
--- plugins used to install plugins with dpp
--- That should included in `deps/dpp.toml` except `denops.vim`
-local normal_deps = {
-  'Shougo/dpp-ext-toml',
-  'Shougo/dpp-ext-local',
-  'Shougo/dpp-ext-installer',
-  'Shougo/dpp-ext-packspec',
-  'Shougo/dpp-protocol-git',
-  'Shougo/dpp-protocol-http',
-  'vim-denops/denops.vim',
-}
+-- Minimum/normal dpp deps are generated from deps/{dpp,denops,neovim,merge}.toml
+-- by scripts/gen_deps.ts (see docs/specifications/09-dev-workflow.md).
+-- Regenerate via `deno task gen`; the pre-commit hook refuses stale output.
+local deps = require("dpp_min_deps")
+assert(deps and deps.minimum_deps and deps.normal_deps,
+       "dpp_min_deps missing fields")
+local minimum_deps, normal_deps = deps.minimum_deps, deps.normal_deps
 
 -----------------------------------------------------------------------------
 -- functions
