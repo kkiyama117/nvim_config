@@ -1,10 +1,12 @@
 # Auto-generate dependency documents — Design
 
-**Status:** in-review (pass 1 complete, pass 2 requested)
+**Status:** Approved (pass 2 complete, 2026-07-13)
 **Date opened:** 2026-07-13
 **Issue:** [docs/issues/2026-07-13-deps-docs-auto-gen.md](../../issues/2026-07-13-deps-docs-auto-gen.md)
 **Author:** kkiyama
-**Review trail:** [pass 1 aggregate](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass1.md) — [A](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass1-A-architecture.md) / [C](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass1-C-plugin-loading.md) / [D](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass1-D-devils-advocate.md) — 5 blocking + 12 non-blocking findings, all applied per §8; pass 2 requested with same letters (A + C + D) to verify RESOLVED without regression.
+**Review trail:**
+- [pass 1 aggregate](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass1.md) — [A](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass1-A-architecture.md) / [C](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass1-C-plugin-loading.md) / [D](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass1-D-devils-advocate.md) — 5 blocking + 12 non-blocking findings, all applied per §8.
+- [pass 2 aggregate](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass2.md) — [A](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass2-A-architecture.md) / [C](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass2-C-plugin-loading.md) / [D](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass2-D-devils-advocate.md) — 1 MEDIUM (D-pass2-2) + 4 polish, all applied per §8a + pass-2 findings table. No new CRITICAL/HIGH. Promoted to Approved.
 
 > **Review requirement (per [AGENTS.md](../../../AGENTS.md) §4):** this design touches startup order (`lua/dpp_loader.lua` requires a generated module) and plugin loading (reads `deps/*.toml`, declares the minimum dpp set). It therefore requires review letters **A + C + D** at minimum.
 
@@ -53,7 +55,7 @@ The four source-of-truth TOML files under `deps/` are:
 - **S4** — A reference doc `docs/references/deps-list.md` is regenerated with a per-plugin table (repo, source TOML, on_ft / on_event / if / depends / external_commands, description). `docs/README.md` index is updated to list it.
 - **S5** — A pre-commit hook runs the script and **fails the commit** if any generated file (`deps/README.md`, `lua/dpp_min_deps.lua`, `docs/references/deps-list.md`) differs from what the script would produce — i.e. enforces "generated files are up to date".
 - **S6** — The script is invokable as a single Deno command. Per Q2 resolution (revised pass-1 D7), dependencies come from JSR `@std/toml` declared via `scripts/deno.json` import map and resolved from deno's default HTTP cache; the first run after a fresh clone may fetch `@std/toml` from JSR (network required once), and subsequent runs are cached. Exits non-zero on TOML parse error, missing sentinel markers, or classification inconsistency.
-- **S7** — No plugin-runtime behavior change: the generated `minimum_deps` / `normal_deps` lists are byte-identical to the hand-maintained lists in `lua/dpp_loader.lua` **as corrected by Phase 0** (the pre-refactor drift-fix commit). `dpp#make_state`'s input is byte-identical before and after the refactor (verified by `:checkhealth dpp`-equivalent smoke test in the plan). The strict sub-claim "`dpp#make_state` input byte-identical" holds regardless because `dpp#make_state` takes `(dpp_cache_home, dpp_denops_script)`, not the Lua lists (verified by Reviewer-C).
+- **S7** — No plugin-runtime behavior change **in Phase 1 (the refactor)**: the generated `minimum_deps` / `normal_deps` lists are byte-identical to the hand-maintained lists in `lua/dpp_loader.lua` **as corrected by Phase 0** (the pre-refactor drift-fix commit). `dpp#make_state`'s input is byte-identical before and after the refactor (verified by `:checkhealth dpp`-equivalent smoke test in the plan). The strict sub-claim "`dpp#make_state` input byte-identical" holds regardless because `dpp#make_state` takes `(dpp_cache_home, dpp_denops_script)`, not the Lua lists (verified by Reviewer-C). (Phase 0 *does* change bootstrap behavior by eagerly loading `dpp-protocol-http` — see §4 Phase 0 acceptance; Reviewer-C pass-2 verified this eager-load is safe because `load_plugins` only clones + `runtimepath:prepend`, no `:runtime!`.)
 
 ### 1.3 Out of scope
 
@@ -126,6 +128,8 @@ The four source-of-truth TOML files under `deps/` are:
             └──────────────────────────┘
 ```
 
+> **Diagram note (per pass-2 A-pass2-3):** the `require()` arrow above points from `lua/dpp_loader.lua` up to the `.git/hooks/pre-commit` box for layout reasons, but the actual require target is `lua/dpp_min_deps.lua` (the generated module, drawn in the script's output row at upper-left). The pre-commit hook does *not* require `dpp_loader.lua`; it runs `deno task gen` and `git diff --exit-code`. The `require("dpp_min_deps")` edge is: `lua/dpp_loader.lua` → `lua/dpp_min_deps.lua` (synchronous, at startup).
+
 ### 3.2 Classification rule (dpp.toml → minimum_deps / normal_deps)
 
 `lua/dpp_loader.lua` currently splits the dpp bootstrap set into two lists:
@@ -156,7 +160,7 @@ This is the only place where the minimum set is named explicitly **in code**; ev
 - **I4** — `lua/dpp_min_deps.lua` is a **pure-data module**: only `return { minimum_deps = {...}, normal_deps = {...} }`. No `vim.*` calls, no side effects, no `require` of other modules. Required at top of `dpp_loader.lua` before `initialize_dpp()` runs.
 - **I5** — Startup order is unchanged. The `require('dpp_min_deps')` call resolves synchronously via `vim.loader` (already enabled in `init.lua`), executes in microseconds, and returns a table. No new autocmds, no new `User` events.
 - **I6** — The pre-commit hook **does not commit on its own**; it only verifies freshness and stages the regenerated files for the user to review. The commit is still the user's.
-- **I7** — The generator's deno process relies on deno's default HTTP cache: the first run after a fresh clone may fetch `@std/toml` from JSR (network required once), and subsequent runs are served from the local cache. Per pass-1 D7 decision, `--no-remote` is **not** used — it created a UX hazard on fresh clones (confusing "module not found in cache" error). Note (C5): this applies only to the **generator's** deno process (a one-shot `deno run` for `gen_deps.ts`). denops.vim spawns its own separate deno process at `ensure_denops_plugin()` time (`dpp_loader.lua:82`) with its own dependency surface (`@shougo/dpp-vim`, `@denops/std`, etc.); the generator's cache strategy does not affect denops's deno.
+- **I7** — The generator's deno process relies on deno's default HTTP cache: the first run after a fresh clone may fetch `@std/toml` from JSR (network required once), and subsequent runs are served from the local cache. Per pass-1 D7 decision, `--no-remote` is **not** used — it created a UX hazard on fresh clones (confusing "module not found in cache" error). Note (C5, tightened per pass-2 C-pass2-1): this applies only to the **generator's** deno process (a one-shot `deno run` for `gen_deps.ts`). denops.vim spawns its own separate deno process at `ensure_denops_plugin()` time (`dpp_loader.lua:82`) with its own dependency surface (`@shougo/dpp-vim`, `@denops/std`, etc.); pre-caching the generator's `@std/toml` does not pre-cache denops's deps — the two deno processes share `DENO_DIR` but have independent dependency surfaces, so the generator's cache strategy does not affect denops's deno.
 - **I8** — If a sentinel marker is missing from `deps/README.md`, the script **exits non-zero** with a clear error rather than silently appending.
 
 ---
@@ -200,7 +204,7 @@ The implementation is split into 4 phases (Phase 0 + Phases 1–3), each one com
 - Document the hook in [docs/specifications/09-dev-workflow.md](../../09-dev-workflow.md) (already created in the design phase; Phase 3 only adds the concrete hook script and installer that the spec references).
 - **Acceptance:** with a dirty `deps/dpp.toml` not yet regenerated, `git commit` is blocked; after `deno task gen && git add …`, commit succeeds.
 - **Rollback:** `chmod -x .git/hooks/pre-commit` or remove the symlink.
-- **Note (D3):** for a solo-maintainer repo with no other contributors, the hook's onboarding cost is marginal and `deno task gen` can be run manually before commit if preferred. The hook is included per the issue's Acceptance criteria (goal 3: generator framework); it can be disabled without affecting Phases 0–2.
+- **Note (D3, tightened per pass-2 D-pass2-7):** the hook is **installed by default** per the issue's Acceptance criteria (goal 3: generator framework). The manual `deno task gen` path is a fallback for environments where hook installation is impractical (e.g. CI runners that don't persist `.git/hooks/`), not an equal option. For a solo-maintainer repo with no other contributors, the hook can be disabled without affecting Phases 0–2, but the default state is "installed".
 
 ---
 
@@ -441,7 +445,6 @@ The hook **does not** auto-stage — the user reviews the diff (per I6 and H3). 
 ## §8 Revision decisions (pass 1 → pass 2)
 
 Recording author decisions on pass-1 blocking findings from [the aggregate](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass1.md). All 5 blocking findings are resolved; non-blocking findings are applied in the same revision pass.
-
 | Finding | Severity | Decision | Status |
 |---------|----------|----------|--------|
 | **A1** — Lua require path resolution | CRITICAL | **`lua/dpp_min_deps.lua` + `require("dpp_min_deps")`.** No dot in the module name → resolves directly to `lua/dpp_min_deps.lua`. The "generated" signal is carried by the `-- AUTO-GENERATED by scripts/gen_deps.ts — do not edit by hand.` header comment (per [09-dev-workflow.md](../09-dev-workflow.md) R8), not the filename. | ✅ Applied: S2, S5, I3, I4, I5, §3.1, §4 Phase 1, §4 Phase 3, §5.1, §5.5, §6, [09-dev-workflow.md](../09-dev-workflow.md) §4. |
@@ -466,3 +469,41 @@ Recording author decisions on pass-1 blocking findings from [the aggregate](../.
 | D5 | LOW | §5.4 Q7 assertion trimmed from 20 lines to 3 (the complementary predicate already guarantees coverage; only duplicate detection remains). |
 | D6 | LOW | Q5 noted as non-issue for current scope (hooks omitted from reference table); Q5/Q3 left deferred. |
 | D7 | MEDIUM | `--no-remote` dropped from `gen` task and I7; deno's default HTTP cache used instead. Separate `deno task cache` onboarding step removed. §6 hook cache hint removed. |
+
+### §8a Deferred-rules mapping (per pass-2 D-pass2-2)
+
+[09-dev-workflow.md](../09-dev-workflow.md) §3 lists 11 deferred rules (R2, R3, R4, R5, R10, G1, G2, G4, H1, H2, H3) that are "carried across the deps-docs-auto-gen design's invariants (I1–I8), success criteria (S2), and body text (§2, §5, §6)". The precise mapping (verified in pass-2 review):
+
+| Deferred rule | Carried in | Notes |
+|---------------|------------|-------|
+| R2 (Deno/TS only) | §2 A4 (chosen alternative) | Rejects Lua/Python/Shell alternatives |
+| R3 (`deno task` entrypoint) | §5.1 `deno.json` tasks | `gen` task declared in `scripts/deno.json` |
+| R4 (JSR via `deno.json`) | §5.1 `imports` map | `@std/toml: jsr:@std/toml@^1` |
+| R5 (cache strategy) | I7 | `--no-remote` dropped (D7); default HTTP cache |
+| R10 (sentinel or whole-file) | §5.6 (sentinel), §5.5/§5.7 (whole-file) | I8 covers missing-sentinel only |
+| G1 (git-tracked) | S2, S5 | Generated files git-tracked; diff is review surface |
+| G2 (no hand-edits) | I3 (marker header implies) | Header comment says "do not edit by hand" |
+| G4 (pure-data Lua module) | I4 | `return { minimum_deps, normal_deps }` only |
+| H1 (symlinked hook) | §6 + [09-dev-workflow.md](../09-dev-workflow.md) §5 | `scripts/install-hooks.sh` symlinks |
+| H2 (hook runs every gen task) | §6 + [09-dev-workflow.md](../09-dev-workflow.md) §4 | `deno task gen` chains all `gen-*` |
+| H3 (no auto-stage) | I6 | User reviews and stages the diff |
+
+**Re-elevated to spec (pass-2):** R1 (generators live under `scripts/`) — re-elevated to [09-dev-workflow.md](../09-dev-workflow.md) §3 as a 6th cross-cutting rule per D-pass2-2(a). It is genuinely cross-cutting (every future generator must live under `scripts/`), not per-generator.
+
+**Removed entirely (pass-2):** H4 (no network in hook) — removed from [09-dev-workflow.md](../09-dev-workflow.md) §3 deferred list per D-pass2-2(b). Pass-1 D7 dropped `--no-remote`, so the hook may fetch from JSR on first run (I7 documents this). H4 was negated, not deferred.
+
+### Pass-2 findings applied (2026-07-13)
+
+Pass-2 review ([aggregate](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass2.md)) returned `approve with revisions` on one MEDIUM finding (D-pass2-2, corroborated by A-pass2-1 + A-pass2-2) + 4 polish items. All applied:
+
+| ID | Severity | How applied |
+|----|----------|-------------|
+| D-pass2-2 / A-pass2-1 / A-pass2-2 | MEDIUM | [09-dev-workflow.md](../09-dev-workflow.md) §3: R1 re-elevated (6th rule), H4 removed (negated by D7), deferred-rules note corrected. This §8a mapping table added. |
+| A-pass2-3 | LOW | §3.1 diagram: one-line caption added clarifying the `require()` target is `lua/dpp_min_deps.lua`, not the pre-commit hook. |
+| C-pass2-1 | INFO | I7 C5 note tightened: "the two deno processes share `DENO_DIR` but have independent dependency surfaces". |
+| C-pass2-2 | INFO | S7 heading scoped to "No plugin-runtime behavior change **in Phase 1 (the refactor)**"; Phase 0 eager-load noted as the exception (safe per Reviewer-C). |
+| D-pass2-7 | LOW | §4 Phase 3 note tightened: hook is "installed by default per Acceptance goal 3; manual `deno task gen` is a fallback, not an equal option". |
+
+All other pass-2 findings (D-pass2-1, D-pass2-3, D-pass2-4, D-pass2-5, D-pass2-6, D-pass2-8, D-pass2-9) are INFO-level confirmations that the corresponding revision decisions are sound — recorded as verified premises in the [pass-2 aggregate](../../reviews/2026-07-13-deps-docs-auto-gen-review-pass2.md), no action needed.
+
+**Design promoted `in-review (pass 2 complete) → Approved`** — all pass-1 and pass-2 findings resolved, no open CRITICAL/HIGH. The plan phase (`docs/plans/2026-07-13-deps-docs-auto-gen-impl.md`) may begin per [00-document-management.md](../00-document-management.md) §4 lifecycle.
