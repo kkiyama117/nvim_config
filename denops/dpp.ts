@@ -131,7 +131,7 @@ export class Config extends BaseConfig{
     let multipleHooks: MultipleHook[] = [];
 
     // avoid lazy loading 
-    const noLazyTomls = ["dpp.toml"];
+    const noLazyTomls = ["merge.toml", "dpp.toml"];
 
     const [tomlExt, tomlOptions, tomlParams]: [
       TomlExt | undefined,

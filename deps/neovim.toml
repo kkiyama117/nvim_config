@@ -17,7 +17,7 @@ lua_source = '''
     },
   })
 '''
-# TODO: make it `lua`
+# TODO: make it `lua` and separate it into other hook file.
 hook_source = '''
   " Custom colors
   highlight CandyBlue         gui=NONE guibg=NONE guifg=#1e95fd
