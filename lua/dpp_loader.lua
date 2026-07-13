@@ -15,15 +15,17 @@ local xdg_config_home = vim.env.XDG_CONFIG_HOME
 local dpp_cache_home = vim.fs.joinpath(xdg_cache_home, "dpp")
 local dpp_cache_github = vim.fs.joinpath(dpp_cache_home, "repos", "github.com")
 local dpp_cache_local = vim.fs.joinpath(dpp_cache_home, "local")
--- 
-local dpp_denops_script = vim.fs.joinpath(xdg_config_home, "nvim", "denops", "dpp.ts")
+--
+local dpp_denops_script = vim.fs.joinpath(vim.g.nvim_config_home, "denops", "dpp.ts")
 
 -- Minimum plugins to load dpp
+-- That should included in `deps/dpp.toml`
 local minimum_deps = {
   "Shougo/dpp.vim",
   "Shougo/dpp-ext-lazy",
 }
 -- plugins used to install plugins with dpp
+-- That should included in `deps/dpp.toml` except `denops.vim`
 local normal_deps = {
   "Shougo/dpp-ext-installer",
   "Shougo/dpp-ext-local",
@@ -50,7 +52,7 @@ end
 
 -- Install one plugin
 -- `name` should be `username/name` pattern
--- And return `dest`, local path that installed 
+-- And return `dest`, local path that installed
 local function install_github_plugin(plugin_name, dest_path)
   vim.notify(("[dpp] cloning %s"):format(plugin_name), vim.log.levels.INFO)
   vim.fn.system({
@@ -75,10 +77,16 @@ local function load_plugins(list_of_plugin)
   end
 end
 
+local function ensure_denops_plugin()
+  if vim.fn.has("nvim") == 1 and not vim.g.loaded_denops then
+    vim.cmd([[runtime! plugin/denops.vim]])
+  end
+end
+
 -----------------------------------------------------------------------------
 -- Main
 -----------------------------------------------------------------------------
--- Called when initialize dpp
+-- https://github.com/Shougo/shougo-s-github/blob/master/vim/rc/dpp.vim
 local function initialize_dpp()
   -- check minimum requirements are installed
   load_plugins(minimum_deps)
@@ -87,13 +95,9 @@ local function initialize_dpp()
 
   -- call `dpp#min#load_state` and check it works
   if dpp.load_state(dpp_cache_home) then
-    -- install and load `denops.vim` and `dpp plugins`
+    -- install and load `denops.vim` and `dpp plugins` to load dpp
     load_plugins(normal_deps)
-    -- NOTE: Manual load is needed for Neovim because "--noplugin" is used to optimize.
-    if vim.fn.has("nvim") == 1 then
-	    vim.cmd([[ runtime! plugin/denops.vim ]])
-    end
-    -- If load state is failed, call `make_state`
+    ensure_denops_plugin()
     vim.api.nvim_create_autocmd("User", {
       pattern = "DenopsReady",
       group = my_autocmds,
@@ -104,43 +108,38 @@ local function initialize_dpp()
       end,
     })
   else
-    -- Update cache file alutomatically when the config is updated
-    -- See `:h dpp-faq-4`
+    ensure_denops_plugin()
+    -- check config is updated and update cache
     vim.api.nvim_create_autocmd("BufWritePost", {
       pattern = "*.lua,*.vim,*.toml,*.ts,vimrc,.vimrc",
       group = my_autocmds,
       callback = function()
-	if #dpp.check_files(dpp_cache_home) ~= 0 then
-	  dpp.make_state(dpp_cache_home, dpp_denops_script)
-	end
+        local updated = vim.fn["dpp#check_files"](dpp_cache_home)
+        if type(updated) == "table" and not vim.tbl_isempty(updated) then
+          dpp.make_state(dpp_cache_home, dpp_denops_script)
+        end
       end,
     })
-    -- Install new plugins if not exist
+    -- check toml deps are updated and new plugins are needed
     vim.api.nvim_create_autocmd("BufWritePost", {
-      pattern = "*.toml",
+      pattern = "*.toml,*.lua",
       group = my_autocmds,
       callback = function()
-	-- We need `dpp-ext-installer`
-	if #dpp.sync_ext_action("installer", "getNotInstalled") ~= 0 then
-	  dpp.async_ext_action("installer", "install")
-	end
+        local not_installed = vim.fn["dpp#sync_ext_action"]("installer", "getNotInstalled")
+        if type(not_installed) == "table" and not vim.tbl_isempty(not_installed) then
+          dpp.async_ext_action("installer", "install")
+        end
       end,
     })
-
   end
-  -- If dpp.make_state() is finished, notify (with AutoCmd)
+
   vim.api.nvim_create_autocmd("User", {
     pattern = "Dpp:makeStatePost",
     group = my_autocmds,
     callback = function()
-      vim.notify("dpp make_state() is done", vim.log.levels.INFO)
+      vim.notify("dpp make_state() is done", vim.log.levels.WARN)
     end,
   })
-  -- Add user command of alias `dpp: update`
-  -- TODO: move to other place
-  vim.api.nvim_create_user_command("DppUpdate", function()
-    vim.fn["dpp#async_ext_action"]("installer", "update")
-  end, {})
 end
 
 -----------------------------------------------------------------------------
