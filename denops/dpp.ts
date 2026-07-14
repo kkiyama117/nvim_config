@@ -91,7 +91,9 @@ export class Config extends BaseConfig{
   }):Promise<ConfigReturn>{
     // List up vimrc/lua files
     console.debug("Load Dpp Config");
+    // TODO: List up all files under `lua` (but avoid including sub dir like `lua/hooks`)
     const inlineVimrcs = [
+      join(neovimLuaDir, "options.lua"),
       join(neovimLuaDir, "visual.lua"),
     ];
     const hasNvim = args.denops.meta.host === "nvim"

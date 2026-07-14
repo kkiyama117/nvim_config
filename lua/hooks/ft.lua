@@ -1,4 +1,7 @@
 -- lua_ {{{
+  -- expand tab
+  vim.opt_local.shiftwidth = 2
+  vim.bo.expandtab = true
   -- " Disable automatically insert comment.
   vim.opt.formatoptions:remove({ "t", "c", "r", "o" })
   vim.opt.formatoptions:append({ "m", "M", "B", "l" })
@@ -6,6 +9,8 @@
     vim.bo.textwidth = 0
   end
 -- }}}
+
+-- TODO: Add each filetype
 
 -- lua_python {{{
 vim.opt_local.shiftwidth = 4
