@@ -12,9 +12,7 @@ export interface PluginEntry {
   on_source?: string[] | string;
   depends?: string[] | string;
   external_commands?: string[] | string;
-  hook_add?: string;
-  hook_source?: string;
-  lua_source?: string;
+  has_hooks: boolean;
   extAttrs?: Record<string, unknown>;
   source_toml: SourceToml;
 }
@@ -120,9 +118,7 @@ function toPluginEntry(
     on_source: asStringOrArray(raw["on_source"]),
     depends: asStringOrArray(raw["depends"]),
     external_commands: asStringOrArray(raw["external_commands"]),
-    hook_add: asString(raw["hook_add"]),
-    hook_source: asString(raw["hook_source"]),
-    lua_source: asString(raw["lua_source"]),
+    has_hooks: Object.keys(raw).some((k) => /^(?:hook|lua)_/.test(k)),
     extAttrs:
       extAttrs !== null && typeof extAttrs === "object" && !Array.isArray(extAttrs)
         ? (extAttrs as Record<string, unknown>)

@@ -1,0 +1,61 @@
+# ddc.vim and related files
+
+[[plugins]]
+repo = 'Shougo/ddc.vim'
+depends = 'denops.vim'
+#on_source = 'ddt.vim'
+on_event = ['InsertEnter', 'CmdlineEnter']
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddc.lua'
+
+[[plugins]]
+repo = 'Shougo/pum.vim'
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/pum.lua'
+
+# ---------------------------------------------------------------------------
+# UI
+# ---------------------------------------------------------------------------
+
+[[plugins]]
+repo = 'Shougo/ddc-ui-native'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-ui-none'
+group = 'ddc'
+
+# ---------------------------------------------------------------------------
+# SOURCE
+# ---------------------------------------------------------------------------
+
+[[plugins]]
+repo = 'Shougo/ddc-source-around'
+group = 'ddc'
+
+# ---------------------------------------------------------------------------
+# FILTER
+# ---------------------------------------------------------------------------
+
+[[plugins]]
+repo = 'Shougo/ddc-filter-matcher_head'
+group = 'ddc'
+
+# ---------------------------------------------------------------------------
+# SOURCE
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = 'Shougo/ddc-sorter_rank'
+group = 'ddc'
+
+#[[plugins]]
+#repo = 'Shougo/dpp-ext-lazy'
+#rtp = ''
+#
+#[[plugins]]
+#repo = 'Shougo/dpp-ext-toml'
+#hook_add = '''
+#" Enable dpp toml syntax.
+#if !has('nvim')
+#  autocmd MyAutoCmd CursorHold */rc/*.toml call dpp#ext#toml#syntax()
+#endif
+#'''
+

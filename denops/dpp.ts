@@ -61,6 +61,7 @@ const dppTSDir = join(nvimHome, "denops");
 // Where inline vimrc fragments live.
 // Files under `$nvimHome/lua` is autoloaded by neovim as a default.
 const neovimLuaDir = join(nvimHome, "lua");
+const neovimLuaHookDir = join(neovimLuaDir, "hooks");
 
 // --------------------------------------------------------------------------
 // Util functions
@@ -241,6 +242,9 @@ export class Config extends BaseConfig{
     ]);
     // TODO: implement
     const groups = {
+      ddc: {
+	on_source: "ddc.vim"
+      },
     };
     const result: ConfigReturn = {
       checkFiles,

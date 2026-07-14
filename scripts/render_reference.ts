@@ -22,10 +22,7 @@ function renderDesc(p: PluginEntry): string {
 }
 
 function hasHooks(p: PluginEntry): string {
-  return p.hook_add !== undefined || p.hook_source !== undefined ||
-      p.lua_source !== undefined
-    ? "✓"
-    : "";
+  return p.has_hooks ? "✓" : "";
 }
 
 const HEADER = "| repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |";

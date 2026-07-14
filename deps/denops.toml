@@ -1,25 +1,18 @@
 # Denops itself and Denops-related plugins
 [[plugins]]
 repo = 'vim-denops/denops.vim'
-# TODO: write it by lua
-hook_source = '''
-  let g:denops#debug = v:true
+lua_source = '''
+  vim.g['denops#debug'] = true
 
-  let g:denops#server#deno_args = [
-      \   '-q',
-      \   '-A',
-      \ ]
+  -- denops.vim's default is ['-q', '--no-lock', '-A'];
+  vim.g['denops#server#deno_args'] = {
+    '-q',
+    '-A',
+    '--unstable-kv', -- for Deno KV storage
+    '--unstable-ffi', -- for deno-pty-ffi (https://github.com/sigmaSd/deno-pty-ffi)
+    -- '--inspect', -- for profile or dev
+  }
 
-  " NOTE: for Deno KV storage
-  let g:denops#server#deno_args += ['--unstable-kv']
-
-  " NOTE: for profile
-  "let g:denops#server#deno_args += ['--inspect']
-
-  " NOTE: for deno-pty-ffi
-  " https://github.com/sigmaSd/deno-pty-ffi
-  let g:denops#server#deno_args += ['--unstable-ffi']
-
-  "let g:denops_server_addr = '127.0.0.1:32123'
+  --vim.g.denops_server_addr = '127.0.0.1:32123'
 '''
 

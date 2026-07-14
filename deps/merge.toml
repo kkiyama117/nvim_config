@@ -1,4 +1,4 @@
-hook_files = ["$XDG_CONFIG_HOME/nvim/lua/dpp_hooks/ft.lua"]
+hook_files = ["$NVIM_CONFIG_HOME/lua/hooks/ft.lua"]
 
 [[plugins]]
 repo = 'vim-jp/vimdoc-ja'

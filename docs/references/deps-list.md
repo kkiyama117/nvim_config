@@ -20,6 +20,20 @@ Regenerate via `deno task gen`; the pre-commit hook refuses stale output.
 | `Shougo/dpp-protocol-git` |  |  |  |  |  |  |  |  |  |
 | `Shougo/dpp-protocol-http` |  |  |  |  |  |  |  |  |  |
 
+## deps/ddc.toml
+
+7 plugins:
+
+| repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |
+|------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
+| `Shougo/ddc.vim` |  |  |  | InsertEnter, CmdlineEnter |  | denops.vim |  |  |  |
+| `Shougo/pum.vim` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-ui-native` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-ui-none` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-source-around` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-filter-matcher_head` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-sorter_rank` |  |  |  |  |  |  |  |  |  |
+
 ## deps/denops.toml
 
 1 plugin:
