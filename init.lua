@@ -13,7 +13,6 @@ vim.g.nvim_config_home = vim.api.nvim_call_function('fnamemodify',
   { vim.api.nvim_call_function("expand", { '<sfile>' }), ":p:h" })
 vim.env.NVIM_CONFIG_HOME = vim.g.nvim_config_home
 
-vim.g.python3_host_prog = vim.env.MISE_DATA_DIR .. '/installs/python/latest/bin/python' or 'python3'
 vim.g['denops#deno'] = vim.env.MISE_DATA_DIR .. '/installs/deno/latest/bin/deno' or 'deno'
 
 vim.api.nvim_create_augroup('MyAutoCmd', { clear = true })

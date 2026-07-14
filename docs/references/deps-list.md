@@ -56,7 +56,7 @@ Regenerate via `deno task gen`; the pre-commit hook refuses stale output.
 
 | repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |
 |------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
-| `romus204/tree-sitter-manager.nvim` |  | !has("win32") | help | BufRead, CursorHold |  |  | tree-sitter |  | ✓ |
+| `romus204/tree-sitter-manager.nvim` |  | !has("win32") | help | VimEnter, BufRead, CursorHold |  |  | tree-sitter |  | ✓ |
 
 ---
 
