@@ -59,3 +59,7 @@ group = 'ddc'
 #endif
 #'''
 
+# DDC AND SKKELETON (Japanese input)
+#[[multiple_hooks]]
+#plugins = ['ddc.vim', 'skkeleton']
+#hooks_file = '$BASE_DIR/ddc_skkeleton.vim'

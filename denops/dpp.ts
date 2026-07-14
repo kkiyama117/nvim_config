@@ -91,12 +91,15 @@ export class Config extends BaseConfig{
   }):Promise<ConfigReturn>{
     // List up vimrc/lua files
     console.debug("Load Dpp Config");
-    //const hasNvim = args.denops.meta.host === "nvim"
-    //const hasWindows = await fn.has(args.denops, "win32");
-    //const hasGui = await fn.has(args.denops, "gui_running");
     const inlineVimrcs = [
       join(neovimLuaDir, "visual.lua"),
     ];
+    const hasNvim = args.denops.meta.host === "nvim"
+    if (hasNvim) {
+      inlineVimrcs.push(join(neovimLuaDir, "neovim.lua"))
+    } 
+    //const hasWindows = await fn.has(args.denops, "win32");
+    //const hasGui = await fn.has(args.denops, "gui_running");
 
     // Dpp ContextBuilder
     args.contextBuilder.setGlobal({

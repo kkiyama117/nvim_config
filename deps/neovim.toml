@@ -1,7 +1,7 @@
 [[plugins]]
 repo = 'romus204/tree-sitter-manager.nvim'
 if = '!has("win32")'
-on_event = ['BufRead', 'CursorHold']
+on_event = ['VimEnter', 'BufRead', 'CursorHold']
 on_ft = ['help']
 external_commands = ['tree-sitter']
 lua_source = '''
@@ -13,6 +13,7 @@ lua_source = '''
       'python',
       'toml',
       'typescript',
+      'vim',
       'vimdoc',
     },
   })
