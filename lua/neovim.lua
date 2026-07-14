@@ -1,7 +1,7 @@
--- For Neovim
+-- For Neovim only workarounds
 
 -- ==========================================================================
--- UI2
+-- Disable default syntax loading an remote providers
 -- ==========================================================================
 -- Disable auto syntax loading
 if vim.v.vim_starting == 1 and #vim.fn.argv() == 0 then
@@ -17,11 +17,12 @@ vim.g.loaded_ruby_provider = false
 -- Disable remote plugin loading
 vim.g.loaded_remote_plugins = true
 
--- NOTE: Disable treesitter async parsing
--- https://github.com/neovim/neovim/pull/31631
--- https://github.com/neovim/neovim/pull/33145
--- vim.g._ts_force_sync_parsing = true
+-- Python3 host prog
+vim.g.python3_host_prog = vim.fn.has('win32') == 1 and 'python.exe' or 'python3'
 
+-- ==========================================================================
+-- WORKAROUNDS
+-- ==========================================================================
 -- Workaround for the flicker
 -- https://github.com/neovim/neovim/issues/32660
 -- https://blog.atusy.net/2025/05/07/workaround-nvim-async-ts-fliker/
@@ -55,8 +56,6 @@ vim.api.nvim_create_autocmd({ 'BufWinEnter', 'WinNew', 'WinClosed', 'TabEnter' }
   end,
 })
 
--- Python3 host prog
-vim.g.python3_host_prog = vim.fn.has('win32') == 1 and 'python.exe' or 'python3'
 
 vim.api.nvim_create_autocmd('TermOpen', {
   pattern = '*',
@@ -74,6 +73,13 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- ==========================================================================
+-- Treesitter configs
+-- ==========================================================================
+-- NOTE: Disable treesitter async parsing
+-- https://github.com/neovim/neovim/pull/31631
+-- https://github.com/neovim/neovim/pull/33145
+-- vim.g._ts_force_sync_parsing = true
 local function config_treesitter()
   vim.treesitter.start = (function(wrapped)
     return function(bufnr, lang)
@@ -104,6 +110,9 @@ vim.api.nvim_create_autocmd('Syntax', {
   callback = config_treesitter,
 })
 
+-- ==========================================================================
+-- GUI and UI2
+-- ==========================================================================
 -- Enable virtual_lines feature
 -- vim.diagnostic.config({ virtual_lines = { current_line = true } })
 
@@ -121,9 +130,6 @@ else
   vim.opt.guifont = 'PlemolJP:h10'
 end
 
--- ==========================================================================
--- UI2
--- ==========================================================================
 local function enable_ui2()
   if #vim.api.nvim_list_uis() == 0 or vim.g._ui2_enabled then
     return true
