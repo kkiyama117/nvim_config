@@ -2,6 +2,13 @@
 -- Plugin functions cannot be called here (the plugin is not sourced yet).
 -- Only mappings and global options.
 
+local function commandline_post()
+  if vim.b.prev_buffer_config ~= nil then
+    vim.fn['ddc#custom#set_buffer'](vim.b.prev_buffer_config)
+    vim.b.prev_buffer_config = nil
+  end
+end
+
 local function commandline_pre(mode)
   if vim.b.prev_buffer_config ~= nil then
     return
@@ -39,13 +46,9 @@ local function commandline_pre(mode)
   vim.fn['ddc#enable_cmdline_completion']()
 end
 
-local function commandline_post()
-  if vim.b.prev_buffer_config ~= nil then
-    vim.fn['ddc#custom#set_buffer'](vim.b.prev_buffer_config)
-    vim.b.prev_buffer_config = nil
-  end
-end
-
+-- ========================================================================== 
+-- KEYBINDS
+-- ========================================================================== 
 -- nnoremap :  <Cmd>call CommandlinePre(':')<CR>:
 vim.keymap.set('n', ':', function()
   commandline_pre(':')
@@ -92,7 +95,17 @@ patch('sourceParams', {
   around = { maxSize = 500 },
 })
 
+-- ========================================================================== 
+-- KEYBINDS
+-- ========================================================================== 
+
+
 -- Enable ddc (registers the denops plugin + autocmds).  Without this,
 -- patch_global() only stores config and no completion fires.
-vim.fn['ddc#enable']()
+--vim.fn['ddc#enable_terminal_completion']()
+vim.fn['ddc#enable']({
+  -- context_filetype = {
+	  --
+  -- }
+})
 -- }}}
