@@ -8,12 +8,22 @@
   if vim.bo.textwidth ~= 70 and vim.bo.filetype ~= "help" then
     vim.bo.textwidth = 0
   end
+
 -- }}}
 
 -- TODO: Add each filetype
 
 -- lua_python {{{
+vim.opt_local.softtabstop = 4
 vim.opt_local.shiftwidth = 4
 vim.opt_local.textwidth = 80
+vim.bo.smarttab = true
 vim.bo.expandtab = true
+-- }}}
+
+-- lua_vim {{{
+vim.opt_local.softtabstop = 2
+vim.opt_local.shiftwidth = 2
+vim.opt_local.textwidth = 78
+-- set iskeyword and `indentkeys`
 -- }}}
