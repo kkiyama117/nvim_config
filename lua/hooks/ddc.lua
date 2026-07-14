@@ -1,7 +1,7 @@
 -- lua_add {{{
 -- Plugin functions cannot be called here (the plugin is not sourced yet).
 -- Only mappings and global options.
-
+-- CommandLine settings for ddc
 local function commandline_post()
   if vim.b.prev_buffer_config ~= nil then
     vim.fn['ddc#custom#set_buffer'](vim.b.prev_buffer_config)
@@ -67,9 +67,10 @@ vim.keymap.set('x', ':', function()
   vim.api.nvim_feedkeys(':', 'n', false)
 end, { desc = 'Cmdline with pre-processing (visual)' })
 
--- nnoremap ;;  <Cmd>call cmdline#enable()<CR><Cmd>call CommandlinePre(':')<CR>:
+-- nnoremap ;;  <Cmd>call CommandlinePre(':')<CR>:
 vim.keymap.set('n', ';;', function()
-  vim.cmd('call cmdline#enable()')
+  -- TODO: make `cmdline#enable`
+  -- vim.cmd('call cmdline#enable()')
   commandline_pre(':')
   vim.api.nvim_feedkeys(':', 'n', false)
 end, { desc = 'Cmdline enable + pre-processing' })
@@ -79,8 +80,12 @@ vim.keymap.set('n', ';', '<Nop>', { desc = 'Disable ;' })
 -- }}}
 
 -- lua_source {{{
+vim.fn["ddc#custom#load_config"](vim.env.NVIM_CONFIG_HOME .. "/denops/ddc.ts") 
+-- ========================================================================== 
+-- functions
+-- ========================================================================== 
 local patch = vim.fn['ddc#custom#patch_global']
-
+-- we should set `ui`, `sources`, `completionMenu`
 patch('ui', 'native')
 patch('sources', { 'around' })
 patch('sourceOptions', {
@@ -88,6 +93,7 @@ patch('sourceOptions', {
   _ = {
     matchers = { 'matcher_head' },
     sorters = { 'sorter_rank' },
+    -- converters
   },
   around  = { mark = '[A]' }
 })
@@ -98,6 +104,21 @@ patch('sourceParams', {
 -- ========================================================================== 
 -- KEYBINDS
 -- ========================================================================== 
+-- 
+--inoremap <Tab>   <Cmd>call pum#map#insert_relative(+1)<CR>
+--inoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+--inoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+--inoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
+--inoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+--inoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+
+-- Mouse Support
+vim.keymap.set({'i','c','t'}, '<LeftMouse>', function()
+  vim.fn['pum#map#confirm_mouse']()
+end, { desc = 'Left Mouse with pum.vim' })
+vim.keymap.set({'i','c','t'}, '<RightMouse>', function()
+  vim.fn['pum#map#select_mouse']()
+end, { desc = 'Right Mouse with pum' })
 
 
 -- Enable ddc (registers the denops plugin + autocmds).  Without this,
@@ -109,3 +130,4 @@ vim.fn['ddc#enable']({
   -- }
 })
 -- }}}
+

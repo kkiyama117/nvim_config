@@ -1,6 +1,7 @@
 -- lua_ {{{
   -- expand tab
   vim.opt_local.shiftwidth = 2
+  vim.opt_local.softtabstop = 2
   vim.bo.expandtab = true
   -- " Disable automatically insert comment.
   vim.opt.formatoptions:remove({ "t", "c", "r", "o" })
