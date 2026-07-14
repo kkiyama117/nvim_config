@@ -243,10 +243,9 @@ export class Config extends BaseConfig{
       "denops/**/*.ts",
       "**/*.vim",
     ]);
-    // TODO: implement
     const groups = {
       ddc: {
-	on_source: "ddc.vim"
+        on_source: "ddc.vim",
       },
     };
     const result: ConfigReturn = {
