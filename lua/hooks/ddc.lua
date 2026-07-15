@@ -28,9 +28,7 @@ local function commandline_pre(mode)
     vim.fn['ddc#custom#set_context_buffer'](function()
       return vim.fn.stridx(vim.fn.getcmdline(), '!') == 0
           and { cmdlineSources = {
-            'around',
-	    -- TODO: install each ddc plugins
-            --'shell_native', 'cmdline', 'cmdline_history', 'around',
+            'shell_native', 'cmdline', 'cmdline_history', 'around',
           } }
           or {}
     end)
@@ -49,28 +47,20 @@ end
 -- ========================================================================== 
 -- KEYBINDS
 -- ========================================================================== 
--- nnoremap :  <Cmd>call CommandlinePre(':')<CR>:
 vim.keymap.set('n', ':', function()
   commandline_pre(':')
   vim.api.nvim_feedkeys(':', 'n', false)
 end, { desc = 'Cmdline with pre-processing' })
-
--- nnoremap ?  <Cmd>call CommandlinePre('/')<CR>?
 vim.keymap.set('n', '?', function()
   commandline_pre('/')
   vim.api.nvim_feedkeys('?', 'n', false)
 end, { desc = 'Search with pre-processing' })
-
--- xnoremap :  <Cmd>call CommandlinePre(':')<CR>:
 vim.keymap.set('x', ':', function()
   commandline_pre(':')
   vim.api.nvim_feedkeys(':', 'n', false)
 end, { desc = 'Cmdline with pre-processing (visual)' })
-
--- nnoremap ;;  <Cmd>call CommandlinePre(':')<CR>:
 vim.keymap.set('n', ';;', function()
-  -- TODO: make `cmdline#enable`
-  -- vim.cmd('call cmdline#enable()')
+  vim.cmd('call cmdline#enable()')
   commandline_pre(':')
   vim.api.nvim_feedkeys(':', 'n', false)
 end, { desc = 'Cmdline enable + pre-processing' })
@@ -127,6 +117,9 @@ vim.keymap.set('i', '<C-o>', function()
 end)
 vim.keymap.set('i', '<C-p>', function()
   vim.fn['pum#map#select_relative'](-1)
+end)
+vim.keymap.set('i', '<C-t>', function()
+  return "<C-v><Tab>"
 end)
 vim.keymap.set('i', '<C-y>', function()
   vim.fn['pum#map#confirm_suffix']()

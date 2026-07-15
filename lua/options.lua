@@ -20,4 +20,3 @@ if has_clipboard then
   vim.opt.clipboard:append('unnamedplus')
 end
 
-

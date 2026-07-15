@@ -30,5 +30,5 @@ hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/nvim-lspconfig.lua'
 repo = 'williamboman/mason.nvim'
 depends = ['nvim-lspconfig', 'ddc-source-lsp']
 on_event = 'FileType'
-#hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/mason.lua'
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/mason.lua'
 
