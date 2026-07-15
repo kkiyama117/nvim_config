@@ -1,3 +1,0 @@
-[dpp] Error occurred while executing hook_source: ddc.vim
-[dpp] InsertEnter Autocommands for "*"..function dpp#ext#lazy#_on_event[18]..<SNR>34_source_events[18]..dpp#source[4]..dpp#source#_source[30]..dpp#util#_call_hook[10]..dpp#util#_execute_hook[28]
-[dpp] Vim(lua):E5107: Lua: [string ":lua"]:63: '=' expected near 'vim'
