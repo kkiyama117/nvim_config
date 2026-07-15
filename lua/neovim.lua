@@ -130,6 +130,8 @@ else
   vim.opt.guifont = 'PlemolJP:h10'
 end
 
+-- Now Disable UI2 to avoid error.
+require('vim._core.ui2').enable({ enable = false })
 --[[
 local function enable_ui2()
   if #vim.api.nvim_list_uis() == 0 or vim.g._ui2_enabled then

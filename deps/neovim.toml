@@ -1,3 +1,4 @@
+# Tree-sitter
 [[plugins]]
 repo = 'romus204/tree-sitter-manager.nvim'
 if = '!has("win32")'
@@ -18,3 +19,16 @@ lua_source = '''
     },
   })
 '''
+
+# LSP
+
+[[plugins]]
+repo = 'neovim/nvim-lspconfig'
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/nvim-lspconfig.lua'
+
+[[plugins]]
+repo = 'williamboman/mason.nvim'
+depends = ['nvim-lspconfig', 'ddc-source-lsp']
+on_event = 'FileType'
+#hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/mason.lua'
+

@@ -24,9 +24,12 @@ group = 'ddc'
 repo = 'Shougo/ddc-ui-none'
 group = 'ddc'
 
+[[plugins]]
+repo = 'Shougo/ddc-ui-inline'
+group = 'ddc'
+
 # Other UI
 #repo = 'Shougo/ddc-ui-native'
-#repo = 'Shougo/ddc-ui-inline'
 
 # ---------------------------------------------------------------------------
 # SOURCE
@@ -36,13 +39,47 @@ group = 'ddc'
 repo = 'Shougo/ddc-source-around'
 group = 'ddc'
 
+# TODO: `cmdline` and `cmdline_history` diff
 [[plugins]]
-repo = 'Shougo/ddc-source-shell_native'
+repo = 'Shougo/ddc-source-cmdline'
 group = 'ddc'
 
-# Tell me the diff of `shell_native` and `shell`
 [[plugins]]
-repo = 'Shougo/ddc-source-shell'
+repo = 'Shougo/ddc-source-cmdline_history'
+group = 'ddc'
+
+[[plugins]]
+repo = 'LumaKernel/ddc-source-file'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-source-input'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-source-line'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-source-lsp'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-source-mocword'
+if = 'exists("$MOCWORD_DATA")'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Milly/ddc-source-register'
+group = 'ddc'
+
+# FOR WINDOWS
+#[[plugins]]
+#repo = 'Shougo/ddc-source-shell'
+#group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-source-shell_native'
 group = 'ddc'
 
 [[plugins]]
@@ -52,35 +89,55 @@ group = 'ddc'
 # ---------------------------------------------------------------------------
 # FILTER
 # ---------------------------------------------------------------------------
+# matcher and sorter
 
 [[plugins]]
 repo = 'Shougo/ddc-filter-matcher_head'
 group = 'ddc'
 
-# ---------------------------------------------------------------------------
-# SORTER
-# ---------------------------------------------------------------------------
 [[plugins]]
-repo = 'Shougo/ddc-sorter_rank'
+repo = 'Shougo/ddc-filter-matcher_length'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-filter-matcher_prefix'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-filter-matcher_suffix'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-filter-sorter_head'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-filter-sorter_rank'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-filter-sorter_lsp_kind'
 group = 'ddc'
 
 # ---------------------------------------------------------------------------
 # CONVERTER
 # ---------------------------------------------------------------------------
 
-#[[plugins]]
-#repo = 'Shougo/dpp-ext-lazy'
-#rtp = ''
-#
-#[[plugins]]
-#repo = 'Shougo/dpp-ext-toml'
-#hook_add = '''
-#" Enable dpp toml syntax.
-#if !has('nvim')
-#  autocmd MyAutoCmd CursorHold */rc/*.toml call dpp#ext#toml#syntax()
-#endif
-#'''
+[[plugins]]
+repo = 'Shougo/ddc-filter-converter_remove_overlap'
+group = 'ddc'
 
+[[plugins]]
+repo = 'Shougo/ddc-filter-converter_truncate_abbr'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-filter-converter_kind_labels'
+group = 'ddc'
+
+# ---------------------------------------------------------------------------
+# Multiple Hooks
+# ---------------------------------------------------------------------------
 # DDC AND SKKELETON (Japanese input)
 #[[multiple_hooks]]
 #plugins = ['ddc.vim', 'skkeleton']
