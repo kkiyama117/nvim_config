@@ -80,25 +80,29 @@ vim.keymap.set('n', ';', '<Nop>', { desc = 'Disable ;' })
 -- }}}
 
 -- lua_source {{{
-vim.fn["ddc#custom#load_config"](vim.env.NVIM_CONFIG_HOME .. "/denops/ddc.ts") 
+--vim.fn["ddc#custom#load_config"](vim.env.NVIM_CONFIG_HOME .. "/denops/ddc.ts") 
 -- ========================================================================== 
 -- functions
 -- ========================================================================== 
 local patch = vim.fn['ddc#custom#patch_global']
--- we should set `ui`, `sources`, `completionMenu`
-patch('ui', 'native')
-patch('sources', { 'around' })
-patch('sourceOptions', {
-  -- default settings
-  _ = {
-    matchers = { 'matcher_head' },
-    sorters = { 'sorter_rank' },
-    -- converters
+-- TODO: Move to `ddc.ts`
+vim.fn['ddc#custom#patch_global']({
+  --ui = 'native',
+  ui = 'pum',
+  -- autoCompleteEvents = {'CmdlineChanged'},
+  -- cmdlineSources = {[':'] = { "shell-native" }},
+  sources = { 'around' },
+  sourceOptions = {
+    -- default settings
+    _ = {
+      matchers = { 'matcher_head' },
+      sorters = { 'sorter_rank' },
+    },
+    around = { mark = '[A]' },
   },
-  around  = { mark = '[A]' }
-})
-patch('sourceParams', {
-  around = { maxSize = 500 },
+  sourceParams = {
+    ["around"]  = { maxSize = 500 }
+  },
 })
 
 -- ========================================================================== 
@@ -106,11 +110,44 @@ patch('sourceParams', {
 -- ========================================================================== 
 -- 
 --inoremap <Tab>   <Cmd>call pum#map#insert_relative(+1)<CR>
+-- Config to use `pum.vim`; If you use `native-ui`, use `pumvisible`
+vim.keymap.set('i', '<TAB>', function()
+  if vim.fn['pum#visible']() == 1 then
+    vim.fn['pum#map#insert_relative'](1)
+    return ''
+  end
+  local col = vim.fn.col('.')
+  if col <= 1 then
+    return '<TAB>'
+  end
+  local char_before = vim.fn.getline('.'):sub(col - 1, col - 1)
+  if char_before:match('%s') then
+    return '<TAB>'
+  end
+  return vim.fn['ddc#map#manual_complete']()
+end, { expr = true })
+
+-- 
 --inoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+vim.keymap.set('i', '<S-Tab>', function()
+  vim.fn['pum#map#insert_relative'](-1)
+end,{})
 --inoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+vim.keymap.set('i', '<C-n>', function()
+  vim.fn['pum#map#select_relative'](1)
+end,{})
 --inoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
+vim.keymap.set('i', '<C-p>', function()
+  vim.fn['pum#map#select_relative'](-1)
+end,{})
 --inoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+vim.keymap.set('i', '<C-y>', function()
+  vim.fn['pum#map#confirm']()
+end,{})
 --inoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+vim.keymap.set('i', '<C-e>', function()
+  vim.fn['pum#map#cancel']()
+end,{})
 
 -- Mouse Support
 vim.keymap.set({'i','c','t'}, '<LeftMouse>', function()
@@ -120,13 +157,11 @@ vim.keymap.set({'i','c','t'}, '<RightMouse>', function()
   vim.fn['pum#map#select_mouse']()
 end, { desc = 'Right Mouse with pum' })
 
-
 -- Enable ddc (registers the denops plugin + autocmds).  Without this,
 -- patch_global() only stores config and no completion fires.
 --vim.fn['ddc#enable_terminal_completion']()
 vim.fn['ddc#enable']({
   -- context_filetype = {
-	  --
   -- }
 })
 -- }}}
