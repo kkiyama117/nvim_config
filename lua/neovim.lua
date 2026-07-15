@@ -130,6 +130,7 @@ else
   vim.opt.guifont = 'PlemolJP:h10'
 end
 
+--[[
 local function enable_ui2()
   if #vim.api.nvim_list_uis() == 0 or vim.g._ui2_enabled then
     return true
@@ -155,3 +156,4 @@ if #vim.api.nvim_list_uis() > 0 and not enable_ui2() then
     end,
   })
 end
+--]]

@@ -15,10 +15,6 @@ hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/pum.lua'
 # UI
 # ---------------------------------------------------------------------------
 
-#[[plugins]]
-#repo = 'Shougo/ddc-ui-native'
-#group = 'ddc'
-
 [[plugins]]
 repo = 'Shougo/ddc-ui-pum'
 depends = 'pum.vim'
@@ -28,12 +24,29 @@ group = 'ddc'
 repo = 'Shougo/ddc-ui-none'
 group = 'ddc'
 
+# Other UI
+#repo = 'Shougo/ddc-ui-native'
+#repo = 'Shougo/ddc-ui-inline'
+
 # ---------------------------------------------------------------------------
 # SOURCE
 # ---------------------------------------------------------------------------
 
 [[plugins]]
 repo = 'Shougo/ddc-source-around'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-source-shell_native'
+group = 'ddc'
+
+# Tell me the diff of `shell_native` and `shell`
+[[plugins]]
+repo = 'Shougo/ddc-source-shell'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-source-shell_history'
 group = 'ddc'
 
 # ---------------------------------------------------------------------------
