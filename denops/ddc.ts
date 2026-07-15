@@ -10,7 +10,6 @@ export class Config extends BaseConfig {
     const hasWindows = await fn.has(args.denops, "win32");
     
     const mocWord = Deno.env.get("MOCWORD_DATA") ? ["mocword"] : [];
-    
     // DDC Sources that always loaded
     const commonSources = [
       "around",    //[A]

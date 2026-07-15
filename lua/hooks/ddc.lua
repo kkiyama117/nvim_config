@@ -75,14 +75,18 @@ vim.fn["ddc#custom#load_config"](vim.env.NVIM_CONFIG_HOME .. "/denops/ddc.ts")
 -- KEYBINDS
 -- ========================================================================== 
 -- Keys may sorted alphabetally.
+-- Some functions of `ddc.vim` return String that contains viml;
+-- So we need to use `vim.api.nvim_feedkeys to parse it correctly, instead of call these functions via lua
 -- -----------------------------------------------
 -- FOR INSERT MODE COMPLETION -----------------------------------------------
 -- Config to use `pum.vim`; If you use `native-ui`, use `pumvisible`
 vim.keymap.set('i', '<TAB>', function()
   if vim.fn['ddc#ui#inline#visible']() == 1 then
-    return vim.fn['ddc#map#insert_item'](0)
+    vim.api.nvim_feedkeys(vim.fn['ddc#map#insert_item'](0), 'n', false)
+    return ''
   elseif vim.fn['pum#visible']() == 1 then
-    return vim.fn['pum#map#insert_relative'](1, 'empty')
+    vim.fn['pum#map#insert_relative'](1, 'empty')
+    return ''
   elseif vim.fn.col('.') <= 1 then
     return '<TAB>'
   elseif vim.fn.getline('.'):sub(vim.fn.col('.') - 1, vim.fn.col('.') - 1):match('%s') then
@@ -95,7 +99,8 @@ vim.keymap.set('i', '<S-Tab>', function()
   vim.fn['pum#map#insert_relative'](-1)
 end,{})
 vim.keymap.set('i', '<C-e>', function() if vim.fn['ddc#map#can_complete']() == 1 then
-    return vim.fn['ddc#map#insert_item'](0)
+    vim.api.nvim_feedkeys(vim.fn['ddc#map#insert_item'](0), 'n', false)
+    return ''
   else
     return '<End>'
   end
@@ -104,7 +109,8 @@ vim.keymap.set('i', '<C-g>', function()
   return vim.fn['pum#map#toggle_preview']()
 end, {desc = "No `expr`"})
 vim.keymap.set('i', '<C-g>', function()
-  return vim.fn['pum#map#insert_item'](0)
+  vim.api.nvim_feedkeys(vim.fn['ddc#map#insert_item'](0), 'n', false)
+  return ''
 end, { expr = true, desc = "with `expr`"})
 vim.keymap.set('i', '<C-l>', function()
   return vim.fn['ddc#map#manual_complete']()
@@ -128,7 +134,8 @@ end)
 -- FOR COMMAND-LINE MODE COMPLETION -----------------------------------------
 vim.keymap.set('c', '<Tab>', function()
   if vim.fn['ddc#ui#inline#visible']() == 1 then
-    return vim.fn['ddc#map#insert_item'](0)
+    vim.api.nvim_feedkeys(vim.fn['ddc#map#insert_item'](0), 'n', false)
+    return ''
   elseif vim.fn.wildmenumode() == 1 then
     return vim.fn.nr2char(vim.o.wildcharm)
   elseif vim.fn['pum#visible']() == 1 then
@@ -142,7 +149,8 @@ vim.keymap.set('c', '<S-Tab>', function()
 end)
 vim.keymap.set('c', '<C-e>', function()
   if vim.fn['ddc#ui#inline#visible']() == 1 then
-    return vim.fn['ddc#map#insert_item'](0)
+    vim.api.nvim_feedkeys(vim.fn['ddc#map#insert_item'](0), 'n', false)
+    return ''
   elseif vim.fn['pum#visible']() == 1 then
     return vim.fn['pum#map#cancel']()
   else
@@ -150,7 +158,8 @@ vim.keymap.set('c', '<C-e>', function()
   end
 end, { expr = true })
 vim.keymap.set('c', '<C-g>', function()
-  return vim.fn['pum#map#insert_item'](0)
+  vim.api.nvim_feedkeys(vim.fn['ddc#map#insert_item'](0), 'n', false)
+  return ''
 end, { expr = true })
 vim.keymap.set('c', '<C-o>', function()
   vim.fn['pum#map#confirm']()
