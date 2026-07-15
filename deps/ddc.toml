@@ -15,8 +15,13 @@ hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/pum.lua'
 # UI
 # ---------------------------------------------------------------------------
 
+#[[plugins]]
+#repo = 'Shougo/ddc-ui-native'
+#group = 'ddc'
+
 [[plugins]]
-repo = 'Shougo/ddc-ui-native'
+repo = 'Shougo/ddc-ui-pum'
+depends = 'pum.vim'
 group = 'ddc'
 
 [[plugins]]
@@ -40,11 +45,15 @@ repo = 'Shougo/ddc-filter-matcher_head'
 group = 'ddc'
 
 # ---------------------------------------------------------------------------
-# SOURCE
+# SORTER
 # ---------------------------------------------------------------------------
 [[plugins]]
 repo = 'Shougo/ddc-sorter_rank'
 group = 'ddc'
+
+# ---------------------------------------------------------------------------
+# CONVERTER
+# ---------------------------------------------------------------------------
 
 #[[plugins]]
 #repo = 'Shougo/dpp-ext-lazy'
@@ -63,3 +72,4 @@ group = 'ddc'
 #[[multiple_hooks]]
 #plugins = ['ddc.vim', 'skkeleton']
 #hooks_file = '$BASE_DIR/ddc_skkeleton.vim'
+
