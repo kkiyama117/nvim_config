@@ -32,7 +32,8 @@ depends = ['nvim-lspconfig', 'ddc-source-lsp']
 on_event = 'FileType'
 hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/mason.lua'
 
-# Bridge LSP servers; Merge with Tree-sitter and combine multiple LSP
+# Bridge LSP servers and clients; Share the config of LSP
+# And we can merge with Tree-sitter and combine multiple LSP
 [[plugins]]
 repo = 'atusy/kakehashi.nvim'
 on_source = 'mason.nvim'
