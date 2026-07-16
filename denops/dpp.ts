@@ -56,12 +56,12 @@ const dppCacheHome= join(xdgCacheHome, "dpp");
 const dppTomlDir = join(nvimHome, "deps");
 
 // denops TypeScript files
-const dppTSDir = join(nvimHome, "denops");
+//const dppTSDir = join(nvimHome, "denops");
 
 // Where inline vimrc fragments live.
 // Files under `$nvimHome/lua` is autoloaded by neovim as a default.
 const neovimLuaDir = join(nvimHome, "lua");
-const neovimLuaHookDir = join(neovimLuaDir, "hooks");
+//const neovimLuaHookDir = join(neovimLuaDir, "hooks");
 
 // --------------------------------------------------------------------------
 // Util functions
@@ -97,11 +97,14 @@ export class Config extends BaseConfig{
       join(neovimLuaDir, "visual.lua"),
     ];
     const hasNvim = args.denops.meta.host === "nvim"
+    const hasWindows = await fn.has(args.denops, "win32");
+    // const hasGui = await fn.has(args.denops, "gui_running");
     if (hasNvim) {
-      inlineVimrcs.push(join(neovimLuaDir, "neovim.lua"))
+      inlineVimrcs.push(join(neovimLuaDir, "neovim.lua"));
     } 
-    //const hasWindows = await fn.has(args.denops, "win32");
-    //const hasGui = await fn.has(args.denops, "gui_running");
+    if (hasWindows){
+      inlineVimrcs.push(join(neovimLuaDir, "unix.lua"));
+    }
 
     // Dpp ContextBuilder
     args.contextBuilder.setGlobal({
@@ -241,7 +244,7 @@ export class Config extends BaseConfig{
 
     const checkFiles = await gatherCheckFiles(args.denops, nvimHome, [
       "lua/**/*.lua",
-      "**/*.toml",
+      "deps/*.toml",
       "denops/**/*.ts",
       "**/*.vim",
     ]);

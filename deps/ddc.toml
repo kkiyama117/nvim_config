@@ -139,7 +139,7 @@ group = 'ddc'
 # Multiple Hooks
 # ---------------------------------------------------------------------------
 # DDC AND SKKELETON (Japanese input)
-#[[multiple_hooks]]
-#plugins = ['ddc.vim', 'skkeleton']
-#hooks_file = '$BASE_DIR/ddc_skkeleton.vim'
+[[multiple_hooks]]
+plugins = ['ddc.vim', 'skkeleton']
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddc_skkeleton.lua'
 

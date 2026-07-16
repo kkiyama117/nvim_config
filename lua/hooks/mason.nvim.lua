@@ -18,9 +18,9 @@
     'denols',
     'emmylua_ls',
     'gopls',
-    --'lua_ls',
     'pyright',
     'rust_analyzer',
+    'tombi',
     'vtsls',
   }
 
@@ -43,64 +43,8 @@
     capabilities = require("ddc_source_lsp").make_client_capabilities(),
   })
 
-  vim.lsp.config('emmylua_ls', {
-    on_init = function(client)
-      client.config.settings.Lua = vim.tbl_deep_extend(
-          'force', client.config.settings.Lua, {
-        workspace = { library = vim.api.nvim_get_runtime_file('', true) },
-      })
-    end,
-    settings = {
-      Lua = {
-        runtime = { version = 'LuaJIT' },
-        workspace = { checkThirdParty = false },
-      },
-    },
-    workspace_required = true,
-  })
-
-  vim.lsp.config('lua_ls', {
-    settings = {
-      Lua = {
-        runtime = {
-          -- Tell the language server which version of Lua you're using
-          -- (most likely LuaJIT in the case of Neovim)
-          version = 'LuaJIT',
-        },
-        diagnostics = {
-          -- Get the language server to recognize the `vim` global
-          globals = {
-            'vim',
-            'require',
-          },
-        },
-        semantic = {
-          -- Disable semantic token feature.
-          -- Because treesitter highlight is better.
-          enable = false,
-        },
-        workspace = {
-          -- Make the server aware of Neovim runtime files
-          library = vim.api.nvim_get_runtime_file("", true),
-        },
-        telemetry = {
-          -- Do not send telemetry data
-          enable = false,
-        },
-      },
-    },
-  })
-
-  vim.lsp.config('vtsls', {
-    root_dir = function(bufnr, callback)
-      -- NOTE: Must be node directory
-      if vim.fn.findfile('package.json', '.;') ~= '' then
-        callback(vim.fn.getcwd())
-      end
-    end,
-    workspace_required = true,
-  })
-
+  --vim.lsp.config('tombi', {
+  --})
   vim.lsp.config('denols', {
     -- Disable nest.land imports
     -- https://github.com/neovim/nvim-lspconfig/pull/2793
@@ -124,6 +68,32 @@
       'deps.ts',
     },
     workspace_required = false,
+  })
+
+  vim.lsp.config('emmylua_ls', {
+    on_init = function(client)
+      client.config.settings.Lua = vim.tbl_deep_extend(
+          'force', client.config.settings.Lua, {
+        workspace = { library = vim.api.nvim_get_runtime_file('', true) },
+      })
+    end,
+    settings = {
+      Lua = {
+        runtime = { version = 'LuaJIT' },
+        workspace = { checkThirdParty = false },
+      },
+    },
+    workspace_required = true,
+  })
+
+  vim.lsp.config('vtsls', {
+    root_dir = function(bufnr, callback)
+      -- NOTE: Must be node directory
+      if vim.fn.findfile('package.json', '.;') ~= '' then
+        callback(vim.fn.getcwd())
+      end
+    end,
+    workspace_required = true,
   })
 
   vim.lsp.enable(servers)
