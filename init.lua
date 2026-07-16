@@ -39,3 +39,4 @@ require('dpp_loader')
 
 vim.cmd("filetype indent plugin on")
 vim.cmd("syntax on")
+
