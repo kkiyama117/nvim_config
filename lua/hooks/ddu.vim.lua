@@ -2,6 +2,7 @@
 -- ========================================================================== 
 -- KEYMAPS
 -- ========================================================================== 
+-- Keymaps that are common between each `ui`; Opening each UI etc.
 -- TODO: Update keymaps to use `LEADER` key
 -- }}}
 
