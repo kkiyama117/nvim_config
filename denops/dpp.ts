@@ -22,10 +22,10 @@ import type {
 //  Ext as LocalExt,
 //  Params as LocalParams,
 //} from "@shougo/dpp-ext-local";
-//import type {
-//  Ext as PackspecExt,
-//  Params as PackspecParams,
-//} from "@shougo/dpp-ext-packspec";
+import type {
+  Ext as PackspecExt,
+  Params as PackspecParams,
+} from "@shougo/dpp-ext-packspec";
 import type {
   Ext as LazyExt,
   LazyMakeStateResult,
@@ -56,12 +56,12 @@ const dppCacheHome= join(xdgCacheHome, "dpp");
 const dppTomlDir = join(nvimHome, "deps");
 
 // denops TypeScript files
-const dppTSDir = join(nvimHome, "denops");
+//const dppTSDir = join(nvimHome, "denops");
 
 // Where inline vimrc fragments live.
 // Files under `$nvimHome/lua` is autoloaded by neovim as a default.
 const neovimLuaDir = join(nvimHome, "lua");
-const neovimLuaHookDir = join(neovimLuaDir, "hooks");
+//const neovimLuaHookDir = join(neovimLuaDir, "hooks");
 
 // --------------------------------------------------------------------------
 // Util functions
@@ -97,11 +97,14 @@ export class Config extends BaseConfig{
       join(neovimLuaDir, "visual.lua"),
     ];
     const hasNvim = args.denops.meta.host === "nvim"
+    const hasWindows = await fn.has(args.denops, "win32");
+    // const hasGui = await fn.has(args.denops, "gui_running");
     if (hasNvim) {
-      inlineVimrcs.push(join(neovimLuaDir, "neovim.lua"))
+      inlineVimrcs.push(join(neovimLuaDir, "neovim.lua"));
     } 
-    //const hasWindows = await fn.has(args.denops, "win32");
-    //const hasGui = await fn.has(args.denops, "gui_running");
+    if (hasWindows){
+      inlineVimrcs.push(join(neovimLuaDir, "unix.lua"));
+    }
 
     // Dpp ContextBuilder
     args.contextBuilder.setGlobal({
@@ -180,11 +183,7 @@ export class Config extends BaseConfig{
           }
         }
         if (toml.ftplugins) {
-          for (const filetype of Object.keys(toml.ftplugins)) {
-            ftplugins[filetype] = ftplugins[filetype]
-              ? `${ftplugins[filetype]}\n${toml.ftplugins[filetype]}`
-              : toml.ftplugins[filetype];
-          }
+          mergeFtplugins(ftplugins, toml.ftplugins);
         }
         if (toml.multiple_hooks) {
           multipleHooks = multipleHooks.concat(toml.multiple_hooks);
@@ -206,14 +205,34 @@ export class Config extends BaseConfig{
     // TODO: Use this if we use `local plugin`. And we need to overwrite url like 
     // https://github.com/Shougo/shougo-s-github/blob/b10f7172e39731a1e54f086258b5c6a6ac055aa6/vim/rc/dpp.ts#L228
 
-    // TODO: search what is `packspec`
-    //const [packspecExt, packspecOptions, packspecParams]: [
-    //  PackspecExt | undefined,
-    //  ExtOptions,
-    //  PackspecParams,
-    //] = await args.denops.dispatcher.getExt(
-    //  "packspec",
-    //) as [PackspecExt | undefined, ExtOptions, PackspecParams];
+    const [packspecExt, packspecOptions, packspecParams]: [
+      PackspecExt | undefined,
+      ExtOptions,
+      PackspecParams,
+    ] = await args.denops.dispatcher.getExt(
+      "packspec",
+    ) as [PackspecExt | undefined, ExtOptions, PackspecParams];
+
+    if (packspecExt) {
+      const packspecPlugins = await packspecExt.actions.load.callback({
+        denops: args.denops,
+        context,
+        options,
+        protocols,
+        extOptions: packspecOptions,
+        extParams: packspecParams,
+        actionParams: {
+          basePath: args.basePath,
+          plugins: Object.values(recordPlugins),
+        },
+      }) as Plugin[];
+
+      for (const plugin of packspecPlugins) {
+        if (!recordPlugins[plugin.name]) {
+          recordPlugins[plugin.name] = plugin;
+        }
+      }
+    }
 
     const [lazyExt, lazyOptions, lazyParams]: [
       LazyExt | undefined,
@@ -241,7 +260,7 @@ export class Config extends BaseConfig{
 
     const checkFiles = await gatherCheckFiles(args.denops, nvimHome, [
       "lua/**/*.lua",
-      "**/*.toml",
+      "deps/*.toml",
       "denops/**/*.ts",
       "**/*.vim",
     ]);
@@ -249,6 +268,9 @@ export class Config extends BaseConfig{
     const groups = {
       ddc: {
 	on_source: "ddc.vim"
+      },
+      ddu: {
+	on_source: "ddu.vim"
       },
     };
     const result: ConfigReturn = {
@@ -260,8 +282,10 @@ export class Config extends BaseConfig{
       plugins: lazyResult?.plugins ?? [],
       stateLines: lazyResult?.stateLines ?? [],
     };
-    console.debug("Dpp ConfigReturn is");
+    console.debug("Dpp ConfigReturn ==============================");
     console.debug(result);
+    console.debug("Dpp ConfigReturn END===========================");
     return result;
   }
 }
+

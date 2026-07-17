@@ -21,9 +21,8 @@ New config and documents of `neovim`.
 | Item | description |
 |------|-------|
 | Plugin manager | [dpp.vim](https://github.com/Shougo/dpp.vim) (Shougo family, denops.vim based) |
-| External runtime | [deno](https://deno.land/) (for denops, via mise), [coc.nvim](https://github.com/neoclide/coc.nvim) |
+| External runtime | [deno](https://deno.land/) (for denops, via mise) |
 | Japanese input | [skkeleton](https://github.com/vim-skk/skkeleton) |
-| Environment | Linux, `LANG=ja_JP.UTF-8` |
 
 ### Planned directory layout (per README.md)
 
@@ -54,7 +53,8 @@ docs/
 ├── references/                     # External / host-state reference material
 ├── reviews/                        # Reviews (pass-N / per-letter / aggregate / prompt)
 └── specifications/
-    ├── 00-document-management.md   # ← canonical source referenced by this section
+    ├── 00-document-management.md   # Canonical source; Numbered spec md are the most significant specs.
+    ├── 01-......                   # We need to add specifications for each rules
     └── implementation/             # Per-implementation design draft (YYYY-MM-DD-<slug>-design.md)
 ```
 
@@ -76,7 +76,7 @@ docs/
 ### 3.3 Lifecycle
 
 ```
-issue (open) → design (DRAFT) → review pass-N (A–E) → design (Approved) → plan (executing) → result-log → issue (closed)
+issue (open) → design (DRAFT) → (review pass-N (A–E)) → design (Approved) → plan (executing) → result-log → issue (closed)
 ```
 
 - A design is promoted `DRAFT → in-review → Approved` as it passes review passes.

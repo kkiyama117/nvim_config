@@ -18,9 +18,9 @@
     'denols',
     'emmylua_ls',
     'gopls',
-    --'lua_ls',
     'pyright',
     'rust_analyzer',
+    'tombi',
     'vtsls',
   }
 
@@ -43,64 +43,8 @@
     capabilities = require("ddc_source_lsp").make_client_capabilities(),
   })
 
-  vim.lsp.config('emmylua_ls', {
-    on_init = function(client)
-      client.config.settings.Lua = vim.tbl_deep_extend(
-          'force', client.config.settings.Lua, {
-        workspace = { library = vim.api.nvim_get_runtime_file('', true) },
-      })
-    end,
-    settings = {
-      Lua = {
-        runtime = { version = 'LuaJIT' },
-        workspace = { checkThirdParty = false },
-      },
-    },
-    workspace_required = true,
-  })
-
-  vim.lsp.config('lua_ls', {
-    settings = {
-      Lua = {
-        runtime = {
-          -- Tell the language server which version of Lua you're using
-          -- (most likely LuaJIT in the case of Neovim)
-          version = 'LuaJIT',
-        },
-        diagnostics = {
-          -- Get the language server to recognize the `vim` global
-          globals = {
-            'vim',
-            'require',
-          },
-        },
-        semantic = {
-          -- Disable semantic token feature.
-          -- Because treesitter highlight is better.
-          enable = false,
-        },
-        workspace = {
-          -- Make the server aware of Neovim runtime files
-          library = vim.api.nvim_get_runtime_file("", true),
-        },
-        telemetry = {
-          -- Do not send telemetry data
-          enable = false,
-        },
-      },
-    },
-  })
-
-  vim.lsp.config('vtsls', {
-    root_dir = function(bufnr, callback)
-      -- NOTE: Must be node directory
-      if vim.fn.findfile('package.json', '.;') ~= '' then
-        callback(vim.fn.getcwd())
-      end
-    end,
-    workspace_required = true,
-  })
-
+  --vim.lsp.config('tombi', {
+  --})
   vim.lsp.config('denols', {
     -- Disable nest.land imports
     -- https://github.com/neovim/nvim-lspconfig/pull/2793
@@ -124,6 +68,52 @@
       'deps.ts',
     },
     workspace_required = false,
+  })
+
+  -- emmylua_ls reads settings under the `emmylua` namespace (NOT `Lua`, which
+  -- belongs to sumneko/lua-language-server). Using `Lua` is why `vim` was
+  -- reported as an undefined global.
+  vim.lsp.config('emmylua_ls', {
+    on_init = function(client)
+      -- If the workspace has its own emmylua/lua config file, defer to it.
+      if client.workspace_folders then
+        local path = client.workspace_folders[1].name
+        if
+          path ~= vim.fn.stdpath('config')
+          and (vim.uv.fs_stat(path .. '/.emmyrc.json') or vim.uv.fs_stat(path .. '/.luarc.json'))
+        then
+          client.config.settings = {}
+          return
+        end
+      end
+    end,
+    settings = {
+      emmylua = {
+        runtime = { version = 'LuaJIT' },
+        diagnostics = { globals = { 'vim' } },
+        workspace = {
+          -- library must be a FLAT array of path strings; nesting the array
+          -- returned by nvim_get_runtime_file produces an invalid
+          -- EmmyrcWorkspacePathItem and makes emmylua fall back to defaults
+          -- (re-introducing the `undefined global variable: vim` error).
+          library = vim.list_extend(
+            { vim.env.VIMRUNTIME },
+            vim.api.nvim_get_runtime_file('lua', true)
+          ),
+        },
+      },
+    },
+    workspace_required = false,
+  })
+
+  vim.lsp.config('vtsls', {
+    root_dir = function(bufnr, callback)
+      -- NOTE: Must be node directory
+      if vim.fn.findfile('package.json', '.;') ~= '' then
+        callback(vim.fn.getcwd())
+      end
+    end,
+    workspace_required = true,
   })
 
   vim.lsp.enable(servers)

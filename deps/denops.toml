@@ -17,6 +17,10 @@ lua_source = '''
 '''
 
 [[plugins]]
+repo = 'lambdalisue/kensaku.vim'
+denops_wait = false
+
+[[plugins]]
 repo = 'vim-skk/skkeleton'
 on_map = { ict = '<Plug>(skkeleton-' }
 denops_wait = false
@@ -25,7 +29,6 @@ hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/skkeleton.lua'
 [[plugins]]
 repo = 'NI57721/skkeleton-state-popup'
 on_source = 'skkeleton'
-
 
 [[plugins]]
 repo = 'NI57721/skkeleton-henkan-highlight'
@@ -36,3 +39,4 @@ hook_source = '''
   highlight SkkeletonHenkanSelect
   \ gui=underline,reverse term=underline,reverse cterm=underline,reverse
 '''
+

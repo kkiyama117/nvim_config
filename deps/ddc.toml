@@ -5,11 +5,11 @@ repo = 'Shougo/ddc.vim'
 depends = 'denops.vim'
 #on_source = 'ddt.vim'
 on_event = ['InsertEnter', 'CmdlineEnter']
-hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddc.lua'
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddc.vim.lua'
 
 [[plugins]]
 repo = 'Shougo/pum.vim'
-hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/pum.lua'
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/pum.vim.lua'
 
 # ---------------------------------------------------------------------------
 # UI
@@ -58,6 +58,10 @@ group = 'ddc'
 
 [[plugins]]
 repo = 'Shougo/ddc-source-line'
+group = 'ddc'
+
+[[plugins]]
+repo = 'Shougo/ddc-source-vim'
 group = 'ddc'
 
 [[plugins]]
@@ -139,7 +143,7 @@ group = 'ddc'
 # Multiple Hooks
 # ---------------------------------------------------------------------------
 # DDC AND SKKELETON (Japanese input)
-#[[multiple_hooks]]
-#plugins = ['ddc.vim', 'skkeleton']
-#hooks_file = '$BASE_DIR/ddc_skkeleton.vim'
+[[multiple_hooks]]
+plugins = ['ddc.vim', 'skkeleton']
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddc_skkeleton.lua'
 

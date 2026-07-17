@@ -21,7 +21,6 @@ lua_source = '''
 '''
 
 # LSP
-
 [[plugins]]
 repo = 'neovim/nvim-lspconfig'
 hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/nvim-lspconfig.lua'
@@ -30,7 +29,7 @@ hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/nvim-lspconfig.lua'
 repo = 'williamboman/mason.nvim'
 depends = ['nvim-lspconfig', 'ddc-source-lsp']
 on_event = 'FileType'
-hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/mason.lua'
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/mason.nvim.lua'
 
 # Bridge LSP servers and clients; Share the config of LSP
 # And we can merge with Tree-sitter and combine multiple LSP
@@ -38,5 +37,12 @@ hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/mason.lua'
 repo = 'atusy/kakehashi.nvim'
 on_source = 'mason.nvim'
 external_commands = ['kakehashi']
-hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/kakehashi.lua'
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/kakehashi.nvim.lua'
+
+# deps/dpp.toml
+[[plugins]]
+repo = "carlos-algms/agentic.nvim"
+on_lua = 'agentic'
+#external_commands = ['pi']
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/agentic.nvim.lua'
 
