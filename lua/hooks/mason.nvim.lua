@@ -70,31 +70,40 @@
     workspace_required = false,
   })
 
+  -- emmylua_ls reads settings under the `emmylua` namespace (NOT `Lua`, which
+  -- belongs to sumneko/lua-language-server). Using `Lua` is why `vim` was
+  -- reported as an undefined global.
   vim.lsp.config('emmylua_ls', {
     on_init = function(client)
-      client.config.settings.Lua = vim.tbl_deep_extend(
-          'force', client.config.settings.Lua or {}, {
+      -- If the workspace has its own emmylua/lua config file, defer to it.
+      if client.workspace_folders then
+        local path = client.workspace_folders[1].name
+        if
+          path ~= vim.fn.stdpath('config')
+          and (vim.uv.fs_stat(path .. '/.emmyrc.json') or vim.uv.fs_stat(path .. '/.luarc.json'))
+        then
+          client.config.settings = {}
+          return
+        end
+      end
+    end,
+    settings = {
+      emmylua = {
         runtime = { version = 'LuaJIT' },
+        diagnostics = { globals = { 'vim' } },
         workspace = {
-          checkThirdParty = false,
+          -- library must be a FLAT array of path strings; nesting the array
+          -- returned by nvim_get_runtime_file produces an invalid
+          -- EmmyrcWorkspacePathItem and makes emmylua fall back to defaults
+          -- (re-introducing the `undefined global variable: vim` error).
           library = vim.list_extend(
-            {
-              vim.env.VIMRUNTIME .. '/lua',
-              '${3rd}/luv/library',
-            },
+            { vim.env.VIMRUNTIME },
             vim.api.nvim_get_runtime_file('lua', true)
           ),
         },
-        diagnostics = { globals = { 'vim' } },
-      })
-    end,
-    settings = {
-      Lua = {
-        runtime = { version = 'LuaJIT' },
-        workspace = { checkThirdParty = false },
       },
     },
-    workspace_required = true,
+    workspace_required = false,
   })
 
   vim.lsp.config('vtsls', {
