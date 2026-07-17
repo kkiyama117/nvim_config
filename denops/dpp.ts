@@ -22,10 +22,10 @@ import type {
 //  Ext as LocalExt,
 //  Params as LocalParams,
 //} from "@shougo/dpp-ext-local";
-//import type {
-//  Ext as PackspecExt,
-//  Params as PackspecParams,
-//} from "@shougo/dpp-ext-packspec";
+import type {
+  Ext as PackspecExt,
+  Params as PackspecParams,
+} from "@shougo/dpp-ext-packspec";
 import type {
   Ext as LazyExt,
   LazyMakeStateResult,
@@ -183,11 +183,7 @@ export class Config extends BaseConfig{
           }
         }
         if (toml.ftplugins) {
-          for (const filetype of Object.keys(toml.ftplugins)) {
-            ftplugins[filetype] = ftplugins[filetype]
-              ? `${ftplugins[filetype]}\n${toml.ftplugins[filetype]}`
-              : toml.ftplugins[filetype];
-          }
+          mergeFtplugins(ftplugins, toml.ftplugins);
         }
         if (toml.multiple_hooks) {
           multipleHooks = multipleHooks.concat(toml.multiple_hooks);
@@ -209,14 +205,34 @@ export class Config extends BaseConfig{
     // TODO: Use this if we use `local plugin`. And we need to overwrite url like 
     // https://github.com/Shougo/shougo-s-github/blob/b10f7172e39731a1e54f086258b5c6a6ac055aa6/vim/rc/dpp.ts#L228
 
-    // TODO: search what is `packspec`
-    //const [packspecExt, packspecOptions, packspecParams]: [
-    //  PackspecExt | undefined,
-    //  ExtOptions,
-    //  PackspecParams,
-    //] = await args.denops.dispatcher.getExt(
-    //  "packspec",
-    //) as [PackspecExt | undefined, ExtOptions, PackspecParams];
+    const [packspecExt, packspecOptions, packspecParams]: [
+      PackspecExt | undefined,
+      ExtOptions,
+      PackspecParams,
+    ] = await args.denops.dispatcher.getExt(
+      "packspec",
+    ) as [PackspecExt | undefined, ExtOptions, PackspecParams];
+
+    if (packspecExt) {
+      const packspecPlugins = await packspecExt.actions.load.callback({
+        denops: args.denops,
+        context,
+        options,
+        protocols,
+        extOptions: packspecOptions,
+        extParams: packspecParams,
+        actionParams: {
+          basePath: args.basePath,
+          plugins: Object.values(recordPlugins),
+        },
+      }) as Plugin[];
+
+      for (const plugin of packspecPlugins) {
+        if (!recordPlugins[plugin.name]) {
+          recordPlugins[plugin.name] = plugin;
+        }
+      }
+    }
 
     const [lazyExt, lazyOptions, lazyParams]: [
       LazyExt | undefined,
@@ -253,6 +269,9 @@ export class Config extends BaseConfig{
       ddc: {
 	on_source: "ddc.vim"
       },
+      ddu: {
+	on_source: "ddu.vim"
+      },
     };
     const result: ConfigReturn = {
       checkFiles,
@@ -263,8 +282,10 @@ export class Config extends BaseConfig{
       plugins: lazyResult?.plugins ?? [],
       stateLines: lazyResult?.stateLines ?? [],
     };
-    console.debug("Dpp ConfigReturn is");
+    console.debug("Dpp ConfigReturn ==============================");
     console.debug(result);
+    console.debug("Dpp ConfigReturn END===========================");
     return result;
   }
 }
+

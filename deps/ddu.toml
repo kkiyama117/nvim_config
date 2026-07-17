@@ -1,0 +1,32 @@
+# ddu.vim and related files
+[[plugins]]
+repo = "shougo/ddu.vim"
+depends = 'denops.vim'
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.lua'
+
+# Add `Ddu` command
+[[plugins]]
+repo = "Shougo/ddu-commands.vim"
+depends = 'ddu.vim'
+on_cmd = 'Ddu'
+
+# ---------------------------------------------------------------------------
+# UI
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = "Shougo/ddu-ui-ff"
+group = 'ddu'
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddu-ui-ff.lua'
+
+[[plugins]]
+repo = "Shougo/ddu-ui-filer"
+group = 'ddu'
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddu-ui-filer.lua'
+
+[[plugins]]
+repo = "Shougo/ddu-filter-matcher_substring"
+group = 'ddu'
+
+[[plugins]]
+repo = "Shougo/ddu-source-file_rec"
+group = 'ddu'

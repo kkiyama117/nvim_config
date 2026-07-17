@@ -73,8 +73,19 @@
   vim.lsp.config('emmylua_ls', {
     on_init = function(client)
       client.config.settings.Lua = vim.tbl_deep_extend(
-          'force', client.config.settings.Lua, {
-        workspace = { library = vim.api.nvim_get_runtime_file('', true) },
+          'force', client.config.settings.Lua or {}, {
+        runtime = { version = 'LuaJIT' },
+        workspace = {
+          checkThirdParty = false,
+          library = vim.list_extend(
+            {
+              vim.env.VIMRUNTIME .. '/lua',
+              '${3rd}/luv/library',
+            },
+            vim.api.nvim_get_runtime_file('lua', true)
+          ),
+        },
+        diagnostics = { globals = { 'vim' } },
       })
     end,
     settings = {
