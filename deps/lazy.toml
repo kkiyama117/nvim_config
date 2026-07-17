@@ -1,0 +1,11 @@
+# Lazy-loaded plugins.
+
+# ---------------------------------------------------------------------------
+# cmdline.vim — render the command line in a floating window
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = 'Shougo/cmdline.vim'
+# NOTE: `on_source = ['ddu.vim']` (not `on_event = 'CmdlineEnter'`)
+on_source = ['ddu.vim']
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/cmdline.vim.lua"
+

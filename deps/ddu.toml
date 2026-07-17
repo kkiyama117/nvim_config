@@ -30,3 +30,19 @@ group = 'ddu'
 [[plugins]]
 repo = "Shougo/ddu-source-file_rec"
 group = 'ddu'
+
+# ---------------------------------------------------------------------------
+# KIND
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = 'Shougo/ddu-kind-file'
+group = 'ddu'
+
+[[plugins]]
+repo = 'Shougo/ddu-kind-word'
+group = 'ddu'
+
+[[plugins]]
+repo = '4513ECHO/ddu-kind-url'
+group = 'ddu'
+
