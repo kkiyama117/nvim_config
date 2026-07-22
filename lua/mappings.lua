@@ -1,3 +1,7 @@
+-- TODO: Add `Sticky Shift` if needed.
+-- TODO: Add Select inside `pair` instead of current `ar` and `aa`
+-- TODO: Add Inclement command and replace `<C-a>` and `<C-x>`
+
 local vimrc = require('vimrc')
 -- =========================================================================
 -- Keys defined by `options`
@@ -81,22 +85,35 @@ vim.keymap.set({ 'n' }, 'q', '<Nop>', { silent = true })
 -- }}}
 
 -- NORMAL MODE {{{
--- Null
 vim.keymap.set('n', '<C-Space>', '<C-@>', { remap = true, desc = 'Null' })
--- Manual indents
-vim.keymap.set({ 'n' }, '>', '>>')
-vim.keymap.set({ 'n' }, '<', '<<')
--- Better x
-vim.keymap.set('n', 'x', '_x')
--- Default search (`s/`, `s?`)
-vim.keymap.set('n', 's/', '/\\<\\%')
-vim.keymap.set('n', 's?', '?\\<\\%')
+vim.keymap.set({ 'n' }, '>', '>>', { desc = 'Shift indent' })
+vim.keymap.set({ 'n' }, '<', '<<', { desc = 'Unshift indent' })
+vim.keymap.set('n', 'x', '"_x', { desc = 'Better `x`' })
+vim.keymap.set('n', 's/', '/\\<%', { desc = 'Default `/`' })
+vim.keymap.set('n', 's?', '?\\<%', { desc = 'Default `?`' })
+vim.keymap.set('n', '<C-f>', function() -- {{{
+  local count = math.max(vim.fn.winheight(0) - 2, 1)
+  local suffix = vim.fn.line('w$') >= vim.fn.line('$') and 'L' or 'M'
+  return count .. '<C-d>' .. suffix
+end, { expr = true, desc = 'Smart page down' }) -- }}}
+vim.keymap.set('n', '<C-b>', function() -- {{{
+  local count = math.max(vim.fn.winheight(0) - 2, 1)
+  local suffix = vim.fn.line('w0') <= 1 and 'H' or 'M'
+  return count .. '<C-u>' .. suffix
+end, { expr = true, desc = 'Smart page up' }) -- }}}
+vim.keymap.set('n', 'l', function() -- {{{
+  return vim.fn.foldclosed('.') ~= -1 and 'zo0' or 'l'
+end, { expr = true, desc = 'Open fold on l' }) -- }}}
 -- }}}
 
 -- INSERT MODE {{{
 -- Insert mode undo key (`<C-w>` and `<C-u>`) {{{
 vim.keymap.set('i', '<C-w>', '<C-g>u<C-w>')
 vim.keymap.set('i', '<C-u>', '<C-g>u<C-u>')
+-- }}}
+-- Easy Escape (by Shougo) -- {{{
+--vim.keymap.set('n', 'jj', '<ESC>', { desc = 'Easy Escape' })
+--vim.keymap.set('n', 'j<Space>', 'j', { desc = 'Easy Escape' })
 -- }}}
 -- }}}
 
@@ -108,6 +125,12 @@ vim.keymap.set({ 'x' }, '<', '<gv')
 -- Substitute with last search pattern (Shougo style)
 vim.keymap.set('x', 'r', '<C-v>', { desc = 'select rectangle' })
 vim.keymap.set('x', 's', ':s//g<Left><Left>', { desc = 'substitute with last search pattern' })
+-- improved `l`; open fold if exists
+vim.keymap.set('x', 'l', function() -- {{{
+  return vim.fn.foldclosed('.') ~= -1 and 'zogv0' or 'l'
+end, { expr = true, desc = 'Open fold on l (visual)' }) -- }}}
+-- put without yank to unnamed register
+vim.keymap.set('x', 'p', 'P', { desc = 'put without yank to unnamed register' })
 -- }}}
 
 -- COMMANDLINE MODE {{{
@@ -117,6 +140,7 @@ vim.keymap.set('c', '<C-a>', '<Home>', { desc = 'or A: move to head' })
 vim.keymap.set('c', '<C-b>', '<Left>', { desc = 'Previous char' })
 vim.keymap.set('c', '<C-d>', '<Del>', { desc = 'Delete char' })
 vim.keymap.set('c', '<C-f>', '<Right>', { desc = 'Next char' })
+vim.keymap.set('c', '<C-g>', '<C-c>', { desc = 'Exit' })
 vim.keymap.set('c', '<C-n>', '<Down>', { desc = 'Next history' })
 vim.keymap.set('c', '<C-p>', '<Up>', { desc = 'Previous history' })
 vim.keymap.set('c', '<C-k>', function()
@@ -127,6 +151,14 @@ vim.keymap.set('c', '<C-k>', function()
     vim.fn.setcmdline(vim.fn.getcmdline():sub(1, pos - 1))
   end
 end, { desc = 'Delete to the end' })
+-- }}}
+
+-- (VISUAL AND) OPERATOR PENDING MODE {{{
+-- Select between <angle> and [rectangle]
+vim.keymap.set({ 'o', 'x' }, 'aa', 'a>', { desc = 'Select <angle>' })
+vim.keymap.set({ 'o', 'x' }, 'ia', 'i>', { desc = 'Select inside <angle>' })
+vim.keymap.set({ 'o', 'x' }, 'ar', 'a]', { desc = 'Select [rectangle]' })
+vim.keymap.set({ 'o', 'x' }, 'ir', 'i]', { desc = 'Select inside [rectangle]' })
 -- }}}
 
 -- Keys using `<Leader>` {{{
@@ -157,6 +189,28 @@ end, { silent = true, desc = 'Toggle autoread' }) -- }}}
 vim.keymap.set('n', '[TOGGLE]c', function() -- {{{
   vimrc.toggle_conceal()
 end, { silent = true, desc = 'Toggle autoread' }) -- }}}
+-- NOTE: hit-enter prompt is needed to debug.
+vim.keymap.set('n', '[TOGGLE]h', function()
+  local messagesopt = vim.opt.messagesopt
+  local values = messagesopt:get()
+  local has_hit_enter = vim.list_contains(values, 'hit-enter')
+  if not has_hit_enter then
+    vim.opt.messagesopt = messagesopt._value .. ',hit-enter'
+    vim.opt.more = true
+  else
+    local filtered = {}
+    for _, v in ipairs(values) do
+      if v ~= 'hit-enter' then
+        table.insert(filtered, v)
+      end
+    end
+    vim.opt.messagesopt = table.concat(filtered, ',')
+    vim.opt.more = false
+  end
+  vim.notify(string.format('messagesopt=%s', vim.opt.messagesopt:get()))
+  vim.notify(string.format('more=%s', tostring(vim.opt.more:get())))
+end, { silent = true, desc = 'Toggle hit-enter prompt' })
+
 vim.keymap.set({ 'n' }, '[TOGGLE]s', function() -- {{{
   vimrc.toggle_option('spell')
   vim.opt_local.spelllang = { 'en_us', 'cjk' }
@@ -312,6 +366,7 @@ end) -- }}}
 -- $NVIM_CONFIG_HOME/lua/hooks/ddu-ui-filer.lua
 -- $NVIM_CONFIG_HOME/lua/hooks/skkeleton.lua
 -- }}}
+
 -- BUFFER-LOCAL MAPPINGS (FileType) {{{
 -- ddu-ff {{{
 -- lua/hooks/ddu-ui-ff.lua
