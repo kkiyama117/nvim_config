@@ -1,48 +1,188 @@
 # ddu.vim and related files
 [[plugins]]
 repo = "shougo/ddu.vim"
-depends = 'denops.vim'
-hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.lua'
+depends = "denops.vim"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.lua"
 
 # Add `Ddu` command
 [[plugins]]
 repo = "Shougo/ddu-commands.vim"
-depends = 'ddu.vim'
-on_cmd = 'Ddu'
+depends = "ddu.vim"
+on_cmd = "Ddu"
 
 # ---------------------------------------------------------------------------
 # UI
 # ---------------------------------------------------------------------------
+# Fuzzy Finder
 [[plugins]]
 repo = "Shougo/ddu-ui-ff"
-group = 'ddu'
-hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddu-ui-ff.lua'
+group = "ddu"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu-ui-ff.lua"
 
+# Filer
 [[plugins]]
 repo = "Shougo/ddu-ui-filer"
-group = 'ddu'
-hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddu-ui-filer.lua'
+group = "ddu"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu-ui-filer.lua"
+
+# ---------------------------------------------------------------------------
+# SOURCE
+# ---------------------------------------------------------------------------
+# TODO: add `;a`
+[[plugins]]
+repo = "Shougo/ddu-source-action"
+group = "ddu"
+
+[[plugins]]
+repo = "Shougo/ddu-source-command_args"
+group = "ddu"
+
+# TODO: read its help.
+[[plugins]]
+repo = "Shougo/ddu-source-dummy"
+group = "ddu"
+
+# Files under current dir
+[[plugins]]
+repo = "Shougo/ddu-source-file"
+group = "ddu"
+
+# TODO: check it.
+[[plugins]]
+repo = "matsui54/ddu-source-file_external"
+group = "ddu"
+
+# Files recursive
+[[plugins]]
+repo = "Shougo/ddu-source-file_rec"
+group = "ddu"
+
+# TODO: What is `old`?
+[[plugins]]
+repo = "Shougo/ddu-source-file_old"
+group = "ddu"
+
+# Uri under cursor
+[[plugins]]
+repo = "Shougo/ddu-source-file_point"
+group = "ddu"
+
+# help
+[[plugins]]
+repo = "Matsui54/ddu-source-help"
+group = "ddu"
+
+[[plugins]]
+repo = "Shougo/ddu-source-input_history"
+group = "ddu"
+
+[[plugins]]
+repo = "Shougo/ddu-source-item"
+group = "ddu"
+
+[[plugins]]
+repo = "Shougo/ddu-source-line"
+group = "ddu"
+
+# Sources from LSP
+[[plugins]]
+repo = "uga-rosa/ddu-source-lsp"
+group = "ddu"
+
+# Outputs of command
+[[plugins]]
+repo = "Shougo/ddu-source-output"
+group = "ddu"
+
+[[plugins]]
+repo = "Shougo/ddu-source-path_history"
+group = "ddu"
+
+# registers of vim
+[[plugins]]
+repo = "Shougo/ddu-source-register"
+group = "ddu"
+
+# Use `ripgrep`
+[[plugins]]
+repo = "shun/ddu-source-rg"
+group = "ddu"
+
+[[plugins]]
+repo = "4513ECHO/ddu-source-source"
+group = "ddu"
+
+# ---------------------------------------------------------------------------
+# FILTER
+# ---------------------------------------------------------------------------
+# Filter has `matcher`, `sorter` and `converter`
+# ===== MATCHER =====
+[[plugins]]
+repo = "Shougo/ddu-filter-matcher_files"
+group = "ddu"
+
+[[plugins]]
+repo = "Shougo/ddu-filter-matcher_hidden"
+group = "ddu"
+
+[[plugins]]
+repo = "Shougo/ddu-filter-matcher_ignore_files"
+group = "ddu"
+
+[[plugins]]
+repo = "Shougo/ddu-filter-matcher_relative"
+group = "ddu"
 
 [[plugins]]
 repo = "Shougo/ddu-filter-matcher_substring"
-group = 'ddu'
+group = "ddu"
+
+# ===== SORTER =====
+[[plugins]]
+repo = "Shougo/ddu-filter-sorter_alpha"
+group = "ddu"
 
 [[plugins]]
-repo = "Shougo/ddu-source-file_rec"
-group = 'ddu'
+repo = "kuuote/ddu-filter-sorter_mtime"
+group = "ddu"
+
+# ===== CONVERTER =====
+
+# Add devicon
+[[plugins]]
+repo = "uga-rosa/ddu-filter-converter_devicon"
+group = "ddu"
+
+# TODO
+[[plugins]]
+repo = "Shougo/ddu-filter-converter_display_word"
+group = "ddu"
+
+# Highlight dir with color
+[[plugins]]
+repo = "kyoh86/ddu-filter-converter_hl_dir"
+group = "ddu"
+
+# ---------------------------------------------------------------------------
+# UI column
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = "Shougo/ddu-column-filename"
+group = "ddu"
 
 # ---------------------------------------------------------------------------
 # KIND
 # ---------------------------------------------------------------------------
+# TODO: kind って、何?
 [[plugins]]
-repo = 'Shougo/ddu-kind-file'
-group = 'ddu'
+repo = "Shougo/ddu-kind-file"
+group = "ddu"
 
 [[plugins]]
-repo = 'Shougo/ddu-kind-word'
-group = 'ddu'
+repo = "Shougo/ddu-kind-word"
+group = "ddu"
 
 [[plugins]]
-repo = '4513ECHO/ddu-kind-url'
-group = 'ddu'
+repo = "4513ECHO/ddu-kind-url"
+group = "ddu"
 

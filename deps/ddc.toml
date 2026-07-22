@@ -1,149 +1,155 @@
 # ddc.vim and related files
 
 [[plugins]]
-repo = 'Shougo/ddc.vim'
-depends = 'denops.vim'
-#on_source = 'ddt.vim'
-on_event = ['InsertEnter', 'CmdlineEnter']
-hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddc.vim.lua'
+repo = "Shougo/ddc.vim"
+depends = "denops.vim"
+# on_source = 'ddt.vim'
+on_event = ["InsertEnter", "CmdlineEnter"]
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddc.vim.lua"
 
 [[plugins]]
-repo = 'Shougo/pum.vim'
-hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/pum.vim.lua'
+repo = "Shougo/pum.vim"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/pum.vim.lua"
 
 # ---------------------------------------------------------------------------
 # UI
 # ---------------------------------------------------------------------------
 
 [[plugins]]
-repo = 'Shougo/ddc-ui-pum'
-depends = 'pum.vim'
-group = 'ddc'
+repo = "Shougo/ddc-ui-pum"
+depends = "pum.vim"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-ui-none'
-group = 'ddc'
+repo = "Shougo/ddc-ui-none"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-ui-inline'
-group = 'ddc'
+repo = "Shougo/ddc-ui-inline"
+group = "ddc"
 
 # Other UI
-#repo = 'Shougo/ddc-ui-native'
+# repo = 'Shougo/ddc-ui-native'
 
 # ---------------------------------------------------------------------------
 # SOURCE
 # ---------------------------------------------------------------------------
 
 [[plugins]]
-repo = 'Shougo/ddc-source-around'
-group = 'ddc'
+repo = "Shougo/ddc-source-around"
+group = "ddc"
+
+[[plugins]]
+repo = "matsui54/ddc-source-buffer"
+group = "ddc"
 
 # TODO: `cmdline` and `cmdline_history` diff
 [[plugins]]
-repo = 'Shougo/ddc-source-cmdline'
-group = 'ddc'
+repo = "Shougo/ddc-source-cmdline"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-source-cmdline_history'
-group = 'ddc'
+repo = "Shougo/ddc-source-cmdline_history"
+group = "ddc"
 
 [[plugins]]
-repo = 'LumaKernel/ddc-source-file'
-group = 'ddc'
+repo = "LumaKernel/ddc-source-file"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-source-input'
-group = 'ddc'
+repo = "Shougo/ddc-source-input"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-source-line'
-group = 'ddc'
+repo = "Shougo/ddc-source-line"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-source-vim'
-group = 'ddc'
+repo = "Shougo/ddc-source-lsp"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-source-lsp'
-group = 'ddc'
-
-[[plugins]]
-repo = 'Shougo/ddc-source-mocword'
+repo = "Shougo/ddc-source-mocword"
 if = 'exists("$MOCWORD_DATA")'
-group = 'ddc'
+group = "ddc"
 
 [[plugins]]
-repo = 'Milly/ddc-source-register'
-group = 'ddc'
+repo = "Milly/ddc-source-register"
+group = "ddc"
+
+[[plugins]]
+repo = "Shougo/ddc-source-rg"
+group = "ddc"
 
 # FOR WINDOWS
-#[[plugins]]
-#repo = 'Shougo/ddc-source-shell'
-#group = 'ddc'
+# [[plugins]]
+# repo = 'Shougo/ddc-source-shell'
+# group = 'ddc'
+
+# For Linux or Mac
+[[plugins]]
+repo = "Shougo/ddc-source-shell_native"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-source-shell_native'
-group = 'ddc'
+repo = "Shougo/ddc-source-shell_history"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-source-shell_history'
-group = 'ddc'
+repo = "Shougo/ddc-source-vim"
+group = "ddc"
 
 # ---------------------------------------------------------------------------
 # FILTER
 # ---------------------------------------------------------------------------
-# matcher and sorter
+# Matcher
+[[plugins]]
+repo = "Shougo/ddc-filter-matcher_head"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-filter-matcher_head'
-group = 'ddc'
+repo = "Shougo/ddc-filter-matcher_length"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-filter-matcher_length'
-group = 'ddc'
+repo = "Shougo/ddc-filter-matcher_prefix"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-filter-matcher_prefix'
-group = 'ddc'
+repo = "Shougo/ddc-filter-matcher_suffix"
+group = "ddc"
+
+# Sorter
+[[plugins]]
+repo = "Shougo/ddc-filter-sorter_head"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-filter-matcher_suffix'
-group = 'ddc'
+repo = "Shougo/ddc-filter-sorter_lsp_kind"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-filter-sorter_head'
-group = 'ddc'
+repo = "Shougo/ddc-filter-sorter_rank"
+group = "ddc"
+
+# Converter
 
 [[plugins]]
-repo = 'Shougo/ddc-filter-sorter_rank'
-group = 'ddc'
+repo = "Shougo/ddc-filter-converter_remove_overlap"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-filter-sorter_lsp_kind'
-group = 'ddc'
-
-# ---------------------------------------------------------------------------
-# CONVERTER
-# ---------------------------------------------------------------------------
+repo = "Shougo/ddc-filter-converter_truncate_abbr"
+group = "ddc"
 
 [[plugins]]
-repo = 'Shougo/ddc-filter-converter_remove_overlap'
-group = 'ddc'
-
-[[plugins]]
-repo = 'Shougo/ddc-filter-converter_truncate_abbr'
-group = 'ddc'
-
-[[plugins]]
-repo = 'Shougo/ddc-filter-converter_kind_labels'
-group = 'ddc'
+repo = "Shougo/ddc-filter-converter_kind_labels"
+group = "ddc"
 
 # ---------------------------------------------------------------------------
 # Multiple Hooks
 # ---------------------------------------------------------------------------
 # DDC AND SKKELETON (Japanese input)
 [[multiple_hooks]]
-plugins = ['ddc.vim', 'skkeleton']
-hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/ddc_skkeleton.lua'
-
+plugins = ["ddc.vim", "skkeleton"]
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddc_skkeleton.lua"

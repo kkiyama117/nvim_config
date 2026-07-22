@@ -1,15 +1,14 @@
 -- lua_add {{{
--- Plugin functions cannot be called here (the plugin is not sourced yet).
--- Only mappings and global options.
 -- CommandLine settings for ddc
-local function commandline_post()
+-- Functions for keymap{{{
+local function commandline_post() -- {{{
   if vim.b.prev_buffer_config ~= nil then
     vim.fn['ddc#custom#set_buffer'](vim.b.prev_buffer_config)
     vim.b.prev_buffer_config = nil
   end
 end
-
-local function commandline_pre(mode)
+-- }}}
+local function commandline_pre(mode) -- {{{
   if vim.b.prev_buffer_config ~= nil then
     return
   end
@@ -27,13 +26,17 @@ local function commandline_pre(mode)
     -- Use zsh source for :! completion
     vim.fn['ddc#custom#set_context_buffer'](function()
       return vim.fn.stridx(vim.fn.getcmdline(), '!') == 0
-          and { cmdlineSources = {
-            'shell_native', 'cmdline', 'cmdline_history', 'around',
-          } }
-          or {}
+          and {
+            cmdlineSources = {
+              'shell_native',
+              'cmdline',
+              'cmdline_history',
+              'around',
+            },
+          }
+        or {}
     end)
   end
-
   vim.api.nvim_create_autocmd('User', {
     pattern = 'DDCCmdlineLeave',
     group = 'MyAutoCmd',
@@ -43,42 +46,41 @@ local function commandline_pre(mode)
 
   vim.fn['ddc#enable_cmdline_completion']()
 end
+-- }}}
+-- }}}
 
--- ========================================================================== 
 -- KEYBINDS
--- ========================================================================== 
-vim.keymap.set('n', ':', function()
-  commandline_pre(':')
-  vim.api.nvim_feedkeys(':', 'n', false)
-end, { desc = 'Cmdline with pre-processing' })
+-- --------------------------------------------------------------------------
+-- n: {';;','?'}
+-- x: {';;'}
+-- --------------------------------------------------------------------------
+-- {{{
+--vim.keymap.set('n', ':', function()
+--  commandline_pre(':')
+--  vim.api.nvim_feedkeys(':', 'n', false)
+--end, { desc = 'Cmdline with pre-processing' })
 vim.keymap.set('n', '?', function()
   commandline_pre('/')
   vim.api.nvim_feedkeys('?', 'n', false)
 end, { desc = 'Search with pre-processing' })
-vim.keymap.set('x', ':', function()
-  commandline_pre(':')
-  vim.api.nvim_feedkeys(':', 'n', false)
-end, { desc = 'Cmdline with pre-processing (visual)' })
 vim.keymap.set('n', ';;', function()
   vim.cmd('call cmdline#enable()')
   commandline_pre(':')
   vim.api.nvim_feedkeys(':', 'n', false)
 end, { desc = 'Cmdline enable + pre-processing' })
-
--- nnoremap ;  <Nop>
-vim.keymap.set('n', ';', '<Nop>', { desc = 'Disable ;' })
+vim.keymap.set('x', ';;', function()
+  commandline_pre(':')
+  vim.api.nvim_feedkeys(':', 'n', false)
+end, { desc = 'Cmdline with pre-processing (visual)' })
+-- }}}
 -- }}}
 
 -- lua_source {{{
-vim.fn["ddc#custom#load_config"](vim.env.NVIM_CONFIG_HOME .. "/denops/ddc.ts") 
--- ========================================================================== 
--- KEYBINDS
--- ========================================================================== 
+vim.fn['ddc#custom#load_config'](vim.env.NVIM_CONFIG_HOME .. '/denops/ddc.ts')
+-- KEYBINDS {{{
 -- Keys may sorted alphabetally.
--- Some functions of `ddc.vim` return String that contains viml;
--- So we need to use `vim.api.nvim_feedkeys to parse it correctly, instead of call these functions via lua
--- -----------------------------------------------
--- FOR INSERT MODE COMPLETION -----------------------------------------------
+
+-- FOR INSERT MODE COMPLETION {{{
 -- Config to use `pum.vim`; If you use `native-ui`, use `pumvisible`
 vim.keymap.set('i', '<TAB>', function()
   if vim.fn['ddc#ui#inline#visible']() == 1 then
@@ -97,8 +99,9 @@ vim.keymap.set('i', '<TAB>', function()
 end, { expr = true })
 vim.keymap.set('i', '<S-Tab>', function()
   vim.fn['pum#map#insert_relative'](-1)
-end,{})
-vim.keymap.set('i', '<C-e>', function() if vim.fn['ddc#map#can_complete']() == 1 then
+end, {})
+vim.keymap.set('i', '<C-e>', function()
+  if vim.fn['ddc#map#can_complete']() == 1 then
     vim.api.nvim_feedkeys(vim.fn['ddc#map#insert_item'](0), 'n', false)
     return ''
   else
@@ -107,11 +110,11 @@ vim.keymap.set('i', '<C-e>', function() if vim.fn['ddc#map#can_complete']() == 1
 end, { expr = true })
 vim.keymap.set('i', '<C-g>', function()
   return vim.fn['pum#map#toggle_preview']()
-end, {desc = "No `expr`"})
+end, { desc = 'No `expr`' })
 vim.keymap.set('i', '<C-g>', function()
   vim.api.nvim_feedkeys(vim.fn['ddc#map#insert_item'](0), 'n', false)
   return ''
-end, { expr = true, desc = "with `expr`"})
+end, { expr = true, desc = 'with `expr`' })
 vim.keymap.set('i', '<C-l>', function()
   return vim.fn['ddc#map#manual_complete']()
 end, { expr = true })
@@ -125,13 +128,14 @@ vim.keymap.set('i', '<C-p>', function()
   vim.fn['pum#map#select_relative'](-1)
 end)
 vim.keymap.set('i', '<C-t>', function()
-  return "<C-v><Tab>"
+  return '<C-v><Tab>'
 end)
 vim.keymap.set('i', '<C-y>', function()
   vim.fn['pum#map#confirm_suffix']()
 end)
+-- }}}
 
--- FOR COMMAND-LINE MODE COMPLETION -----------------------------------------
+-- FOR COMMAND-LINE MODE COMPLETION {{{
 vim.keymap.set('c', '<Tab>', function()
   if vim.fn['ddc#ui#inline#visible']() == 1 then
     vim.api.nvim_feedkeys(vim.fn['ddc#map#insert_item'](0), 'n', false)
@@ -174,23 +178,24 @@ vim.keymap.set('c', '<C-z>', function()
   vim.fn['pum#map#select_relative'](-1)
 end)
 
--- FOR TERMINAL MODE COMPLETION ---------------------------------------------
--- Mouse Support ------------------------------------------------------------
-vim.keymap.set({'i','c','t'}, '<LeftMouse>', function()
+-- }}}
+
+-- FOR TERMINAL MODE COMPLETION {{{
+-- Mouse Support
+vim.keymap.set({ 'i', 'c', 't' }, '<LeftMouse>', function()
   vim.fn['pum#map#confirm_mouse']()
 end, { desc = 'Left Mouse with pum.vim' })
-vim.keymap.set({'i','c','t'}, '<RightMouse>', function()
+vim.keymap.set({ 'i', 'c', 't' }, '<RightMouse>', function()
   vim.fn['pum#map#select_mouse']()
 end, { desc = 'Right Mouse with pum.vim' })
+-- }}}
+-- }}}
 
--- ========================================================================== 
-
--- Enable ddc (registers the denops plugin + autocmds).  Without this,
--- patch_global() only stores config and no completion fires.
---vim.fn['ddc#enable_terminal_completion']()
+-- Enable ddc (registers the denops plugin + autocmds).
+-- Without this, patch_global() only stores config and no completion fires.
+vim.fn['ddc#enable_terminal_completion']()
 vim.fn['ddc#enable']({
-  -- context_filetype = {
-  -- }
+  context_filetype = 'treesitter',
 })
 -- }}}
 

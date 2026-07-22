@@ -4,8 +4,106 @@
 # cmdline.vim — render the command line in a floating window
 # ---------------------------------------------------------------------------
 [[plugins]]
-repo = 'Shougo/cmdline.vim'
-# NOTE: `on_source = ['ddu.vim']` (not `on_event = 'CmdlineEnter'`)
-on_source = ['ddu.vim']
+repo = "Shougo/cmdline.vim"
+on_source = ["ddu.vim"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/cmdline.vim.lua"
+
+# ---------------------------------------------------------------------------
+# gitsigns.nvim - Git integration for buffers
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = "lewis6991/gitsigns.nvim"
+on_event = ["BufReadPost", "BufNewFile"]
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/gitsigns.vim.lua"
+
+# ---------------------------------------------------------------------------
+# heirline.nvim
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = "rebelot/heirline.nvim"
+on_event = ["UIEnter"]
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/heirline.nvim.lua"
+
+# ---------------------------------------------------------------------------
+# Previm: Preview the markdown file
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = "previm/previm"
+on_ft = ["markdown", "rst"]
+# TODO: Custom `xdg-open` (we can't call xdg-open in the container)
+hook_source = '''
+  let g:previm_open_cmd = ''
+'''
+
+# ---------------------------------------------------------------------------
+# vim-findent: find good indent size automatically
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = "lambdalisue/vim-findent"
+
+# ---------------------------------------------------------------------------
+# vim-niceblock: Enable to call `I` and `A` for All visual mode
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = "kana/vim-niceblock"
+on_map = { x = "<Plug>" }
+hook_add = '''
+  xnoremap I  <Plug>(niceblock-I)
+  xnoremap A  <Plug>(niceblock-A)
+'''
+
+# ---------------------------------------------------------------------------
+# vim-operator-surround: Good Operator manage
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = "rhysd/vim-operator-surround"
+depends = "vim-operator-user"
+on_map = { n = "<Plug>" }
+hook_add = '''
+  nnoremap sa <Plug>(operator-surround-append)
+  nnoremap sd <Plug>(operator-surround-delete)a
+  nnoremap sr <Plug>(operator-surround-replace)a
+  nnoremap sc <Plug>(operator-surround-replace)a
+'''
+
+# ---------------------------------------------------------------------------
+# Quickfix plugins
+# ---------------------------------------------------------------------------
+#
+[[plugins]]
+repo = "thinca/vim-qfreplace"
+on_ft = ["qf"]
+
+[plugins.ftplugin]
+qf = '''
+  nnoremap <buffer> r <Cmd>Qfreplace<CR>
+'''
+
+[[plugins]]
+repo = "itchyny/vim-qfedit"
+# on_event = ["BufReadPost", "BufNewFile"]
+on_ft = ["qf"]
+
+# ---------------------------------------------------------------------------
+# Help linter
+# ---------------------------------------------------------------------------
+# [[plugins]]
+# repo = "machakann/vim-vimhelplint"
+# on_ft = "help"
+#
+# [plugins.ftplugin]
+# help = '''
+#  nnoremap <buffer> ,r  <Cmd>VimhelpLint!<CR>
+# '''
+
+# TODO: add `folke/which-key.nvim` add add as a ddu source
+
+# TODO: Set config of these plugins (below)
+[[plugins]]
+repo = "machakann/vim-sandwich"
+on_event = ["InsertEnter"]
+
+[[plugins]]
+repo = "stevearc/aerial.nvim"
+on_event = ["BufReadPost", "BufNewFile"]
 

@@ -1,9 +1,6 @@
 -- For Neovim only workarounds
 
--- ==========================================================================
--- Disable default syntax loading an remote providers
--- ==========================================================================
--- Disable auto syntax loading
+-- Disable auto syntax loading {{{
 if vim.v.vim_starting == 1 and #vim.fn.argv() == 0 then
   vim.cmd('syntax off')
 end
@@ -19,11 +16,12 @@ vim.g.loaded_remote_plugins = true
 
 -- Python3 host prog
 vim.g.python3_host_prog = vim.fn.has('win32') == 1 and 'python.exe' or 'python3'
+-- }}}
 
 -- ==========================================================================
 -- WORKAROUNDS
 -- ==========================================================================
--- Workaround for the flicker
+-- Workaround for the flicker {{{
 -- https://github.com/neovim/neovim/issues/32660
 -- https://blog.atusy.net/2025/05/07/workaround-nvim-async-ts-fliker/
 vim.api.nvim_create_autocmd({ 'BufWinEnter', 'WinNew', 'WinClosed', 'TabEnter' }, {
@@ -34,16 +32,13 @@ vim.api.nvim_create_autocmd({ 'BufWinEnter', 'WinNew', 'WinClosed', 'TabEnter' }
       local bufs = {}
       for _, win in ipairs(wins) do
         local buf = vim.api.nvim_win_get_buf(win)
-        if bufs[buf] == true then
-          local parsable = pcall(vim.treesitter.get_parser, buf)
-          if parsable then
+        if bufs[buf] == nil then
+          bufs[buf] = true
+          local ok, parsable = pcall(vim.treesitter.get_parser, buf)
+          if ok and parsable then
             vim.g._ts_force_sync_parsing = true
             return
           end
-          bufs[buf] = false
-        end
-        if bufs[buf] == nil then
-          bufs[buf] = true
         end
       end
       vim.g._ts_force_sync_parsing = false
@@ -55,8 +50,9 @@ vim.api.nvim_create_autocmd({ 'BufWinEnter', 'WinNew', 'WinClosed', 'TabEnter' }
     return exec()
   end,
 })
+-- }}}
 
-
+-- Modifiable terminal {{{
 vim.api.nvim_create_autocmd('TermOpen', {
   pattern = '*',
   group = 'MyAutoCmd',
@@ -72,14 +68,20 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.hl.hl_op({ higroup = 'IncSearch', timeout = 200 })
   end,
 })
+-- }}}
 
 -- ==========================================================================
 -- Treesitter configs
 -- ==========================================================================
--- NOTE: Disable treesitter async parsing
+-- NOTE: Disable treesitter async parsing {{{
 -- https://github.com/neovim/neovim/pull/31631
 -- https://github.com/neovim/neovim/pull/33145
 -- vim.g._ts_force_sync_parsing = true
+-- }}}
+
+-- Opt-out for specific filetypes and huge files {{{
+-- https://github.com/neovim/neovim/pull/26347#issuecomment-1837508178
+-- s:config_treesitter {{{
 local function config_treesitter()
   vim.treesitter.start = (function(wrapped)
     return function(bufnr, lang)
@@ -103,34 +105,36 @@ local function config_treesitter()
     end
   end)(vim.treesitter.start)
 end
+-- }}}
 
 vim.api.nvim_create_autocmd('Syntax', {
   group = 'MyAutoCmd',
   once = true,
   callback = config_treesitter,
 })
+-- }}}
 
--- ==========================================================================
--- GUI and UI2
--- ==========================================================================
 -- Enable virtual_lines feature
 -- vim.diagnostic.config({ virtual_lines = { current_line = true } })
 
+-- Config for neovide {{{
 if vim.fn.exists('g:neovide') == 1 then
   vim.g.neovide_no_idle = true
   vim.g.neovide_cursor_animation_length = 0
   vim.g.neovide_cursor_trail_length = 0
   vim.g.neovide_hide_mouse_when_typing = true
 end
+-- }}}
 
--- Use PlemolJP
+-- Use PlemolJP for guifont {{{
 if vim.fn.has('win32') == 1 then
   vim.opt.guifont = 'PlemolJP:h13'
 else
   vim.opt.guifont = 'PlemolJP:h10'
 end
+-- }}}
 
--- Now Disable UI2 to avoid error.
+-- Now Disable UI2 to avoid error. {{{
 require('vim._core.ui2').enable({ enable = false })
 --[[
 local function enable_ui2()
@@ -159,3 +163,5 @@ if #vim.api.nvim_list_uis() > 0 and not enable_ui2() then
   })
 end
 --]]
+-- }}}
+

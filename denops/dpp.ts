@@ -18,10 +18,10 @@ import type {
   Params as TomlParams,
   Toml,
 } from "@shougo/dpp-ext-toml";
-//import type {
-//  Ext as LocalExt,
-//  Params as LocalParams,
-//} from "@shougo/dpp-ext-local";
+import type {
+  Ext as LocalExt,
+  Params as LocalParams,
+} from "@shougo/dpp-ext-local";
 import type {
   Ext as PackspecExt,
   Params as PackspecParams,
@@ -47,7 +47,8 @@ const home = Deno.env.get("HOME") ?? "~";
 const xdgConfigHome = Deno.env.get("XDG_CONFIG_HOME") ?? `${home}/.config`;
 const xdgCacheHome = Deno.env.get("XDG_CACHE_HOME") ?? `${home}/.cache`;
 const nvimHome = Deno.env.get("NVIM_CONFIG_HOME") ?? `${xdgConfigHome}/nvim`;
-const dppCacheHome= join(xdgCacheHome, "dpp");
+const dppCacheHome = join(xdgCacheHome, "dpp");
+const dppCacheLocal = join(dppCacheHome, "local");
 
 // --------------------------------------------------------------------------
 // Config file/folder path
@@ -83,26 +84,28 @@ async function gatherCheckFiles(
 // Dpp Config
 // --------------------------------------------------------------------------
 // dpp loads the module named export `Config` (see dpp.vim app.ts: `new mod.Config()`).
-export class Config extends BaseConfig{
-  override async config(args:{
+export class Config extends BaseConfig {
+  override async config(args: {
     denops: Denops;
     contextBuilder: ContextBuilder;
     basePath: string;
-  }):Promise<ConfigReturn>{
+  }): Promise<ConfigReturn> {
     // List up vimrc/lua files
     console.debug("Load Dpp Config");
     // TODO: List up all files under `lua` (but avoid including sub dir like `lua/hooks`)
     const inlineVimrcs = [
       join(neovimLuaDir, "options.lua"),
-      join(neovimLuaDir, "visual.lua"),
+      join(neovimLuaDir, "commands.lua"),
+      join(neovimLuaDir, "mappings.lua"),
+      join(neovimLuaDir, "filetype.lua"),
     ];
-    const hasNvim = args.denops.meta.host === "nvim"
+    const hasNvim = args.denops.meta.host === "nvim";
     const hasWindows = await fn.has(args.denops, "win32");
     // const hasGui = await fn.has(args.denops, "gui_running");
     if (hasNvim) {
       inlineVimrcs.push(join(neovimLuaDir, "neovim.lua"));
-    } 
-    if (hasWindows){
+    }
+    if (hasWindows) {
       inlineVimrcs.push(join(neovimLuaDir, "unix.lua"));
     }
 
@@ -113,6 +116,7 @@ export class Config extends BaseConfig{
         installer: {
           checkDiff: true,
           logFilePath: join(dppCacheHome, "installer-log.txt"),
+          maxProcesses: 8,
           minCommitDays: 1,
           minTrustScore: 50,
           githubAPIToken: Deno.env.get("GITHUB_API_TOKEN"),
@@ -129,7 +133,7 @@ export class Config extends BaseConfig{
       ProtocolName,
       Protocol
     >;
-    
+
     // TODO: implement
     const recordPlugins: Record<string, Plugin> = {};
     // TODO: implement
@@ -139,7 +143,7 @@ export class Config extends BaseConfig{
     // TODO: implement
     let multipleHooks: MultipleHook[] = [];
 
-    // avoid lazy loading 
+    // avoid lazy loading
     const noLazyTomls = ["merge.toml", "dpp.toml"];
 
     const [tomlExt, tomlOptions, tomlParams]: [
@@ -173,7 +177,7 @@ export class Config extends BaseConfig{
           }) as Toml,
         );
       }
-      
+
       // Merge toml results
       for (const toml of tomls) {
         if (!toml) continue;
@@ -189,21 +193,64 @@ export class Config extends BaseConfig{
           multipleHooks = multipleHooks.concat(toml.multiple_hooks);
         }
         if (toml.hooks_file) {
-	  hooksFiles.push(toml.hooks_file);
-	}
+          hooksFiles.push(toml.hooks_file);
+        }
       }
     }
 
-    // Local plugins
-    //const [localExt, localOptions, localParams]: [
-    //  LocalExt | undefined,
-    //  ExtOptions,
-    //  LocalParams,
-    //] = await args.denops.dispatcher.getExt(
-    //  "local",
-    //) as [LocalExt | undefined, ExtOptions, LocalParams];
-    // TODO: Use this if we use `local plugin`. And we need to overwrite url like 
-    // https://github.com/Shougo/shougo-s-github/blob/b10f7172e39731a1e54f086258b5c6a6ac055aa6/vim/rc/dpp.ts#L228
+    // Local plugins (library)
+    const [localExt, localOptions, localParams]: [
+      LocalExt | undefined,
+      ExtOptions,
+      LocalParams,
+    ] = await args.denops.dispatcher.getExt(
+      "local",
+    ) as [LocalExt | undefined, ExtOptions, LocalParams];
+    if (localExt) {
+      const action = localExt.actions.local;
+
+      const localPlugins = await action.callback({
+        denops: args.denops,
+        context,
+        options,
+        protocols,
+        extOptions: localOptions,
+        extParams: localParams,
+        actionParams: {
+          directory: dppCacheLocal,
+          options: {
+            merged: false,
+          },
+          includes: ["*"],
+        },
+      }) as Plugin[];
+
+      const gitProtocol = protocols["git"] ?? null;
+
+      for (const plugin of localPlugins) {
+        if (plugin.name in recordPlugins) {
+          const oldPlugin = recordPlugins[plugin.name];
+
+          // Overwrite url
+          const url = gitProtocol
+            ? await gitProtocol.protocol.getUrl({
+              denops: args.denops,
+              plugin: oldPlugin,
+              protocolOptions: gitProtocol.options,
+              protocolParams: gitProtocol.params,
+            })
+            : "";
+
+          recordPlugins[plugin.name] = {
+            ...oldPlugin,
+            ...plugin,
+            url: url || plugin.url || oldPlugin.url,
+          };
+        } else {
+          recordPlugins[plugin.name] = plugin;
+        }
+      }
+    }
 
     const [packspecExt, packspecOptions, packspecParams]: [
       PackspecExt | undefined,
@@ -267,10 +314,10 @@ export class Config extends BaseConfig{
     // TODO: implement
     const groups = {
       ddc: {
-	on_source: "ddc.vim"
+        on_source: "ddc.vim",
       },
       ddu: {
-	on_source: "ddu.vim"
+        on_source: "ddu.vim",
       },
     };
     const result: ConfigReturn = {

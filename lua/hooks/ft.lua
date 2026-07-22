@@ -1,30 +1,36 @@
--- lua_ {{{
-  -- expand tab
-  vim.opt_local.shiftwidth = 2
-  vim.opt_local.softtabstop = 2
+-- Filetype-specific indent settings
+-- lua {{{
+Lua << EOF
+  vim.bo.shiftwidth = 2
+  vim.bo.softtabstop = 2
   vim.bo.expandtab = true
-  -- " Disable automatically insert comment.
-  vim.opt.formatoptions:remove({ "t", "c", "r", "o" })
-  vim.opt.formatoptions:append({ "m", "M", "B", "l" })
-  if vim.bo.textwidth ~= 70 and vim.bo.filetype ~= "help" then
+  vim.bo.tabstop = 2
+  -- Disable automatically insert comment.
+  vim.opt_local.formatoptions:remove({ 't', 'c', 'r', 'o' })
+  vim.opt_local.formatoptions:append({ 'm', 'M', 'B', 'l' })
+  if vim.bo.textwidth ~= 70 and vim.bo.filetype ~= 'help' then
     vim.bo.textwidth = 0
   end
+EOF
+-- }}}
+-- Each block is wrapped in a FileType autocmd so settings apply per-buffer.
 
+-- python {{{
+Lua << EOF
+  vim.bo.softtabstop = 4
+  vim.bo.shiftwidth = 4
+  vim.bo.tabstop = 4
+  vim.bo.textwidth = 80
+  vim.bo.smarttab = true
+  vim.bo.expandtab = true
+EOF
 -- }}}
 
--- TODO: Add each filetype
-
--- lua_python {{{
-vim.opt_local.softtabstop = 4
-vim.opt_local.shiftwidth = 4
-vim.opt_local.textwidth = 80
-vim.bo.smarttab = true
-vim.bo.expandtab = true
--- }}}
-
--- lua_vim {{{
-vim.opt_local.softtabstop = 2
-vim.opt_local.shiftwidth = 2
-vim.opt_local.textwidth = 78
--- set iskeyword and `indentkeys`
+-- vim {{{
+Lua << EOF
+  vim.bo.softtabstop = 2
+  vim.bo.shiftwidth = 2
+  vim.bo.tabstop = 2
+  vim.bo.textwidth = 78
+EOF
 -- }}}

@@ -1,8 +1,16 @@
 {
   "$schema": "https://raw.githubusercontent.com/CppCXY/emmylua-analyzer-rust/main/crates/emmylua_code_analysis/resources/schema.json",
   "runtime": { "version": "LuaJIT" },
+  "requirePattern": {
+    "init.lua",
+    "lua/*.lua",
+    "lua/hooks/*.lua",
+  },
   "diagnostics": { "globals": ["vim"] },
   "workspace": {
+    "library":{
+      "$VIMRUNTIME",
+    },
     "ignoreDir": [".git", ".cache", "deps"]
   }
 }

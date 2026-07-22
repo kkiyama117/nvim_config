@@ -3,28 +3,30 @@
 
 -- Prepare Lua module and AuGroup
 local M = {}
-local my_autocmds = vim.api.nvim_create_augroup("MyAutoCmd", { clear = false })
+local my_autocmds = vim.api.nvim_create_augroup('MyAutoCmd', { clear = false })
 
-local home_dir       = vim.env.HOME
-local xdg_cache_home = vim.env.XDG_CACHE_HOME
-  or vim.fn.fnamemodify(home_dir, ":p:h") .. "/.cache"
-local xdg_config_home = vim.env.XDG_CONFIG_HOME
-  or vim.fn.fnamemodify(home_dir, ":p:h") .. "/.config"
+local home_dir = vim.env.HOME
+local xdg_cache_home = vim.env.XDG_CACHE_HOME or vim.fn.fnamemodify(home_dir, ':p:h') .. '/.cache'
+local xdg_config_home = vim.env.XDG_CONFIG_HOME or vim.fn.fnamemodify(home_dir, ':p:h') .. '/.config'
 -- cache of dpp
 -- They should be matched with `dpp-ext` plugins
-local dpp_cache_home = vim.fs.joinpath(xdg_cache_home, "dpp")
-local dpp_cache_github = vim.fs.joinpath(dpp_cache_home, "repos", "github.com")
-local dpp_cache_local = vim.fs.joinpath(dpp_cache_home, "local")
+local dpp_cache_home = vim.fs.joinpath(xdg_cache_home, 'dpp')
+local dpp_cache_github = vim.fs.joinpath(dpp_cache_home, 'repos', 'github.com')
+local dpp_cache_local = vim.fs.joinpath(dpp_cache_home, 'local')
 --
-local dpp_denops_script = vim.fs.joinpath(vim.g.nvim_config_home, "denops", "dpp.ts")
+local dpp_denops_script = vim.fs.joinpath(vim.g.nvim_config_home, 'denops', 'dpp.ts')
 
--- Minimum/normal dpp deps are generated from deps/{dpp,denops,neovim,merge}.toml
--- by scripts/gen_deps.ts (see docs/specifications/09-dev-workflow.md).
--- Regenerate via `deno task gen`; the pre-commit hook refuses stale output.
-local deps = require("dpp_min_deps")
-assert(deps and deps.minimum_deps and deps.normal_deps,
-       "dpp_min_deps missing fields")
-local minimum_deps, normal_deps = deps.minimum_deps, deps.normal_deps
+local minimum_deps = { 'Shougo/dpp.vim', 'Shougo/dpp-ext-lazy' }
+
+local normal_deps = {
+  'Shougo/dpp-ext-toml',
+  'Shougo/dpp-ext-local',
+  'Shougo/dpp-ext-installer',
+  'Shougo/dpp-ext-packspec',
+  'Shougo/dpp-protocol-git',
+  'Shougo/dpp-protocol-http',
+  'vim-denops/denops.vim',
+}
 
 -----------------------------------------------------------------------------
 -- functions
@@ -45,13 +47,17 @@ end
 -- `name` should be `username/name` pattern
 -- And return `dest`, local path that installed
 local function install_github_plugin(plugin_name, dest_path)
-  vim.notify(("[dpp] cloning %s"):format(plugin_name), vim.log.levels.INFO)
+  vim.notify(('[dpp] cloning %s'):format(plugin_name), vim.log.levels.INFO)
   vim.fn.system({
-    "git", "clone", "--filter", "blob:none",
-    "https://github.com/" .. plugin_name, dest_path,
+    'git',
+    'clone',
+    '--filter',
+    'blob:none',
+    'https://github.com/' .. plugin_name,
+    dest_path,
   })
   if vim.v.shell_error ~= 0 then
-    vim.notify(("[dpp] failed to clone %s"):format(plugin_name), vim.log.levels.ERROR)
+    vim.notify(('[dpp] failed to clone %s'):format(plugin_name), vim.log.levels.ERROR)
     return nil
   end
   return dest_path
@@ -69,7 +75,7 @@ local function load_plugins(list_of_plugin)
 end
 
 local function ensure_denops_plugin()
-  if vim.fn.has("nvim") == 1 and not vim.g.loaded_denops then
+  if vim.fn.has('nvim') == 1 and not vim.g.loaded_denops then
     vim.cmd([[runtime! plugin/denops.vim]])
   end
 end
@@ -82,53 +88,62 @@ local function initialize_dpp()
   -- check minimum requirements are installed
   load_plugins(minimum_deps)
   -- load dpp
-  local dpp = require("dpp")
+  local dpp = require('dpp')
 
   -- call `dpp#min#load_state` and check it works
   if dpp.load_state(dpp_cache_home) then
     -- install and load `denops.vim` and `dpp plugins` to load dpp
     load_plugins(normal_deps)
     ensure_denops_plugin()
-    vim.api.nvim_create_autocmd("User", {
-      pattern = "DenopsReady",
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'DenopsReady',
       group = my_autocmds,
       once = true,
       callback = function()
-        vim.notify("dpp load_state() is failed", vim.log.levels.WARN)
+        vim.notify('dpp load_state() is failed', vim.log.levels.WARN)
+        -- Mark in-flight so VimLeavePre can wait for completion.
+        -- Cleared by the Dpp:makeStatePost autocmd below.
+        vim.g.dpp_make_state_in_progress = true
         dpp.make_state(dpp_cache_home, dpp_denops_script)
       end,
     })
   else
     ensure_denops_plugin()
     -- check config is updated and update cache
-    vim.api.nvim_create_autocmd("BufWritePost", {
-      pattern = "*.lua,*.vim,*.toml,*.ts,vimrc,.vimrc",
+    vim.api.nvim_create_autocmd('BufWritePost', {
+      pattern = '*.lua,*.vim,*.toml,*.ts,vimrc,.vimrc',
       group = my_autocmds,
       callback = function()
-        local updated = vim.fn["dpp#check_files"](dpp_cache_home)
-        if type(updated) == "table" and not vim.tbl_isempty(updated) then
+        local updated = vim.fn['dpp#check_files'](dpp_cache_home)
+        if type(updated) == 'table' and not vim.tbl_isempty(updated) then
+          -- Mark in-flight so VimLeavePre can wait for completion.
+          -- Cleared by the Dpp:makeStatePost autocmd below.
+          vim.g.dpp_make_state_in_progress = true
           dpp.make_state(dpp_cache_home, dpp_denops_script)
         end
       end,
     })
     -- check toml deps are updated and new plugins are needed
-    vim.api.nvim_create_autocmd("BufWritePost", {
-      pattern = "*.toml,*.lua",
+    vim.api.nvim_create_autocmd('BufWritePost', {
+      pattern = '*.toml,*.lua',
       group = my_autocmds,
       callback = function()
-        local not_installed = vim.fn["dpp#sync_ext_action"]("installer", "getNotInstalled")
-        if type(not_installed) == "table" and not vim.tbl_isempty(not_installed) then
-          dpp.async_ext_action("installer", "install")
+        local not_installed = vim.fn['dpp#sync_ext_action']('installer', 'getNotInstalled')
+        if type(not_installed) == 'table' and not vim.tbl_isempty(not_installed) then
+          dpp.async_ext_action('installer', 'install')
         end
       end,
     })
   end
 
-  vim.api.nvim_create_autocmd("User", {
-    pattern = "Dpp:makeStatePost",
+  -- Deno fires Dpp:makeStatePost only after both state.vim and startup.vim
+  -- are written, so this is the reliable "make_state finished" signal.
+  vim.api.nvim_create_autocmd('User', {
+    pattern = 'Dpp:makeStatePost',
     group = my_autocmds,
     callback = function()
-      vim.notify("dpp make_state() is done", vim.log.levels.WARN)
+      vim.g.dpp_make_state_in_progress = false
+      vim.notify('dpp make_state() is done', vim.log.levels.WARN)
     end,
   })
 end

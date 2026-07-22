@@ -5,6 +5,7 @@
 repo = 'Shougo/dpp.vim'
 description = 'Dark powered plugin manager for Vim/Neovim'
 rtp = ''
+hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/dpp.vim.lua'
 
 [[plugins]]
 repo = 'Shougo/dpp-ext-lazy'

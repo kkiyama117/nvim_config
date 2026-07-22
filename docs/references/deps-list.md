@@ -22,41 +22,116 @@ Regenerate via `deno task gen`; the pre-commit hook refuses stale output.
 
 ## deps/ddc.toml
 
-7 plugins:
+29 plugins:
 
 | repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |
 |------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
 | `Shougo/ddc.vim` |  |  |  | InsertEnter, CmdlineEnter |  | denops.vim |  |  |  |
 | `Shougo/pum.vim` |  |  |  |  |  |  |  |  |  |
-| `Shougo/ddc-ui-native` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-ui-pum` |  |  |  |  |  | pum.vim |  |  |  |
 | `Shougo/ddc-ui-none` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-ui-inline` |  |  |  |  |  |  |  |  |  |
 | `Shougo/ddc-source-around` |  |  |  |  |  |  |  |  |  |
+| `matsui54/ddc-source-buffer` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-source-cmdline` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-source-cmdline_history` |  |  |  |  |  |  |  |  |  |
+| `LumaKernel/ddc-source-file` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-source-input` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-source-line` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-source-lsp` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-source-mocword` |  | exists("$MOCWORD_DATA") |  |  |  |  |  |  |  |
+| `Milly/ddc-source-register` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-source-rg` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-source-shell_native` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-source-shell_history` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-source-vim` |  |  |  |  |  |  |  |  |  |
 | `Shougo/ddc-filter-matcher_head` |  |  |  |  |  |  |  |  |  |
-| `Shougo/ddc-sorter_rank` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-filter-matcher_length` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-filter-matcher_prefix` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-filter-matcher_suffix` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-filter-sorter_head` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-filter-sorter_lsp_kind` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-filter-sorter_rank` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-filter-converter_remove_overlap` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-filter-converter_truncate_abbr` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddc-filter-converter_kind_labels` |  |  |  |  |  |  |  |  |  |
 
-## deps/denops.toml
+## deps/ddu.toml
 
-1 plugin:
+20 plugins:
 
 | repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |
 |------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
-| `vim-denops/denops.vim` |  |  |  |  |  |  |  |  | ✓ |
+| `shougo/ddu.vim` |  |  |  |  |  | denops.vim |  |  |  |
+| `Shougo/ddu-commands.vim` |  |  |  |  |  | ddu.vim |  |  |  |
+| `Shougo/ddu-ui-ff` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-ui-filer` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-file` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-file_rec` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-filter-matcher_files` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-filter-matcher_hidden` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-filter-matcher_ignore_files` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-filter-matcher_relative` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-filter-matcher_substring` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-filter-sorter_alpha` |  |  |  |  |  |  |  |  |  |
+| `kuuote/ddu-filter-sorter_mtime` |  |  |  |  |  |  |  |  |  |
+| `uga-rosa/ddu-filter-converter_devicon` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-filter-converter_display_word` |  |  |  |  |  |  |  |  |  |
+| `kyoh86/ddu-filter-converter_hl_dir` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-column-filename` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-kind-file` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-kind-word` |  |  |  |  |  |  |  |  |  |
+| `4513ECHO/ddu-kind-url` |  |  |  |  |  |  |  |  |  |
+
+## deps/denops.toml
+
+5 plugins:
+
+| repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |
+|------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
+| `vim-denops/denops.vim` |  |  |  |  |  |  |  |  |  |
+| `lambdalisue/kensaku.vim` |  |  |  |  |  |  |  |  |  |
+| `vim-skk/skkeleton` |  |  |  |  |  |  |  |  |  |
+| `NI57721/skkeleton-state-popup` |  |  |  |  | skkeleton |  |  |  |  |
+| `NI57721/skkeleton-henkan-highlight` |  |  |  |  | skkeleton |  |  |  | ✓ |
+
+## deps/lazy.toml
+
+10 plugins:
+
+| repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |
+|------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
+| `Shougo/cmdline.vim` |  |  |  |  | ddu.vim |  |  |  |  |
+| `lewis6991/gitsigns.nvim` |  |  |  | BufReadPost, BufNewFile |  |  |  |  |  |
+| `previm/previm` |  |  | markdown, rst |  |  |  |  |  | ✓ |
+| `lambdalisue/vim-findent` |  |  |  |  |  |  |  |  |  |
+| `kana/vim-niceblock` |  |  |  |  |  |  |  |  | ✓ |
+| `rhysd/vim-operator-surround` |  |  |  |  |  | vim-operator-user |  |  | ✓ |
+| `thinca/vim-qfreplace` |  |  | qf |  |  |  |  |  |  |
+| `itchyny/vim-qfedit` |  |  | qf |  |  |  |  |  |  |
+| `machakann/vim-sandwich` |  |  |  | InsertEnter |  |  |  |  |  |
+| `stevearc/aerial.nvim` |  |  |  | BufReadPost, BufNewFile |  |  |  |  |  |
 
 ## deps/merge.toml
 
-1 plugin:
+2 plugins:
 
 | repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |
 |------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
 | `vim-jp/vimdoc-ja` |  |  |  |  |  |  |  |  |  |
+| `kana/vim-operator-user` |  |  |  |  |  |  |  |  |  |
 
 ## deps/neovim.toml
 
-1 plugin:
+5 plugins:
 
 | repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |
 |------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
 | `romus204/tree-sitter-manager.nvim` |  | !has("win32") | help | VimEnter, BufRead, CursorHold |  |  | tree-sitter |  | ✓ |
+| `neovim/nvim-lspconfig` |  |  |  |  |  |  |  |  |  |
+| `williamboman/mason.nvim` |  |  |  | FileType |  | nvim-lspconfig, ddc-source-lsp |  |  |  |
+| `atusy/kakehashi.nvim` |  |  |  |  | mason.nvim |  | kakehashi |  |  |
+| `carlos-algms/agentic.nvim` |  |  |  |  |  |  |  |  |  |
 
 ---
 

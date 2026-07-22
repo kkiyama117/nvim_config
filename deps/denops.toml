@@ -1,42 +1,28 @@
 # Denops itself and Denops-related plugins
 [[plugins]]
-repo = 'vim-denops/denops.vim'
-lua_source = '''
-  vim.g['denops#debug'] = true
-
-  -- denops.vim's default is ['-q', '--no-lock', '-A'];
-  vim.g['denops#server#deno_args'] = {
-    '-q',
-    '-A',
-    '--unstable-kv', -- for Deno KV storage
-    '--unstable-ffi', -- for deno-pty-ffi (https://github.com/sigmaSd/deno-pty-ffi)
-    -- '--inspect', -- for profile or dev
-  }
-
-  --vim.g.denops_server_addr = '127.0.0.1:32123'
-'''
+repo = "vim-denops/denops.vim"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/denops.vim.lua"
 
 [[plugins]]
-repo = 'lambdalisue/kensaku.vim'
+repo = "lambdalisue/kensaku.vim"
 denops_wait = false
 
 [[plugins]]
-repo = 'vim-skk/skkeleton'
-on_map = { ict = '<Plug>(skkeleton-' }
+repo = "vim-skk/skkeleton"
+on_map = { ict = "<Plug>(skkeleton-" }
 denops_wait = false
-hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/skkeleton.lua'
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/skkeleton.lua"
 
 [[plugins]]
-repo = 'NI57721/skkeleton-state-popup'
-on_source = 'skkeleton'
+repo = "NI57721/skkeleton-state-popup"
+on_source = "skkeleton"
 
 [[plugins]]
-repo = 'NI57721/skkeleton-henkan-highlight'
-on_source = 'skkeleton'
+repo = "NI57721/skkeleton-henkan-highlight"
+on_source = "skkeleton"
 hook_source = '''
   highlight SkkeletonHenkan
   \ gui=underline term=underline cterm=underline
   highlight SkkeletonHenkanSelect
   \ gui=underline,reverse term=underline,reverse cterm=underline,reverse
 '''
-

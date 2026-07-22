@@ -1,11 +1,9 @@
 import { buildModel, GenExitError } from "./deps_as_json.ts";
-import { renderLua } from "./render_lua.ts";
 import { renderReadmeBlock } from "./render_readme.ts";
 import { renderReference } from "./render_reference.ts";
 import { replaceBetween } from "./sentinels.ts";
 
 // Output files of the AUTO-GENERATED deps list
-const LUA_OUT = "lua/dpp_min_deps.lua";
 const README_OUT = "deps/README.md";
 const REFERENCE_OUT = "docs/references/deps-list.md";
 const DOCS_INDEX = "docs/README.md";
@@ -58,9 +56,6 @@ function ensureDocsIndexLine(): void {
 
 async function main(): Promise<void> {
   const model = await buildModel();
-
-  await writeText(LUA_OUT, renderLua(model));
-  console.log(`[gen_deps] wrote ${LUA_OUT}`);
 
   const readmeBlock = renderReadmeBlock(model);
   try {
