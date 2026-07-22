@@ -298,8 +298,8 @@ end, { desc = 'Ddu: register' }) -- }}}
 
 -- }}}
 
--- Terminal mapping {{{
--- rg
+-- Visual mapping {{{
+-- yank line and use it as a input of ripgrep
 vim.keymap.set('x', ';g', function() -- {{{
   vim.cmd('normal! y')
   vim.fn['ddu#start']({
@@ -322,6 +322,60 @@ vim.keymap.set('x', ';g', function() -- {{{
     },
   })
 end, { desc = 'Ddu: ripgrep (visual)' }) -- }}}
+
+-- URL action (visual)
+vim.keymap.set('x', ';G', function() -- {{{
+  local region = vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos('.'), { type = vim.fn.mode() })
+  if vim.fn.empty(region) == 1 then
+    return
+  end
+  local url = region[1]:gsub('%s*\n?$', '')
+  local items = {
+    {
+      word = url,
+      kind = 'url',
+      action = {
+        url = url,
+      },
+    },
+  }
+  vim.fn['ddu#start']({
+    sources = {
+      {
+        name = 'action',
+      },
+    },
+    sourceParams = {
+      action = {
+        items = items,
+      },
+    },
+  })
+end, { desc = 'Ddu: URL action (visual)' }) -- }}}
+
+-- register (visual, expr)
+vim.keymap.set('x', ';r', function() -- {{{
+  local prefix = vim.fn.mode() == 'V' and '"_R<Esc>' or '"_d'
+  vim.fn['ddu#start']({
+    name = 'register',
+    sources = {
+      {
+        name = 'register',
+      },
+    },
+    sourceOptions = {
+      ff = {
+        defaultAction = 'insert',
+      },
+    },
+    uiParams = {
+      ff = {
+        autoResize = true,
+      },
+    },
+  })
+end, { expr = true, desc = 'Ddu: register (visual)' }) --}}}
+
 -- }}}
 
 -- }}}

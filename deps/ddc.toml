@@ -153,3 +153,4 @@ group = "ddc"
 [[multiple_hooks]]
 plugins = ["ddc.vim", "skkeleton"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddc_skkeleton.lua"
+
