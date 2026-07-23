@@ -1,3 +1,7 @@
+-- TODO: Add `Sticky Shift` if needed.
+-- TODO: Add Select inside `pair` instead of current `ar` and `aa`
+-- TODO: Add Inclement command and replace `<C-a>` and `<C-x>`
+
 local vimrc = require('vimrc')
 -- =========================================================================
 -- Keys defined by `options`
@@ -54,7 +58,8 @@ vim.g.maplocalleader = ','
 -- ==========================================================================
 -- Custom keys (without plugins)
 -- ==========================================================================
--- No operation keys {{{1
+-- No operation keys {{{
+-- Not used {{{
 vim.keymap.set({ 'n' }, 'ZZ', '<Nop>', { silent = true })
 vim.keymap.set({ 'n' }, 'ZQ', '<Nop>', { silent = true })
 vim.keymap.set({ 'n' }, 'M', '<Nop>', { silent = true })
@@ -64,11 +69,11 @@ vim.keymap.set({ 'n' }, '<Right>', '<Nop>', { silent = true })
 vim.keymap.set({ 'n' }, '<Up>', '<Nop>', { silent = true })
 vim.keymap.set({ 'n' }, '<Down>', '<Nop>', { silent = true })
 -- }}}
--- Overrided keys {{{1
+-- Overrided keys {{{
 -- <Leader> and <LocalLeader>
 vim.keymap.set({ 'n', 'x' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set({ 'n', 'x' }, ',', '<Nop>', { silent = true })
--- Other mappings
+-- `s` is used for window editing etc.
 vim.keymap.set({ 'n' }, 's', '<Nop>', { silent = true })
 -- convert `;` and `:`, with `cmdline.nvim`. See @lua/hooks/ddc.vim.lua
 vim.keymap.set({ 'n' }, ';', '<Nop>', { silent = true })
@@ -76,67 +81,148 @@ vim.keymap.set({ 'n' }, ':', '<Nop>', { silent = true })
 -- Use `q` as prefix key, with only `m`/`M` registers for macro recording.
 -- Based on [this](https://zenn.dev/vim_jp/articles/29d021fff07e60)
 vim.keymap.set({ 'n' }, 'q', '<Nop>', { silent = true })
-
 -- }}}
--- Manual indents {{{1
-vim.keymap.set({ 'n' }, '>', '>>')
-vim.keymap.set({ 'n' }, '<', '<<')
+-- }}}
+
+-- NORMAL MODE {{{
+vim.keymap.set('n', '<C-Space>', '<C-@>', { remap = true, desc = 'Null' })
+vim.keymap.set({ 'n' }, '>', '>>', { desc = 'Shift indent' })
+vim.keymap.set({ 'n' }, '<', '<<', { desc = 'Unshift indent' })
+vim.keymap.set('n', 'x', '"_x', { desc = 'Better `x`' })
+vim.keymap.set('n', 's/', '/\\<%', { desc = 'Default `/`' })
+vim.keymap.set('n', 's?', '?\\<%', { desc = 'Default `?`' })
+vim.keymap.set('n', '<C-f>', function() -- {{{
+  local count = math.max(vim.fn.winheight(0) - 2, 1)
+  local suffix = vim.fn.line('w$') >= vim.fn.line('$') and 'L' or 'M'
+  return count .. '<C-d>' .. suffix
+end, { expr = true, desc = 'Smart page down' }) -- }}}
+vim.keymap.set('n', '<C-b>', function() -- {{{
+  local count = math.max(vim.fn.winheight(0) - 2, 1)
+  local suffix = vim.fn.line('w0') <= 1 and 'H' or 'M'
+  return count .. '<C-u>' .. suffix
+end, { expr = true, desc = 'Smart page up' }) -- }}}
+vim.keymap.set('n', 'l', function() -- {{{
+  return vim.fn.foldclosed('.') ~= -1 and 'zo0' or 'l'
+end, { expr = true, desc = 'Open fold on l' }) -- }}}
+-- }}}
+
+-- INSERT MODE {{{
+-- Insert mode undo key (`<C-w>` and `<C-u>`) {{{
+vim.keymap.set('i', '<C-w>', '<C-g>u<C-w>')
+vim.keymap.set('i', '<C-u>', '<C-g>u<C-u>')
+-- }}}
+-- Easy Escape (by Shougo) -- {{{
+--vim.keymap.set('n', 'jj', '<ESC>', { desc = 'Easy Escape' })
+--vim.keymap.set('n', 'j<Space>', 'j', { desc = 'Easy Escape' })
+-- }}}
+-- }}}
+
+-- VISUAL MODE {{{
+-- Manual indents by `<` and `>` {{{
 vim.keymap.set({ 'x' }, '>', '>gv')
 vim.keymap.set({ 'x' }, '<', '<gv')
 -- }}}
--- Insert mode undo key{{{1
-vim.keymap.set({ 'i' }, '<C-w>', '<C-g>u<C-w>')
-vim.keymap.set({ 'i' }, '<C-u>', '<C-g>u<C-u>')
+-- Substitute with last search pattern (Shougo style)
+vim.keymap.set('x', 'r', '<C-v>', { desc = 'select rectangle' })
+vim.keymap.set('x', 's', ':s//g<Left><Left>', { desc = 'substitute with last search pattern' })
+-- improved `l`; open fold if exists
+vim.keymap.set('x', 'l', function() -- {{{
+  return vim.fn.foldclosed('.') ~= -1 and 'zogv0' or 'l'
+end, { expr = true, desc = 'Open fold on l (visual)' }) -- }}}
+-- put without yank to unnamed register
+vim.keymap.set('x', 'p', 'P', { desc = 'put without yank to unnamed register' })
 -- }}}
--- Better x {{{1
-vim.keymap.set('n', 'x', '_x')
+
+-- COMMANDLINE MODE {{{
+vim.keymap.set('c', '<C-Space>', '<C-@>', { remap = true, desc = 'Null' })
+vim.keymap.set('c', '<C-a>', '<Home>', { desc = 'or A: move to head' })
+-- TODO: create `Herdr.nvim` plugin and avoid conflict with `herdr`.
+vim.keymap.set('c', '<C-b>', '<Left>', { desc = 'Previous char' })
+vim.keymap.set('c', '<C-d>', '<Del>', { desc = 'Delete char' })
+vim.keymap.set('c', '<C-f>', '<Right>', { desc = 'Next char' })
+vim.keymap.set('c', '<C-g>', '<C-c>', { desc = 'Exit' })
+vim.keymap.set('c', '<C-n>', '<Down>', { desc = 'Next history' })
+vim.keymap.set('c', '<C-p>', '<Up>', { desc = 'Previous history' })
+vim.keymap.set('c', '<C-k>', function()
+  local pos = vim.fn.getcmdpos()
+  if pos == 1 then
+    vim.fn.setcmdline('')
+  else
+    vim.fn.setcmdline(vim.fn.getcmdline():sub(1, pos - 1))
+  end
+end, { desc = 'Delete to the end' })
 -- }}}
--- ==========================================================================
--- Keys using `<Leader>`
--- ==========================================================================
+
+-- (VISUAL AND) OPERATOR PENDING MODE {{{
+-- Select between <angle> and [rectangle]
+vim.keymap.set({ 'o', 'x' }, 'aa', 'a>', { desc = 'Select <angle>' })
+vim.keymap.set({ 'o', 'x' }, 'ia', 'i>', { desc = 'Select inside <angle>' })
+vim.keymap.set({ 'o', 'x' }, 'ar', 'a]', { desc = 'Select [rectangle]' })
+vim.keymap.set({ 'o', 'x' }, 'ir', 'i]', { desc = 'Select inside [rectangle]' })
+-- }}}
+
+-- Keys using `<Leader>` {{{
 -- Save only buffer is changed.
 vim.keymap.set('n', '<Leader><Leader>', function() -- {{{
   vim.cmd('update')
 end, { silent = true }) -- }}}
-
 -- Quickfix
-vim.keymap.set('n', '<Leader>q', function()
-  -- {{{
+vim.keymap.set('n', '<Leader>q', function() -- {{{
   vimrc.diagnostics_to_location_list()
-end, { silent = true })
--- }}}
+end, { silent = true }) -- }}}
 
--- Plugin mapped sub keys of `<Leader>`
--- Keymaps depends on user plugins are defined at
--- $NVIM_CONFIG_HOME/lua/hooks/(plugin).lua
--- {{{
+-- Plugin mapped keys with `<Leader>`. See `$NVIM_CONFIG_HOME/lua/hooks` files also. {{{
 -- `<Leader>d`=[DP]{{{
 vim.keymap.set({ 'n' }, '<Leader>d', '[DP]', { remap = true })
 vim.keymap.set({ 'n' }, '[DP]', '<Nop>')
 -- }}}
+
 -- `<Leader>T`=[TOGGLE]{{{
 vim.keymap.set({ 'n' }, '<Leader>T', '[TOGGLE]', { remap = true })
 vim.keymap.set({ 'n' }, '[TOGGLE]', '<Nop>')
 -- }}}
--- }}}
 
--- Keys for [TOGGLE] options{{{
-vim.keymap.set('n', '[TOGGLE]c', function()
-  --TODO: FIX IT
-  --vimrc.toggle_option('wrap')
-end, { silent = true })
-vim.keymap.set({ 'n' }, '[TOGGLE]s', function()
+-- Keys for [TOGGLE] options {{{
+vim.keymap.set('n', '[TOGGLE]a', function() -- {{{
+  vimrc.toggle_option('autoread')
+end, { silent = true, desc = 'Toggle autoread' }) -- }}}
+vim.keymap.set('n', '[TOGGLE]c', function() -- {{{
+  vimrc.toggle_conceal()
+end, { silent = true, desc = 'Toggle autoread' }) -- }}}
+-- NOTE: hit-enter prompt is needed to debug.
+vim.keymap.set('n', '[TOGGLE]h', function()
+  local messagesopt = vim.opt.messagesopt
+  local values = messagesopt:get()
+  local has_hit_enter = vim.list_contains(values, 'hit-enter')
+  if not has_hit_enter then
+    vim.opt.messagesopt = messagesopt._value .. ',hit-enter'
+    vim.opt.more = true
+  else
+    local filtered = {}
+    for _, v in ipairs(values) do
+      if v ~= 'hit-enter' then
+        table.insert(filtered, v)
+      end
+    end
+    vim.opt.messagesopt = table.concat(filtered, ',')
+    vim.opt.more = false
+  end
+  vim.notify(string.format('messagesopt=%s', vim.opt.messagesopt:get()))
+  vim.notify(string.format('more=%s', tostring(vim.opt.more:get())))
+end, { silent = true, desc = 'Toggle hit-enter prompt' })
+
+vim.keymap.set({ 'n' }, '[TOGGLE]s', function() -- {{{
   vimrc.toggle_option('spell')
   vim.opt_local.spelllang = { 'en_us', 'cjk' }
-end, { silent = true })
-vim.keymap.set('n', '[TOGGLE]w', function()
+end, { desc = 'Toggle spelllang' }) -- }}}
+vim.keymap.set('n', '[TOGGLE]w', function() -- {{{
   vimrc.toggle_option('wrap')
-end, { silent = true })
+end, { desc = 'Toggle wrap' }) -- }}}
+-- }}}
+-- }}}
 -- }}}
 
--- ==========================================================================
--- Other 'Leader' key
--- ==========================================================================
+-- Other 'Leader' key {{{
 -- q | smart quit settings except `m` and `M` buffer {{{
 -- Default `q` macro settings (only `qm` or `qM`){{{
 -- Start recording into `m` or `M` register
@@ -218,12 +304,6 @@ end, { desc = 'smart exit' }) -- }}}
 vim.keymap.set('n', 'qr', function() -- {{{
   if vim.fn.exists(':restart') == 2 then
     if vim.fn.exists('*dpp#make_state') == 1 then
-      -- Mark in-flight so VimLeavePre (filetype.lua) waits for
-      -- `Dpp:makeStatePost` before `:restart`'s `:qall` kills the denops
-      -- Deno process mid-write.  Cleared by the Dpp:makeStatePost autocmd
-      -- registered in dpp_loader.lua.  Without this, :restart re-execs nvim
-      -- before denops finishes writing state.vim/startup.vim, so the new
-      -- nvim's `dpp#min#load_state` falls back to the slow DenopsReady path.
       vim.g.dpp_make_state_in_progress = true
       vim.fn['dpp#make_state']('~/.cache/dpp')
     end
@@ -233,13 +313,18 @@ vim.keymap.set('n', 'qr', function() -- {{{
   end
 end) -- }}}
 
+-- Redraw.
+vim.keymap.set('n', 'qR', function()
+  vim.notify('Redraw')
+  vim.cmd('redraw!')
+end, { desc = 'call redraw!' })
+
 -- Save, then call `qq`
 vim.keymap.set('n', 'qw', ':<C-u>w<CR>qq', { desc = 'smart exit with saving' })
 
 -- }}}
 -- }}}
-
--- s | windows and buffers {{{1
+-- s | windows and buffers {{{
 local function next_window() -- {{{
   local wins = vim.api.nvim_tabpage_list_wins(0)
   local cur = vim.api.nvim_get_current_win()
@@ -251,7 +336,7 @@ local function next_window() -- {{{
   end
 end
 -- }}}
--- check `lua/hooks/ddu.vim.lua` for other keymaps start from `s`
+-- check `$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.lua` for other keymaps start from `s`
 vim.keymap.set('n', 'sn', next_window)
 vim.keymap.set('n', 'so', function()
   -- {{{
@@ -267,13 +352,7 @@ vim.keymap.set('n', 'st', function()
   vim.cmd('split')
 end) -- }}}
 
--- Default search
-vim.keymap.set('n', 's/', '/\\<\\%')
-vim.keymap.set('n', 's?', '?\\<\\%')
 -- }}}
-
--- Command line mode keymap {{{1
--- TODO: Add
 -- }}}
 
 -- ==========================================================================
@@ -287,6 +366,7 @@ vim.keymap.set('n', 's?', '?\\<\\%')
 -- $NVIM_CONFIG_HOME/lua/hooks/ddu-ui-filer.lua
 -- $NVIM_CONFIG_HOME/lua/hooks/skkeleton.lua
 -- }}}
+
 -- BUFFER-LOCAL MAPPINGS (FileType) {{{
 -- ddu-ff {{{
 -- lua/hooks/ddu-ui-ff.lua

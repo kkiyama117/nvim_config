@@ -103,10 +103,10 @@ export class Config extends BaseConfig {
     const hasWindows = await fn.has(args.denops, "win32");
     // const hasGui = await fn.has(args.denops, "gui_running");
     if (hasNvim) {
-      inlineVimrcs.push(join(neovimLuaDir, "neovim.lua"));
+      inlineVimrcs.push(join(neovimLuaDir, "specific/neovim.lua"));
     }
     if (hasWindows) {
-      inlineVimrcs.push(join(neovimLuaDir, "unix.lua"));
+      inlineVimrcs.push(join(neovimLuaDir, "specific/unix.lua"));
     }
 
     // Dpp ContextBuilder
