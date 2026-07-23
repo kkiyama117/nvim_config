@@ -1,3 +1,4 @@
+-- TODO: Merge them as new command `Encode` and get encode as args
 -- Reopen with specific encoding
 vim.api.nvim_create_user_command('Utf8', function(opts)
   vim.cmd('edit' .. (opts.bang and '!' or '') .. ' ++enc=utf-8 ' .. opts.args)
