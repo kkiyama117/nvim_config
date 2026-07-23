@@ -39,30 +39,18 @@ import * as fn from "@denops/std/function";
 // std
 import { join } from "@std/path";
 
-// --------------------------------------------------------------------------
 // consts
-// --------------------------------------------------------------------------
-// TODO: define in the other file to use in multiple files
-const home = Deno.env.get("HOME") ?? "~";
-const xdgConfigHome = Deno.env.get("XDG_CONFIG_HOME") ?? `${home}/.config`;
-const xdgCacheHome = Deno.env.get("XDG_CACHE_HOME") ?? `${home}/.cache`;
-const nvimHome = Deno.env.get("NVIM_CONFIG_HOME") ?? `${xdgConfigHome}/nvim`;
-const dppCacheHome = join(xdgCacheHome, "dpp");
-const dppCacheLocal = join(dppCacheHome, "local");
+import { nvimConfigHome, nvimLuaHome, xdgCacheHome } from "./consts.ts";
 
 // --------------------------------------------------------------------------
-// Config file/folder path
+// Config and Cachepath
 // --------------------------------------------------------------------------
 // Where plugin definition TOMLs live.
-const dppTomlDir = join(nvimHome, "deps");
+const dppTomlDir = join(nvimConfigHome, "deps");
 
-// denops TypeScript files
-//const dppTSDir = join(nvimHome, "denops");
-
-// Where inline vimrc fragments live.
-// Files under `$nvimHome/lua` is autoloaded by neovim as a default.
-const neovimLuaDir = join(nvimHome, "lua");
-//const neovimLuaHookDir = join(neovimLuaDir, "hooks");
+// Caches
+const dppCacheHome = join(xdgCacheHome, "dpp");
+const dppCacheLocal = join(dppCacheHome, "local");
 
 // --------------------------------------------------------------------------
 // Util functions
@@ -94,19 +82,19 @@ export class Config extends BaseConfig {
     console.debug("Load Dpp Config");
     // TODO: List up all files under `lua` (but avoid including sub dir like `lua/hooks`)
     const inlineVimrcs = [
-      join(neovimLuaDir, "options.lua"),
-      join(neovimLuaDir, "commands.lua"),
-      join(neovimLuaDir, "mappings.lua"),
-      join(neovimLuaDir, "filetype.lua"),
+      join(nvimLuaHome, "options.lua"),
+      join(nvimLuaHome, "commands.lua"),
+      join(nvimLuaHome, "mappings.lua"),
+      join(nvimLuaHome, "filetype.lua"),
     ];
     const hasNvim = args.denops.meta.host === "nvim";
     const hasWindows = await fn.has(args.denops, "win32");
     // const hasGui = await fn.has(args.denops, "gui_running");
     if (hasNvim) {
-      inlineVimrcs.push(join(neovimLuaDir, "specific/neovim.lua"));
+      inlineVimrcs.push(join(nvimLuaHome, "specific/neovim.lua"));
     }
     if (hasWindows) {
-      inlineVimrcs.push(join(neovimLuaDir, "specific/unix.lua"));
+      inlineVimrcs.push(join(nvimLuaHome, "specific/unix.lua"));
     }
 
     // Dpp ContextBuilder
@@ -305,16 +293,18 @@ export class Config extends BaseConfig {
       });
     }
 
-    const checkFiles = await gatherCheckFiles(args.denops, nvimHome, [
+    const checkFiles = await gatherCheckFiles(args.denops, nvimConfigHome, [
       "lua/**/*.lua",
       "deps/*.toml",
       "denops/**/*.ts",
       "**/*.vim",
     ]);
-    // TODO: implement
     const groups = {
       ddc: {
         on_source: "ddc.vim",
+      },
+      ddt: {
+        on_source: "ddt.vim",
       },
       ddu: {
         on_source: "ddu.vim",

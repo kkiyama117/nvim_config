@@ -89,7 +89,7 @@ end, { desc = 'Ddu: file picker (old + git + file)' }) -- }}}
 
 -- NVIM_CONFIG_HOME file list
 vim.keymap.set('n', '[DP]c', function() -- {{{
-  local path = vim.fn.expand('$NVIM_CONFIG_HOME')
+  local path = vim.g.nvim_config_home
   vim.fn['ddu#start']({
     name = 'files',
     resume = true,

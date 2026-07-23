@@ -76,7 +76,7 @@ end, { desc = 'Cmdline with pre-processing (visual)' })
 -- }}}
 
 -- lua_source {{{
-vim.fn['ddc#custom#load_config'](vim.env.NVIM_CONFIG_HOME .. '/denops/ddc.ts')
+vim.fn['ddc#custom#load_config'](vim.g.nvim_config_home .. '/denops/ddc.ts')
 -- KEYBINDS {{{
 -- Keys may sorted alphabetally.
 

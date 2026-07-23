@@ -91,17 +91,20 @@ vim.keymap.set({ 'n' }, '<', '<<', { desc = 'Unshift indent' })
 vim.keymap.set('n', 'x', '"_x', { desc = 'Better `x`' })
 vim.keymap.set('n', 's/', '/\\<%', { desc = 'Default `/`' })
 vim.keymap.set('n', 's?', '?\\<%', { desc = 'Default `?`' })
-vim.keymap.set('n', '<C-f>', function() -- {{{
+vim.keymap.set('n', '<C-f>', function()
+  -- {{{
   local count = math.max(vim.fn.winheight(0) - 2, 1)
   local suffix = vim.fn.line('w$') >= vim.fn.line('$') and 'L' or 'M'
   return count .. '<C-d>' .. suffix
 end, { expr = true, desc = 'Smart page down' }) -- }}}
-vim.keymap.set('n', '<C-b>', function() -- {{{
+vim.keymap.set('n', '<C-b>', function()
+  -- {{{
   local count = math.max(vim.fn.winheight(0) - 2, 1)
   local suffix = vim.fn.line('w0') <= 1 and 'H' or 'M'
   return count .. '<C-u>' .. suffix
 end, { expr = true, desc = 'Smart page up' }) -- }}}
-vim.keymap.set('n', 'l', function() -- {{{
+vim.keymap.set('n', 'l', function()
+  -- {{{
   return vim.fn.foldclosed('.') ~= -1 and 'zo0' or 'l'
 end, { expr = true, desc = 'Open fold on l' }) -- }}}
 -- }}}
@@ -112,8 +115,8 @@ vim.keymap.set('i', '<C-w>', '<C-g>u<C-w>')
 vim.keymap.set('i', '<C-u>', '<C-g>u<C-u>')
 -- }}}
 -- Easy Escape (by Shougo) -- {{{
---vim.keymap.set('n', 'jj', '<ESC>', { desc = 'Easy Escape' })
---vim.keymap.set('n', 'j<Space>', 'j', { desc = 'Easy Escape' })
+-- vim.keymap.set('n', 'jj', '<ESC>', { desc = 'Easy Escape' })
+-- vim.keymap.set('n', 'j<Space>', 'j', { desc = 'Easy Escape' })
 -- }}}
 -- }}}
 
@@ -126,7 +129,8 @@ vim.keymap.set({ 'x' }, '<', '<gv')
 vim.keymap.set('x', 'r', '<C-v>', { desc = 'select rectangle' })
 vim.keymap.set('x', 's', ':s//g<Left><Left>', { desc = 'substitute with last search pattern' })
 -- improved `l`; open fold if exists
-vim.keymap.set('x', 'l', function() -- {{{
+vim.keymap.set('x', 'l', function()
+  -- {{{
   return vim.fn.foldclosed('.') ~= -1 and 'zogv0' or 'l'
 end, { expr = true, desc = 'Open fold on l (visual)' }) -- }}}
 -- put without yank to unnamed register
@@ -163,11 +167,13 @@ vim.keymap.set({ 'o', 'x' }, 'ir', 'i]', { desc = 'Select inside [rectangle]' })
 
 -- Keys using `<Leader>` {{{
 -- Save only buffer is changed.
-vim.keymap.set('n', '<Leader><Leader>', function() -- {{{
+vim.keymap.set('n', '<Leader><Leader>', function()
+  -- {{{
   vim.cmd('update')
 end, { silent = true }) -- }}}
 -- Quickfix
-vim.keymap.set('n', '<Leader>q', function() -- {{{
+vim.keymap.set('n', '<Leader>q', function()
+  -- {{{
   vimrc.diagnostics_to_location_list()
 end, { silent = true }) -- }}}
 
@@ -183,14 +189,20 @@ vim.keymap.set({ 'n' }, '[TOGGLE]', '<Nop>')
 -- }}}
 
 -- Keys for [TOGGLE] options {{{
-vim.keymap.set('n', '[TOGGLE]a', function() -- {{{
+-- autoread
+vim.keymap.set('n', '[TOGGLE]a', function()
+  -- {{{
   vimrc.toggle_option('autoread')
 end, { silent = true, desc = 'Toggle autoread' }) -- }}}
-vim.keymap.set('n', '[TOGGLE]c', function() -- {{{
+-- conceal
+vim.keymap.set('n', '[TOGGLE]c', function()
+  -- {{{
   vimrc.toggle_conceal()
-end, { silent = true, desc = 'Toggle autoread' }) -- }}}
+end, { silent = true, desc = 'Toggle conceal' }) -- }}}
+-- messagesopt
 -- NOTE: hit-enter prompt is needed to debug.
 vim.keymap.set('n', '[TOGGLE]h', function()
+  -- {{{
   local messagesopt = vim.opt.messagesopt
   local values = messagesopt:get()
   local has_hit_enter = vim.list_contains(values, 'hit-enter')
@@ -209,13 +221,16 @@ vim.keymap.set('n', '[TOGGLE]h', function()
   end
   vim.notify(string.format('messagesopt=%s', vim.opt.messagesopt:get()))
   vim.notify(string.format('more=%s', tostring(vim.opt.more:get())))
-end, { silent = true, desc = 'Toggle hit-enter prompt' })
-
-vim.keymap.set({ 'n' }, '[TOGGLE]s', function() -- {{{
+end, { silent = true, desc = 'Toggle hit-enter prompt' }) -- }}}
+-- spelllang
+vim.keymap.set({ 'n' }, '[TOGGLE]s', function()
+  -- {{{
   vimrc.toggle_option('spell')
   vim.opt_local.spelllang = { 'en_us', 'cjk' }
 end, { desc = 'Toggle spelllang' }) -- }}}
-vim.keymap.set('n', '[TOGGLE]w', function() -- {{{
+-- wrap
+vim.keymap.set('n', '[TOGGLE]w', function()
+  -- {{{
   vimrc.toggle_option('wrap')
 end, { desc = 'Toggle wrap' }) -- }}}
 -- }}}
@@ -233,7 +248,8 @@ vim.keymap.set('n', 'qM', 'qM', { desc = 'start recording into M' })
 vim.api.nvim_create_autocmd('RecordingEnter', {
   pattern = '*',
   group = 'MyAutoCmd',
-  callback = function() -- {{{
+  callback = function()
+    -- {{{
     local reg = vim.fn.reg_recording()
     if reg ~= 'm' and reg ~= 'M' then
       vim.cmd('normal! q')
@@ -273,7 +289,8 @@ vim.api.nvim_create_autocmd('RecordingEnter', {
 -- }}}
 -- smart quit {{{
 -- normal smart quit
-vim.keymap.set('n', 'qq', function() -- {{{
+vim.keymap.set('n', 'qq', function()
+  -- {{{
   if vim.fn.winnr('$') == 1 then
     vim.cmd('enew')
     return
@@ -301,7 +318,8 @@ vim.keymap.set('n', 'qq', function() -- {{{
 end, { desc = 'smart exit' }) -- }}}
 
 -- Call `dpp#make_state` and then restart Nvim
-vim.keymap.set('n', 'qr', function() -- {{{
+vim.keymap.set('n', 'qr', function()
+  -- {{{
   if vim.fn.exists(':restart') == 2 then
     if vim.fn.exists('*dpp#make_state') == 1 then
       vim.g.dpp_make_state_in_progress = true

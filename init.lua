@@ -8,13 +8,19 @@ end
 -----------------------------------------------------------------------------
 -- General ENVIRONMENT VARIABLES
 -----------------------------------------------------------------------------
---" config home for nvim
-vim.g.nvim_config_home =
-  vim.api.nvim_call_function('fnamemodify', { vim.api.nvim_call_function('expand', { '<sfile>' }), ':p:h' })
+-- ENVIRONMENT VARIABLES with neovim {{{
+-- STDPATH {{{
+vim.g.nvim_config_home = vim.fn.stdpath('config')
 vim.env.NVIM_CONFIG_HOME = vim.g.nvim_config_home
+vim.g.nvim_cache_home = vim.fn.stdpath('cache')
+vim.env.NVIM_CACHE_HOME = vim.g.nvim_cache_home
+-- }}}
 
+-- Deno binary path for denops
 vim.g['denops#deno'] = vim.env.MISE_DATA_DIR .. '/installs/deno/latest/bin/deno' or 'deno'
+-- }}}
 
+-- Default `MyAutoCmd`
 vim.api.nvim_create_augroup('MyAutoCmd', { clear = true })
 
 -- vim.api.nvim_create_autocmd({"filetype","syntax","bufnewfile","bufnew","bufread"}, {
@@ -23,7 +29,7 @@ vim.api.nvim_create_augroup('MyAutoCmd', { clear = true })
 --   command = [[ call vimrc#on_filetype() ]]
 -- })
 
--- LANG
+-- LANG {{{
 if vim.fn.has('unix') then
   vim.env.LANG = 'ja_JP.UTF_8'
 else
@@ -31,6 +37,7 @@ else
 end
 -- vim.fn.language(vim.env.LANG)
 vim.opt.langmenu = vim.env.LANG
+-- }}}
 
 -----------------------------------------------------------------------------
 -- LOAD OTHER SETTING FILES (ex. loader of dpp.vim):
