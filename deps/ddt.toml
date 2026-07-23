@@ -1,0 +1,14 @@
+[[plugins]]
+repo = "Shougo/ddt.vim"
+depends = "denops.vim"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddt.vim.lua"
+on_source = "ddu.vim"
+
+[[plugins]]
+repo = "Shougo/ddt-ui-terminal"
+group = "ddt"
+
+[[plugins]]
+repo = "Shougo/ddt-ui-shell"
+group = "ddt"
+
