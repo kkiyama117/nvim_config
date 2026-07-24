@@ -5,6 +5,7 @@
 local M = {}
 local my_autocmds = vim.api.nvim_create_augroup('MyAutoCmd', { clear = false })
 
+-- ENVS{{{
 local home_dir = vim.env.HOME
 local xdg_cache_home = vim.env.XDG_CACHE_HOME or vim.fn.fnamemodify(home_dir, ':p:h') .. '/.cache'
 local xdg_config_home = vim.env.XDG_CONFIG_HOME or vim.fn.fnamemodify(home_dir, ':p:h') .. '/.config'
@@ -15,6 +16,7 @@ local dpp_cache_github = vim.fs.joinpath(dpp_cache_home, 'repos', 'github.com')
 local dpp_cache_local = vim.fs.joinpath(dpp_cache_home, 'local')
 --
 local dpp_denops_script = vim.fs.joinpath(vim.g.nvim_config_home, 'denops', 'dpp.ts')
+-- }}}
 
 local minimum_deps = { 'Shougo/dpp.vim', 'Shougo/dpp-ext-lazy' }
 
@@ -26,6 +28,7 @@ local normal_deps = {
   'Shougo/dpp-protocol-git',
   'Shougo/dpp-protocol-http',
   'vim-denops/denops.vim',
+  'Shougo/cmdline.vim',
 }
 
 -----------------------------------------------------------------------------
@@ -94,6 +97,7 @@ local function initialize_dpp()
   if dpp.load_state(dpp_cache_home) then
     -- install and load `denops.vim` and `dpp plugins` to load dpp
     load_plugins(normal_deps)
+    -- startup
     ensure_denops_plugin()
     vim.api.nvim_create_autocmd('User', {
       pattern = 'DenopsReady',

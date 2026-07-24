@@ -78,6 +78,7 @@ vim.keymap.set({ 'n' }, 's', '<Nop>', { silent = true })
 -- convert `;` and `:`, with `cmdline.nvim`. See @lua/hooks/ddc.vim.lua
 vim.keymap.set({ 'n' }, ';', '<Nop>', { silent = true })
 vim.keymap.set({ 'n' }, ':', '<Nop>', { silent = true })
+vim.keymap.set({ 'n' }, ';:', ':', { silent = true, desc = 'normal :'})
 -- Use `q` as prefix key, with only `m`/`M` registers for macro recording.
 -- Based on [this](https://zenn.dev/vim_jp/articles/29d021fff07e60)
 vim.keymap.set({ 'n' }, 'q', '<Nop>', { silent = true })
