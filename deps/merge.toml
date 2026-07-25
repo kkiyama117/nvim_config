@@ -1,5 +1,5 @@
 # Make each file type rule; like indent etc.
-hook_files = ["$NVIM_CONFIG_HOME/lua/hooks/ft.lua"]
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ft.lua"
 
 [[plugins]]
 repo = "vim-jp/vimdoc-ja"
@@ -7,3 +7,4 @@ extAttrs = { installerMinCommitDays = 0 }
 
 [[plugins]]
 repo = "kana/vim-operator-user"
+

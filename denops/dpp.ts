@@ -181,7 +181,9 @@ export class Config extends BaseConfig {
           multipleHooks = multipleHooks.concat(toml.multiple_hooks);
         }
         if (toml.hooks_file) {
-          hooksFiles.push(toml.hooks_file);
+          // dpp expects a flat string[]; a nested array reaches
+          // dpp#util#_expand as a List and fails with E691.
+          hooksFiles.push(...[toml.hooks_file].flat());
         }
       }
     }
