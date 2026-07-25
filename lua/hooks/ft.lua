@@ -1,6 +1,6 @@
 -- Filetype-specific indent settings
 -- lua {{{
-Lua << EOF
+lua << EOF
   vim.bo.shiftwidth = 2
   vim.bo.softtabstop = 2
   vim.bo.expandtab = true
@@ -13,10 +13,9 @@ Lua << EOF
   end
 EOF
 -- }}}
--- Each block is wrapped in a FileType autocmd so settings apply per-buffer.
 
 -- python {{{
-Lua << EOF
+lua << EOF
   vim.bo.softtabstop = 4
   vim.bo.shiftwidth = 4
   vim.bo.tabstop = 4
@@ -27,10 +26,11 @@ EOF
 -- }}}
 
 -- vim {{{
-Lua << EOF
+lua << EOF
   vim.bo.softtabstop = 2
   vim.bo.shiftwidth = 2
   vim.bo.tabstop = 2
   vim.bo.textwidth = 78
 EOF
 -- }}}
+

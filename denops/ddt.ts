@@ -9,7 +9,7 @@ export class Config extends BaseConfig {
     const hasWindows = await fn.has(args.denops, "win32");
 
     args.contextBuilder.patchGlobal({
-      debug: false,
+      debug: true,
       nvimServer: `${nvimCacheHome}/server.pipe`,
       uiParams: {
         terminal: {
@@ -64,7 +64,8 @@ export class Config extends BaseConfig {
           noSaveHistoryCommands: [
             "history",
           ],
-          userPrompt: "'| ' .. fnamemodify(getcwd(), ':~') .. v:lua.MyGitStatus()",
+          userPrompt:
+            "'| ' .. fnamemodify(getcwd(), ':~') .. v:lua.MyGitStatus()",
           shellHistoryPath: "~/.cache/ddt-shell-history",
         },
       },
