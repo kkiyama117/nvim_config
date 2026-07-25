@@ -125,70 +125,70 @@ vim.g.terminal_color_15 = '#ffffff'
 -- }}}
 
 -- Terminal mode keymaps (pum.vim integration) {{{
--- }}}
 vim.keymap.set('t', '<C-t>', '<Tab>')
-vim.keymap.set('t', '<Tab>', function()
+vim.keymap.set('t', '<Tab>', function() -- {{{
   if vim.fn['pum#visible']() == 1 then
     return vim.api.nvim_replace_termcodes(vim.fn['pum#map#select_relative'](1), true, false, true)
   end
   return '<Tab>'
-end, { expr = true })
-vim.keymap.set('t', '<S-Tab>', function()
+end, { expr = true }) -- }}}
+vim.keymap.set('t', '<S-Tab>', function() -- {{{
   if vim.fn['pum#visible']() == 1 then
     return vim.api.nvim_replace_termcodes(vim.fn['pum#map#select_relative'](-1), true, false, true)
   end
   return '<S-Tab>'
-end, { expr = true })
-vim.keymap.set('t', '<Down>', function()
+end, { expr = true }) -- }}}
+vim.keymap.set('t', '<Down>', function() -- {{{
   vim.fn['pum#map#insert_relative'](1)
-end)
-vim.keymap.set('t', '<Up>', function()
+end) -- }}}
+vim.keymap.set('t', '<Up>', function() -- {{{
   vim.fn['pum#map#insert_relative'](-1)
-end)
-vim.keymap.set('t', '<C-y>', function()
+end) -- }}}
+vim.keymap.set('t', '<C-y>', function() -- {{{
   if vim.fn['pum#visible']() == 1 then
     return vim.api.nvim_replace_termcodes(vim.fn['pum#map#confirm'](), true, false, true)
   end
   return vim.api.nvim_replace_termcodes(vim.fn['pum#map#confirm'](), true, false, true)
-end, { expr = true })
-vim.keymap.set('t', '<C-o>', function()
+end, { expr = true }) -- }}}
+vim.keymap.set('t', '<C-o>', function() -- {{{
   vim.fn['pum#map#confirm']()
-end)
+end) -- }}}
+-- }}}
 
--- ddt-terminal buffer-local mappings
+-- ddt-terminal buffer-local mappings -- {{{
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'ddt-terminal',
   group = 'MyAutoCmd',
   callback = function()
-    vim.keymap.set('n', '<C-n>', function()
+    vim.keymap.set('n', '<C-n>', function() -- {{{
       vim.fn['ddt#ui#do_action']('nextPrompt')
-    end, { buffer = true, desc = 'ddt-terminal: next prompt' })
-    vim.keymap.set('n', '<C-p>', function()
+    end, { buffer = true, desc = 'ddt-terminal: next prompt' }) -- }}}
+    vim.keymap.set('n', '<C-p>', function() -- {{{
       vim.fn['ddt#ui#do_action']('previousPrompt')
-    end, { buffer = true, desc = 'ddt-terminal: previous prompt' })
-    vim.keymap.set('n', '<C-y>', function()
+    end, { buffer = true, desc = 'ddt-terminal: previous prompt' }) -- }}}
+    vim.keymap.set('n', '<C-y>', function() -- {{{
       vim.fn['ddt#ui#do_action']('pastePrompt')
-    end, { buffer = true, desc = 'ddt-terminal: paste prompt' })
-    vim.keymap.set('n', '<CR>', function()
+    end, { buffer = true, desc = 'ddt-terminal: paste prompt' }) -- }}}
+    vim.keymap.set('n', '<CR>', function() -- {{{
       vim.fn['ddt#ui#do_action']('executeLine')
-    end, { buffer = true, desc = 'ddt-terminal: execute line' })
-    vim.keymap.set('n', '[Space]gd', function()
+    end, { buffer = true, desc = 'ddt-terminal: execute line' }) -- }}}
+    vim.keymap.set('n', '[Space]gd', function() -- {{{
       vim.fn['ddt#ui#do_action']('send', { str = 'git diff' })
-    end, { buffer = true, desc = 'ddt-terminal: git diff' })
-    vim.keymap.set('n', '[Space]gc', function()
+    end, { buffer = true, desc = 'ddt-terminal: git diff' }) -- }}}
+    vim.keymap.set('n', '[Space]gc', function() -- {{{
       vim.fn['ddt#ui#do_action']('send', { str = 'git commit' })
-    end, { buffer = true, desc = 'ddt-terminal: git commit' })
-    vim.keymap.set('n', '[Space]gs', function()
+    end, { buffer = true, desc = 'ddt-terminal: git commit' }) -- }}}
+    vim.keymap.set('n', '[Space]gs', function() -- {{{
       vim.fn['ddt#ui#do_action']('send', { str = 'git status' })
-    end, { buffer = true, desc = 'ddt-terminal: git status' })
-    vim.keymap.set('n', '[Space]ga', function()
+    end, { buffer = true, desc = 'ddt-terminal: git status' }) -- }}}
+    vim.keymap.set('n', '[Space]ga', function() -- {{{
       vim.fn['ddt#ui#do_action']('setPrompt', { str = 'git add ' })
       vim.api.nvim_feedkeys('A', 'n', false)
-    end, { buffer = true, desc = 'ddt-terminal: git add' })
-    vim.keymap.set('n', '[Space]gA', function()
+    end, { buffer = true, desc = 'ddt-terminal: git add' }) -- }}}
+    vim.keymap.set('n', '[Space]gA', function() -- {{{
       vim.fn['ddt#ui#do_action']('send', { str = 'git commit --amend' })
-    end, { buffer = true, desc = 'ddt-terminal: git commit --amend' })
-    vim.keymap.set('n', '<C-h>', function()
+    end, { buffer = true, desc = 'ddt-terminal: git commit --amend' }) -- }}}
+    vim.keymap.set('n', '<C-h>', function() -- {{{
       vim.fn['ddu#start']({
         name = 'ddt',
         sync = true,
@@ -197,8 +197,8 @@ vim.api.nvim_create_autocmd('FileType', {
           { name = 'ddt_shell_history' },
         },
       })
-    end, { buffer = true, desc = 'ddt-terminal: shell history' })
-    vim.keymap.set('n', 'I', function()
+    end, { buffer = true, desc = 'ddt-terminal: shell history' }) -- }}}
+    vim.keymap.set('n', 'I', function() -- {{{
       vim.cmd('split')
       vim.fn['ddu#start']({
         name = vim.t.ddt_ui_terminal_last_name,
@@ -217,12 +217,12 @@ vim.api.nvim_create_autocmd('FileType', {
           },
         },
       })
-    end, { buffer = true, desc = 'ddt-terminal: launch ddu' })
-    vim.keymap.set('x', '<CR>', function()
+    end, { buffer = true, desc = 'ddt-terminal: launch ddu' }) -- }}}
+    vim.keymap.set('x', '<CR>', function() -- {{{
       vim.fn['ddt#ui_action'](vim.t.ddt_ui_terminal_last_name, 'send', {
         str = table.concat(vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos('.'), { type = vim.fn.mode() }), '\n'),
       })
-    end, { buffer = true, desc = 'ddt-terminal: send selection' })
+    end, { buffer = true, desc = 'ddt-terminal: send selection' }) -- }}}
 
     -- DirChanged autocmd for ddt-terminal
     vim.api.nvim_create_autocmd('DirChanged', {
@@ -334,6 +334,6 @@ vim.api.nvim_create_autocmd('FileType', {
       vim.cmd('tcd ' .. vim.fn.fnameescape(vim.b.ddt_shell_directory))
     end
   end,
-})
+}) -- }}}
 -- }}}
 

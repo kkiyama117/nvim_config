@@ -12,8 +12,8 @@ export const xdgCacheHome = Deno.env.get("XDG_CACHE_HOME") ??
 // Common paths of neovim {{{
 export const nvimConfigHome = Deno.env.get("NVIM_CONFIG_HOME") ??
   join(xdgConfigHome, "nvim");
-export const nvimCacheHome = Deno.env.get("NVIM_CONFIG_HOME") ??
-  join(xdgConfigHome, "nvim");
+export const nvimCacheHome = Deno.env.get("NVIM_CACHE_HOME") ??
+  join(xdgCacheHome, "nvim");
 
 // Where inline vimrc fragments live.
 // Files under `$nvimHome/lua` can be loaded by `require(module name)`

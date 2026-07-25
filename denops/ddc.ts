@@ -8,13 +8,17 @@ export class Config extends BaseConfig {
   override async config(args: ConfigArguments): Promise<void> {
     const hasNvim = args.denops.meta.host === "nvim";
     const hasWindows = await fn.has(args.denops, "win32");
-    
+    const shell_history_paths = [
+      "~/.cache/ddt-shell-history",
+      "~/.zsh-history",
+    ];
+
     const mocWord = Deno.env.get("MOCWORD_DATA") ? ["mocword"] : [];
     // DDC Sources that always loaded
     const commonSources = [
-      "around",    //[A]
-      "file",      //[F]
-      "register",  //[R]
+      "around", //[A]
+      "file", //[F]
+      "register", //[R]
     ];
     args.contextBuilder.patchGlobal({
       matcherConcurrency: 4,
@@ -26,11 +30,12 @@ export class Config extends BaseConfig {
         };
         const mode = await fn.mode(denops);
         return Promise.resolve(
-          mode !== "t" && uiArgs.items.length == 1 ? "inline" : "pum",);
+          mode !== "t" && uiArgs.items.length == 1 ? "inline" : "pum",
+        );
       },
       // Sources
       dynamicSources: async (denops: Denops, args: Record<string, unknown>) => {
-	const sourceArgs = args as {
+        const sourceArgs = args as {
           context: Context;
           sources: string[];
         };
@@ -43,7 +48,7 @@ export class Config extends BaseConfig {
       },
       sources: commonSources,
       cmdlineSources: {
-	 ":": [
+        ":": [
           "cmdline",
           "cmdline_history",
           "around",
@@ -87,8 +92,8 @@ export class Config extends BaseConfig {
       ],
       // SourcesOptions
       sourceOptions: {
-	// default options
-	_: {
+        // default options
+        _: {
           ignoreCase: true,
           matchers: [
             "matcher_head",
@@ -106,8 +111,8 @@ export class Config extends BaseConfig {
         around: {
           mark: "[A]",
         },
-	//buffer:{},
-	cmdline: {
+        //buffer:{},
+        cmdline: {
           isVolatile: true,
           mark: "[CMD]",
           matchers: [
@@ -129,7 +134,7 @@ export class Config extends BaseConfig {
           minAutoCompleteLength: 500,
           forceCompletionPattern: String.raw`\S/\S*`,
         },
-	input: {
+        input: {
           mark: "[I]",
           forceCompletionPattern: String.raw`\S/\S*`,
           isVolatile: true,
@@ -140,26 +145,26 @@ export class Config extends BaseConfig {
         line: {
           mark: "[LINE]",
         },
-	lsp: {
+        lsp: {
           mark: "[LSP]",
           forceCompletionPattern: String.raw`\.\w*|::\w*|->\w*`,
           dup: "force",
         },
-	mocword: {
+        mocword: {
           mark: "[moc]",
           minAutoCompleteLength: 4,
           isVolatile: true,
         },
-	register: {
-	  mark: "[R]"
-	},
-	// shell: {
-          //   mark: "[SHELL]",
-          //   isVolatile: true,
-          //   forceCompletionPattern: String.raw`\S/\S*`,
-          //   minAutoCompleteLength: 3,
-          //   sorters: ["sorter_shell_history"],
-          // },
+        register: {
+          mark: "[R]",
+        },
+        shell: {
+          mark: "[SHELL]",
+          isVolatile: true,
+          forceCompletionPattern: String.raw`\S/\S*`,
+          minAutoCompleteLength: 3,
+          sorters: ["sorter_shell_history"],
+        },
         shell_history: {
           mark: "[HIST]",
           sorters: [],
@@ -172,8 +177,8 @@ export class Config extends BaseConfig {
           isVolatile: true,
         },
       },
-      sourceParams:{
-	 file: {
+      sourceParams: {
+        file: {
           filenameChars: "[:keyword:].",
         },
         lsp: {
@@ -187,10 +192,7 @@ export class Config extends BaseConfig {
           extractWords: true,
         },
         shell_history: {
-          paths: [
-            "~/.cache/ddt-shell-history",
-            "~/.zsh-history",
-          ],
+          paths: shell_history_paths,
         },
         shell_native: {
           shell: "zsh",
@@ -198,16 +200,13 @@ export class Config extends BaseConfig {
       },
       // FILTER
       filterOptions: {
-	_: {
+        _: {
           parallelSafe: true,
         },
       },
       filterParams: {
         sorter_shell_history: {
-          paths: [
-            "~/.cache/ddt-shell-history",
-            "~/.zsh-history",
-          ],
+          paths: shell_history_paths,
         },
       },
       postFilters: [
@@ -228,7 +227,7 @@ export class Config extends BaseConfig {
         sources: [...commonSources, "line", ...mocWord],
       });
     }
-    
+
     // Shell sources
     const shellSourceOptions = {
       specialBufferCompletion: true,
@@ -254,7 +253,7 @@ export class Config extends BaseConfig {
     ) {
       args.contextBuilder.patchFiletype(filetype, shellSourceOptions);
     }
-     // Use "#" as TypeScript keywordPattern
+    // Use "#" as TypeScript keywordPattern
     for (const filetype of ["typescript"]) {
       args.contextBuilder.patchFiletype(filetype, {
         sourceOptions: {
