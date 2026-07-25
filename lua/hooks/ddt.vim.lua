@@ -248,78 +248,78 @@ EOF
 -- ddt-shell {{{
 lua << EOF
 -- Keymaps {{{
-    vim.keymap.set('n', '<C-n>', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('nextPrompt')
-    end, { buffer = true, desc = 'ddt-shell: next prompt' }) -- }}}
-    vim.keymap.set('n', '<C-p>', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('previousPrompt')
-    end, { buffer = true, desc = 'ddt-shell: previous prompt' }) -- }}}
-    vim.keymap.set('n', '<C-y>', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('pastePrompt')
-    end, { buffer = true, desc = 'ddt-shell: paste prompt' }) -- }}}
-    vim.keymap.set('n', '<CR>', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('executeLine')
-    end, { buffer = true, desc = 'ddt-shell: execute line' }) -- }}}
-    vim.keymap.set('i', '<CR>', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('executeLine')
-    end, { buffer = true, desc = 'ddt-shell: execute line (insert)' }) -- }}}
-    vim.keymap.set('i', '<C-c>', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('terminate')
-    end, { buffer = true, desc = 'ddt-shell: terminate' }) -- }}}
-    vim.keymap.set('i', '<C-z>', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('pushBufferStack')
-    end, { buffer = true, desc = 'ddt-shell: push buffer stack' }) -- }}}
-    vim.keymap.set('n', '[Space]gd', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('send', { str = 'git diff' })
-    end, { buffer = true, desc = 'ddt-shell: git diff' }) -- }}}
-    vim.keymap.set('n', '[Space]gc', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('send', { str = 'git commit' })
-    end, { buffer = true, desc = 'ddt-shell: git commit' }) -- }}}
-    vim.keymap.set('n', '[Space]gs', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('send', { str = 'git status' })
-    end, { buffer = true, desc = 'ddt-shell: git status' }) -- }}}
-    vim.keymap.set('n', '[Space]ga', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('setPrompt', { str = 'git add ' })
-      vim.api.nvim_feedkeys('A', 'n', false)
-    end, { buffer = true, desc = 'ddt-shell: git add' }) -- }}}
-    vim.keymap.set('n', '[Space]gA', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('send', { str = 'git commit --amend' })
-    end, { buffer = true, desc = 'ddt-shell: git commit --amend' }) -- }}}
-    vim.keymap.set('n', '[Space]gp', function() -- {{{ 
-      vim.fn['ddt#ui#do_action']('setPrompt', { str = 'git push' })
-    end, { buffer = true, desc = 'ddt-shell: git push' }) -- }}}
-    vim.keymap.set('i', '<C-n>', function() -- {{{ 
-      if vim.fn['pum#visible']() == 1 then
-        return vim.api.nvim_replace_termcodes(vim.fn['pum#map#insert_relative'](1, 'empty'), true, false, true)
-      end
-      return vim.api.nvim_replace_termcodes(
-        vim.fn['ddc#map#manual_complete']({ sources = { 'shell_history' } }),
-        true,
-        false,
-        true
-      )
-    end, { buffer = true, expr = true, desc = 'ddt-shell: complete next' }) -- }}}
-    vim.keymap.set('i', '<C-p>', function() -- {{{ 
-      if vim.fn['pum#visible']() == 1 then
-        return vim.api.nvim_replace_termcodes(vim.fn['pum#map#insert_relative'](-1, 'empty'), true, false, true)
-      end
-      return vim.api.nvim_replace_termcodes(
-        vim.fn['ddc#map#manual_complete']({ sources = { 'shell_history' } }),
-        true,
-        false,
-        true
-      )
-    end, { buffer = true, expr = true, desc = 'ddt-shell: complete previous' }) -- }}}
-    vim.keymap.set('n', '<C-h>', function() -- {{{ 
-      vim.fn['ddu#start']({
-        name = 'ddt',
-        sync = true,
-        input = vim.fn['ddt#ui#get_input'](),
-        sources = {
-          { name = 'ddt_shell_history' },
-        },
-      })
-    end, { buffer = true, desc = 'ddt-shell: shell history' }) -- }}}
+vim.keymap.set('n', '<C-n>', function() -- {{{
+  vim.fn['ddt#ui#do_action']('nextPrompt')
+end, { buffer = true, desc = 'ddt-shell: next prompt' }) -- }}}
+vim.keymap.set('n', '<C-p>', function() -- {{{
+  vim.fn['ddt#ui#do_action']('previousPrompt')
+end, { buffer = true, desc = 'ddt-shell: previous prompt' }) -- }}}
+vim.keymap.set('n', '<C-y>', function() -- {{{
+  vim.fn['ddt#ui#do_action']('pastePrompt')
+end, { buffer = true, desc = 'ddt-shell: paste prompt' }) -- }}}
+vim.keymap.set('n', '<CR>', function() -- {{{
+  vim.fn['ddt#ui#do_action']('executeLine')
+end, { buffer = true, desc = 'ddt-shell: execute line' }) -- }}}
+vim.keymap.set('i', '<CR>', function() -- {{{
+  vim.fn['ddt#ui#do_action']('executeLine')
+end, { buffer = true, desc = 'ddt-shell: execute line (insert)' }) -- }}}
+vim.keymap.set('i', '<C-c>', function() -- {{{
+  vim.fn['ddt#ui#do_action']('terminate')
+end, { buffer = true, desc = 'ddt-shell: terminate' }) -- }}}
+vim.keymap.set('i', '<C-z>', function() -- {{{
+  vim.fn['ddt#ui#do_action']('pushBufferStack')
+end, { buffer = true, desc = 'ddt-shell: push buffer stack' }) -- }}}
+vim.keymap.set('n', '[Space]gd', function() -- {{{
+  vim.fn['ddt#ui#do_action']('send', { str = 'git diff' })
+end, { buffer = true, desc = 'ddt-shell: git diff' }) -- }}}
+vim.keymap.set('n', '[Space]gc', function() -- {{{
+  vim.fn['ddt#ui#do_action']('send', { str = 'git commit' })
+end, { buffer = true, desc = 'ddt-shell: git commit' }) -- }}}
+vim.keymap.set('n', '[Space]gs', function() -- {{{
+  vim.fn['ddt#ui#do_action']('send', { str = 'git status' })
+end, { buffer = true, desc = 'ddt-shell: git status' }) -- }}}
+vim.keymap.set('n', '[Space]ga', function() -- {{{
+  vim.fn['ddt#ui#do_action']('setPrompt', { str = 'git add ' })
+  vim.api.nvim_feedkeys('A', 'n', false)
+end, { buffer = true, desc = 'ddt-shell: git add' }) -- }}}
+vim.keymap.set('n', '[Space]gA', function() -- {{{
+  vim.fn['ddt#ui#do_action']('send', { str = 'git commit --amend' })
+end, { buffer = true, desc = 'ddt-shell: git commit --amend' }) -- }}}
+vim.keymap.set('n', '[Space]gp', function() -- {{{
+  vim.fn['ddt#ui#do_action']('setPrompt', { str = 'git push' })
+end, { buffer = true, desc = 'ddt-shell: git push' }) -- }}}
+vim.keymap.set('i', '<C-n>', function() -- {{{
+  if vim.fn['pum#visible']() == 1 then
+    return vim.api.nvim_replace_termcodes(vim.fn['pum#map#insert_relative'](1, 'empty'), true, false, true)
+  end
+  return vim.api.nvim_replace_termcodes(
+    vim.fn['ddc#map#manual_complete']({ sources = { 'shell_history' } }),
+    true,
+    false,
+    true
+  )
+end, { buffer = true, expr = true, desc = 'ddt-shell: complete next' }) -- }}}
+vim.keymap.set('i', '<C-p>', function() -- {{{
+  if vim.fn['pum#visible']() == 1 then
+    return vim.api.nvim_replace_termcodes(vim.fn['pum#map#insert_relative'](-1, 'empty'), true, false, true)
+  end
+  return vim.api.nvim_replace_termcodes(
+    vim.fn['ddc#map#manual_complete']({ sources = { 'shell_history' } }),
+    true,
+    false,
+    true
+  )
+end, { buffer = true, expr = true, desc = 'ddt-shell: complete previous' }) -- }}}
+vim.keymap.set('n', '<C-h>', function() -- {{{
+  vim.fn['ddu#start']({
+    name = 'ddt',
+    sync = true,
+    input = vim.fn['ddt#ui#get_input'](),
+    sources = {
+      { name = 'ddt_shell_history' },
+    },
+  })
+end, { buffer = true, desc = 'ddt-shell: shell history' }) -- }}}
 -- }}}
 -- DirChanged autocmd for ddt-shell AutoCmd {{{
 vim.api.nvim_create_autocmd('DirChanged', {
