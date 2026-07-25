@@ -64,7 +64,7 @@ export class Config extends BaseConfig {
           noSaveHistoryCommands: [
             "history",
           ],
-          userPrompt: "'| ' .. fnamemodify(getcwd(), ':~') .. MyGitStatus()",
+          userPrompt: "'| ' .. fnamemodify(getcwd(), ':~') .. v:lua.MyGitStatus()",
           shellHistoryPath: "~/.cache/ddt-shell-history",
         },
       },
