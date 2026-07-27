@@ -19,5 +19,12 @@ export const nvimCacheHome = Deno.env.get("NVIM_CACHE_HOME") ??
 // Files under `$nvimHome/lua` can be loaded by `require(module name)`
 export const nvimLuaHome = join(nvimConfigHome, "lua");
 export const neovimLuaHookDir = join(nvimLuaHome, "hooks");
+
+// history files
+export const shellHistoryPaths = [
+  join(xdgCacheHome, `ddt-shell-history`),
+  "~/.local/share/zsh/history",
+];
+
 // }}}
 

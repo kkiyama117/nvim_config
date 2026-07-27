@@ -17,7 +17,7 @@ on_event = ["BufReadPost", "BufNewFile"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/gitsigns.vim.lua"
 
 # ---------------------------------------------------------------------------
-# heirline.nvim
+# heirline.nvim - statusline
 # ---------------------------------------------------------------------------
 [[plugins]]
 repo = "rebelot/heirline.nvim"
@@ -32,7 +32,7 @@ repo = "previm/previm"
 on_ft = ["markdown", "rst"]
 # TODO: Custom `xdg-open` (we can't call xdg-open in the container)
 hook_source = '''
-  let g:previm_open_cmd = ''
+  let g:previm_open_cmd = 'TODO'
 '''
 
 # ---------------------------------------------------------------------------
@@ -47,24 +47,15 @@ repo = "lambdalisue/vim-findent"
 [[plugins]]
 repo = "kana/vim-niceblock"
 on_map = { x = "<Plug>" }
-hook_add = '''
-  xnoremap I  <Plug>(niceblock-I)
-  xnoremap A  <Plug>(niceblock-A)
-'''
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-niceblock.lua"
 
 # ---------------------------------------------------------------------------
-# vim-operator-surround: Good Operator manage
+# vim-sandwich: add/delete/replace surroundings
 # ---------------------------------------------------------------------------
 [[plugins]]
-repo = "rhysd/vim-operator-surround"
-depends = "vim-operator-user"
+repo = "machakann/vim-sandwich"
 on_map = { n = "<Plug>" }
-hook_add = '''
-  nnoremap sa <Plug>(operator-surround-append)
-  nnoremap sd <Plug>(operator-surround-delete)a
-  nnoremap sr <Plug>(operator-surround-replace)a
-  nnoremap sc <Plug>(operator-surround-replace)a
-'''
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-sandwich.lua"
 
 # ---------------------------------------------------------------------------
 # Quickfix plugins
@@ -99,10 +90,6 @@ on_ft = ["qf"]
 # TODO: add `folke/which-key.nvim` add add as a ddu source
 
 # TODO: Set config of these plugins (below)
-[[plugins]]
-repo = "machakann/vim-sandwich"
-on_event = ["InsertEnter"]
-
 [[plugins]]
 repo = "stevearc/aerial.nvim"
 on_event = ["BufReadPost", "BufNewFile"]

@@ -4,14 +4,12 @@ import type { Context, DdcItem } from "@shougo/ddc-vim/types";
 import type { Denops } from "@denops/std";
 import * as fn from "@denops/std/function";
 
+import { shellHistoryPaths } from "./consts.ts";
+
 export class Config extends BaseConfig {
   override async config(args: ConfigArguments): Promise<void> {
     const hasNvim = args.denops.meta.host === "nvim";
     const hasWindows = await fn.has(args.denops, "win32");
-    const shell_history_paths = [
-      "~/.cache/ddt-shell-history",
-      "~/.zsh-history",
-    ];
 
     const mocWord = Deno.env.get("MOCWORD_DATA") ? ["mocword"] : [];
     // DDC Sources that always loaded
@@ -192,7 +190,7 @@ export class Config extends BaseConfig {
           extractWords: true,
         },
         shell_history: {
-          paths: shell_history_paths,
+          paths: shellHistoryPaths,
         },
         shell_native: {
           shell: "zsh",
@@ -206,7 +204,7 @@ export class Config extends BaseConfig {
       },
       filterParams: {
         sorter_shell_history: {
-          paths: shell_history_paths,
+          paths: shellHistoryPaths,
         },
       },
       postFilters: [

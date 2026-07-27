@@ -1,4 +1,3 @@
--- TODO: Add `Sticky Shift` if needed.
 -- TODO: Add Select inside `pair` instead of current `ar` and `aa`
 -- TODO: Add Inclement command and replace `<C-a>` and `<C-x>`
 
@@ -46,7 +45,6 @@ vim.api.nvim_create_autocmd('CmdlineLeave', {
 })
 -- }}}
 -- }}}
--- }}}
 
 -- ==========================================================================
 -- <Leader> key (and <LocalLeader>)
@@ -74,11 +72,11 @@ vim.keymap.set({ 'n' }, '<Down>', '<Nop>', { silent = true })
 vim.keymap.set({ 'n', 'x' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set({ 'n', 'x' }, ',', '<Nop>', { silent = true })
 -- `s` is used for window editing etc.
-vim.keymap.set({ 'n' }, 's', '<Nop>', { silent = true })
+vim.keymap.set({ 'n', 'x' }, 's', '<Nop>', { silent = true })
 -- convert `;` and `:`, with `cmdline.nvim`. See @lua/hooks/ddc.vim.lua
 vim.keymap.set({ 'n' }, ';', '<Nop>', { silent = true })
 vim.keymap.set({ 'n' }, ':', '<Nop>', { silent = true })
-vim.keymap.set({ 'n' }, ';:', ':', { silent = true, desc = 'normal :'})
+vim.keymap.set({ 'n' }, ';:', ':', { silent = true, desc = 'normal :' })
 -- Use `q` as prefix key, with only `m`/`M` registers for macro recording.
 -- Based on [this](https://zenn.dev/vim_jp/articles/29d021fff07e60)
 vim.keymap.set({ 'n' }, 'q', '<Nop>', { silent = true })
@@ -107,13 +105,13 @@ end, { expr = true, desc = 'Smart page up' }) -- }}}
 vim.keymap.set('n', 'l', function()
   -- {{{
   return vim.fn.foldclosed('.') ~= -1 and 'zo0' or 'l'
-end, { expr = true, desc = 'Open fold on l' }) -- }}}
+end, { expr = true, desc = 'l with open hold' }) -- }}}
 -- }}}
 
 -- INSERT MODE {{{
 -- Insert mode undo key (`<C-w>` and `<C-u>`) {{{
-vim.keymap.set('i', '<C-w>', '<C-g>u<C-w>')
-vim.keymap.set('i', '<C-u>', '<C-g>u<C-u>')
+vim.keymap.set('i', '<C-w>', '<C-g>u<C-w>', { desc = 'undo with insert mode' })
+vim.keymap.set('i', '<C-u>', '<C-g>u<C-u>', { desc = 'undo with insert mode' })
 -- }}}
 -- Easy Escape (by Shougo) -- {{{
 -- vim.keymap.set('n', 'jj', '<ESC>', { desc = 'Easy Escape' })
@@ -123,8 +121,8 @@ vim.keymap.set('i', '<C-u>', '<C-g>u<C-u>')
 
 -- VISUAL MODE {{{
 -- Manual indents by `<` and `>` {{{
-vim.keymap.set({ 'x' }, '>', '>gv')
-vim.keymap.set({ 'x' }, '<', '<gv')
+vim.keymap.set({ 'x' }, '>', '>gv', { desc = 'Insert indents with viusal mode' })
+vim.keymap.set({ 'x' }, '<', '<gv', { desc = 'Remove indents with visual mode' })
 -- }}}
 -- Substitute with last search pattern (Shougo style)
 vim.keymap.set('x', 'r', '<C-v>', { desc = 'select rectangle' })
@@ -296,7 +294,7 @@ vim.keymap.set('n', 'qq', function()
     vim.cmd('enew')
     return
   end
-  -- Quickfix / location list window exist
+  -- Quickfix / location list window exist -> cclose/lclose
   for winnr = 1, vim.fn.winnr('$') do
     local buftype = vim.fn.getbufvar(vim.fn.winbufnr(winnr), '&buftype')
     if buftype and buftype:find('quickfix') then
@@ -356,20 +354,17 @@ local function next_window() -- {{{
 end
 -- }}}
 -- check `$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.lua` for other keymaps start from `s`
-vim.keymap.set('n', 'sn', next_window)
-vim.keymap.set('n', 'so', function()
-  -- {{{
+vim.keymap.set('n', 'sn', next_window, { desc = 'Move cursor to next window' })
+vim.keymap.set('n', 'so', function() -- {{{
   vim.cmd('only')
-end) -- }}}
-vim.keymap.set('n', 'sp', function()
-  -- {{{
+end, { desc = 'Close other windows' }) -- }}}
+vim.keymap.set('n', 'sp', function() -- {{{
   vim.cmd('vsplit')
   next_window()
-end) -- }}}
-vim.keymap.set('n', 'st', function()
-  -- {{{
+end, { desc = 'vsplit' }) -- }}}
+vim.keymap.set('n', 'st', function() -- {{{
   vim.cmd('split')
-end) -- }}}
+end, { desc = 'split' }) -- }}}
 
 -- }}}
 -- }}}

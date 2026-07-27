@@ -36,10 +36,11 @@ This subdirectory has a data of the dependencies of vimrc
 ## Other TOMLs
 
 - `deps/ddc.toml`: 29 plugins
-- `deps/ddu.toml`: 20 plugins
+- `deps/ddt.toml`: 3 plugins
+- `deps/ddu.toml`: 36 plugins
 - `deps/denops.toml`: 5 plugins — see [docs/references/deps-list.md](../docs/references/deps-list.md) for the full table.
 - `deps/lazy.toml`: 10 plugins
-- `deps/merge.toml`: 2 plugins
+- `deps/merge.toml`: 1 plugin
 - `deps/neovim.toml`: 5 plugins
 
 -----------------------------------------------------------------------------

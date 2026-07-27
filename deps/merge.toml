@@ -5,6 +5,3 @@ hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ft.lua"
 repo = "vim-jp/vimdoc-ja"
 extAttrs = { installerMinCommitDays = 0 }
 
-[[plugins]]
-repo = "kana/vim-operator-user"
-

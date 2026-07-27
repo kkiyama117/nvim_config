@@ -26,7 +26,7 @@ Regenerate via `deno task gen`; the pre-commit hook refuses stale output.
 
 | repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |
 |------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
-| `Shougo/ddc.vim` |  |  |  | InsertEnter, CmdlineEnter |  | denops.vim |  |  |  |
+| `Shougo/ddc.vim` |  |  |  | InsertEnter, CmdlineEnter | ddt.vim | denops.vim |  |  |  |
 | `Shougo/pum.vim` |  |  |  |  |  |  |  |  |  |
 | `Shougo/ddc-ui-pum` |  |  |  |  |  | pum.vim |  |  |  |
 | `Shougo/ddc-ui-none` |  |  |  |  |  |  |  |  |  |
@@ -56,9 +56,19 @@ Regenerate via `deno task gen`; the pre-commit hook refuses stale output.
 | `Shougo/ddc-filter-converter_truncate_abbr` |  |  |  |  |  |  |  |  |  |
 | `Shougo/ddc-filter-converter_kind_labels` |  |  |  |  |  |  |  |  |  |
 
+## deps/ddt.toml
+
+3 plugins:
+
+| repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |
+|------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
+| `Shougo/ddt.vim` |  |  |  |  | ddu.vim | denops.vim |  |  |  |
+| `Shougo/ddt-ui-terminal` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddt-ui-shell` |  |  |  |  |  |  |  |  |  |
+
 ## deps/ddu.toml
 
-20 plugins:
+36 plugins:
 
 | repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |
 |------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
@@ -66,8 +76,24 @@ Regenerate via `deno task gen`; the pre-commit hook refuses stale output.
 | `Shougo/ddu-commands.vim` |  |  |  |  |  | ddu.vim |  |  |  |
 | `Shougo/ddu-ui-ff` |  |  |  |  |  |  |  |  |  |
 | `Shougo/ddu-ui-filer` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-action` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-command_args` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-dummy` |  |  |  |  |  |  |  |  |  |
 | `Shougo/ddu-source-file` |  |  |  |  |  |  |  |  |  |
+| `matsui54/ddu-source-file_external` |  |  |  |  |  |  |  |  |  |
 | `Shougo/ddu-source-file_rec` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-file_old` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-file_point` |  |  |  |  |  |  |  |  |  |
+| `Matsui54/ddu-source-help` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-input_history` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-item` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-line` |  |  |  |  |  |  |  |  |  |
+| `uga-rosa/ddu-source-lsp` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-output` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-path_history` |  |  |  |  |  |  |  |  |  |
+| `Shougo/ddu-source-register` |  |  |  |  |  |  |  |  |  |
+| `shun/ddu-source-rg` |  |  |  |  |  |  |  |  |  |
+| `4513ECHO/ddu-source-source` |  |  |  |  |  |  |  |  |  |
 | `Shougo/ddu-filter-matcher_files` |  |  |  |  |  |  |  |  |  |
 | `Shougo/ddu-filter-matcher_hidden` |  |  |  |  |  |  |  |  |  |
 | `Shougo/ddu-filter-matcher_ignore_files` |  |  |  |  |  |  |  |  |  |
@@ -103,23 +129,22 @@ Regenerate via `deno task gen`; the pre-commit hook refuses stale output.
 |------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
 | `Shougo/cmdline.vim` |  |  |  |  | ddu.vim |  |  |  |  |
 | `lewis6991/gitsigns.nvim` |  |  |  | BufReadPost, BufNewFile |  |  |  |  |  |
+| `rebelot/heirline.nvim` |  |  |  | UIEnter |  |  |  |  |  |
 | `previm/previm` |  |  | markdown, rst |  |  |  |  |  | ✓ |
 | `lambdalisue/vim-findent` |  |  |  |  |  |  |  |  |  |
 | `kana/vim-niceblock` |  |  |  |  |  |  |  |  | ✓ |
-| `rhysd/vim-operator-surround` |  |  |  |  |  | vim-operator-user |  |  | ✓ |
+| `machakann/vim-sandwich` |  |  |  |  |  |  |  |  | ✓ |
 | `thinca/vim-qfreplace` |  |  | qf |  |  |  |  |  |  |
 | `itchyny/vim-qfedit` |  |  | qf |  |  |  |  |  |  |
-| `machakann/vim-sandwich` |  |  |  | InsertEnter |  |  |  |  |  |
 | `stevearc/aerial.nvim` |  |  |  | BufReadPost, BufNewFile |  |  |  |  |  |
 
 ## deps/merge.toml
 
-2 plugins:
+1 plugin:
 
 | repo | description | if | on_ft | on_event | on_source | depends | external_commands | rtp | has_hooks |
 |------|-------------|----|-------|----------|----------|---------|-------------------|-----|-----------|
 | `vim-jp/vimdoc-ja` |  |  |  |  |  |  |  |  |  |
-| `kana/vim-operator-user` |  |  |  |  |  |  |  |  |  |
 
 ## deps/neovim.toml
 

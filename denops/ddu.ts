@@ -10,6 +10,7 @@ import type { Params as FilerParams } from "@shougo/ddu-ui-filer";
 
 import type { Denops } from "@denops/std";
 import * as fn from "@denops/std/function";
+import { shellHistoryPaths } from "./consts.ts";
 
 type Params = Record<string, unknown>;
 
@@ -213,7 +214,6 @@ export class Config extends BaseConfig {
           defaultAction: "execute",
         },
         dpp: {
-          // TODO: use `zoxide` instead of `cd`
           defaultAction: "cd",
           actions: {
             update: {
@@ -232,6 +232,9 @@ export class Config extends BaseConfig {
               },
             },
           },
+        },
+        ddt_shell_history: {
+          defaultAction: "execute",
         },
         file: {
           matchers: [
@@ -279,6 +282,9 @@ export class Config extends BaseConfig {
         },
       },
       sourceParams: {
+        ddt_shell_history: {
+          paths: shellHistoryPaths,
+        },
         file_git: {
           cmd: ["git", "ls-files", "-co", "--exclude-standard"],
         },

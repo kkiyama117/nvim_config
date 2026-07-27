@@ -57,7 +57,6 @@ group = "ddu"
 repo = "Shougo/ddu-source-file_rec"
 group = "ddu"
 
-# TODO: What is `old`?
 [[plugins]]
 repo = "Shougo/ddu-source-file_old"
 group = "ddu"
@@ -173,7 +172,6 @@ group = "ddu"
 # ---------------------------------------------------------------------------
 # KIND
 # ---------------------------------------------------------------------------
-# TODO: kind って、何?
 [[plugins]]
 repo = "Shougo/ddu-kind-file"
 group = "ddu"
