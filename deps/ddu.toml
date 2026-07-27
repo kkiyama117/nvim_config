@@ -115,6 +115,12 @@ group = "ddu"
 # FILTER
 # ---------------------------------------------------------------------------
 # Filter has `matcher`, `sorter` and `converter`
+
+[[plugins]]
+repo = "Milly/ddu-filter-kensaku"
+depends = "kensaku.vim"
+group = "ddu"
+
 # ===== MATCHER =====
 [[plugins]]
 repo = "Shougo/ddu-filter-matcher_files"
