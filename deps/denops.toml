@@ -26,3 +26,15 @@ hook_source = '''
   highlight SkkeletonHenkanSelect
   \ gui=underline,reverse term=underline,reverse cterm=underline,reverse
 '''
+
+[[plugins]]
+repo = "lambdalisue/vim-guise"
+depends = "denops.vim"
+on_source = "ddt.vim"
+on_if = 'exists("g:guise_child_session")'
+lua_add = '''
+  if vim.env.GUISE_NVIM_ADDRESS and vim.env.GUISE_NVIM_ADDRESS ~= '' then
+    vim.g.guise_child_session = 1
+  end
+'''
+

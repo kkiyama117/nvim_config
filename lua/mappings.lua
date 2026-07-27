@@ -1,4 +1,3 @@
--- TODO: Add Select inside `pair` instead of current `ar` and `aa`
 -- TODO: Add Inclement command and replace `<C-a>` and `<C-x>`
 
 local vimrc = require('vimrc')
@@ -71,7 +70,7 @@ vim.keymap.set({ 'n' }, '<Down>', '<Nop>', { silent = true })
 -- <Leader> and <LocalLeader>
 vim.keymap.set({ 'n', 'x' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set({ 'n', 'x' }, ',', '<Nop>', { silent = true })
--- `s` is used for window editing etc.
+-- `s` is used for some useful shortcut. Use `cl` instead `s`.
 vim.keymap.set({ 'n', 'x' }, 's', '<Nop>', { silent = true })
 -- convert `;` and `:`, with `cmdline.nvim`. See @lua/hooks/ddc.vim.lua
 vim.keymap.set({ 'n' }, ';', '<Nop>', { silent = true })
@@ -126,7 +125,7 @@ vim.keymap.set({ 'x' }, '<', '<gv', { desc = 'Remove indents with visual mode' }
 -- }}}
 -- Substitute with last search pattern (Shougo style)
 vim.keymap.set('x', 'r', '<C-v>', { desc = 'select rectangle' })
-vim.keymap.set('x', 's', ':s//g<Left><Left>', { desc = 'substitute with last search pattern' })
+vim.keymap.set('x', 'su', ':s//g<Left><Left>', { desc = 'substitute with last search pattern' })
 -- improved `l`; open fold if exists
 vim.keymap.set('x', 'l', function()
   -- {{{
@@ -156,25 +155,50 @@ vim.keymap.set('c', '<C-k>', function()
 end, { desc = 'Delete to the end' })
 -- }}}
 
--- (VISUAL AND) OPERATOR PENDING MODE {{{
--- Select between <angle> and [rectangle]
-vim.keymap.set({ 'o', 'x' }, 'aa', 'a>', { desc = 'Select <angle>' })
-vim.keymap.set({ 'o', 'x' }, 'ia', 'i>', { desc = 'Select inside <angle>' })
-vim.keymap.set({ 'o', 'x' }, 'ar', 'a]', { desc = 'Select [rectangle]' })
-vim.keymap.set({ 'o', 'x' }, 'ir', 'i]', { desc = 'Select inside [rectangle]' })
--- }}}
-
 -- Keys using `<Leader>` {{{
+
 -- Save only buffer is changed.
-vim.keymap.set('n', '<Leader><Leader>', function()
-  -- {{{
+vim.keymap.set('n', '<Leader><Leader>', function() -- {{{
   vim.cmd('update')
 end, { silent = true }) -- }}}
+
 -- Quickfix
-vim.keymap.set('n', '<Leader>q', function()
-  -- {{{
+vim.keymap.set('n', '<Leader>q', function() -- {{{
   vimrc.diagnostics_to_location_list()
 end, { silent = true }) -- }}}
+
+-- Window move
+-- `<Leader>w`=[WINDOW] {{{
+vim.keymap.set({ 'n' }, '<Leader>w', '[WINDOW]', { remap = true })
+vim.keymap.set({ 'n' }, '[WINDOW]', '<Nop>')
+
+-- [WINDOW] map list {{{
+local function next_window() -- {{{
+  local wins = vim.api.nvim_tabpage_list_wins(0)
+  local cur = vim.api.nvim_get_current_win()
+  for i, win in ipairs(wins) do
+    if win == cur then
+      vim.api.nvim_set_current_win(wins[i % #wins + 1])
+      return
+    end
+  end
+end
+-- }}}
+
+vim.keymap.set('n', '[WINDOW]n', next_window, { desc = 'Move cursor to next window' })
+vim.keymap.set('n', '[WINDOW]c', function() -- {{{
+  vim.cmd('only')
+end, { desc = 'Close other windows' }) -- }}}
+vim.keymap.set('n', '[WINDOW]s', function() -- {{{
+  vim.cmd('split')
+end, { desc = 'split' }) -- }}}
+vim.keymap.set('n', '[WINDOW]v', function() -- {{{
+  vim.cmd('vsplit')
+  next_window()
+end, { desc = 'vsplit' }) -- }}}
+
+-- }}}
+-- }}}
 
 -- Plugin mapped keys with `<Leader>`. See `$NVIM_CONFIG_HOME/lua/hooks` files also. {{{
 -- `<Leader>d`=[DP]{{{
@@ -341,31 +365,8 @@ vim.keymap.set('n', 'qw', ':<C-u>w<CR>qq', { desc = 'smart exit with saving' })
 
 -- }}}
 -- }}}
--- s | windows and buffers {{{
-local function next_window() -- {{{
-  local wins = vim.api.nvim_tabpage_list_wins(0)
-  local cur = vim.api.nvim_get_current_win()
-  for i, win in ipairs(wins) do
-    if win == cur then
-      vim.api.nvim_set_current_win(wins[i % #wins + 1])
-      return
-    end
-  end
-end
--- }}}
+-- s | ? {{{
 -- check `$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.lua` for other keymaps start from `s`
-vim.keymap.set('n', 'sn', next_window, { desc = 'Move cursor to next window' })
-vim.keymap.set('n', 'so', function() -- {{{
-  vim.cmd('only')
-end, { desc = 'Close other windows' }) -- }}}
-vim.keymap.set('n', 'sp', function() -- {{{
-  vim.cmd('vsplit')
-  next_window()
-end, { desc = 'vsplit' }) -- }}}
-vim.keymap.set('n', 'st', function() -- {{{
-  vim.cmd('split')
-end, { desc = 'split' }) -- }}}
-
 -- }}}
 -- }}}
 

@@ -294,3 +294,4 @@ vim.cmd([[
 --  highlight NonText ctermbg=none
 --  highlight NormalSB guibg=none
 
+

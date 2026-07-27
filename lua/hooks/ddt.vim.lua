@@ -90,7 +90,7 @@ function _G.MyGitStatus() -- {{{
 
     -- Detect unsaved buffers
     for _, buf in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
-      if buf.changed and buf.name ~= '' then
+      if buf.changed == 1 and buf.name ~= '' then
         status = status .. '\n'
         status = status .. ('| ?? ' .. vim.fn.fnamemodify(buf.name, ':.') .. ' (unsaved)')
       end
