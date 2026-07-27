@@ -44,6 +44,7 @@ function M.diagnostics_to_location_list()
     :totable()
 
   if vim.tbl_isempty(qflist) then
+    vim.notify('LSP Quick fix is empty')
     vim.cmd('lclose')
   else
     vim.fn.setloclist(vim.fn.win_getid(), qflist)
