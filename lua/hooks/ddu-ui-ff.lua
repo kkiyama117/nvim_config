@@ -13,7 +13,6 @@ end -- }}}
 local function current_options() -- {{{
   return vim.fn['ddu#custom#get_current'](vim.b.ddu_ui_name) or {}
 end -- }}}
-local opts = { buffer = true, silent = true }
 -- KEYMAP {{{
 -- itemAction: narrow (directory) / default (file)
     vim.keymap.set('n', '<CR>', function () -- {{{
@@ -27,7 +26,7 @@ end, {buffer = true, desc = 'DDU: do_action'}) -- }}}
 -- Toggle Select Item
 vim.keymap.set({'n','x'}, '<Space>', function () -- {{{
   vim.fn['ddu#ui#do_action']('toggleSelectItem')
-end, {buffer = true, desc = 'DDU: toggle selection'}) -- }}}
+end, {buffer = true, silent=true, desc = 'DDU: toggle selection'}) -- }}}
 -- Toggle All Items
 vim.keymap.set('n', '*', function () -- {{{
   vim.fn['ddu#ui#do_action']('toggleAllItems')
