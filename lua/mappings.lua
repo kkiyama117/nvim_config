@@ -183,22 +183,30 @@ vim.keymap.set({ 'n' }, '<Leader>w', '[WINDOW]', { remap = true })
 vim.keymap.set({ 'n' }, '[WINDOW]', '<Nop>')
 
 -- [WINDOW] map list {{{
-local function next_window() -- {{{
+local function next_window(opts) -- {{{
+  opts = opts or {}
+  local reverse = opts.reverse or false
   local wins = vim.api.nvim_tabpage_list_wins(0)
   local cur = vim.api.nvim_get_current_win()
   for i, win in ipairs(wins) do
     if win == cur then
-      vim.api.nvim_set_current_win(wins[i % #wins + 1])
+      local idx = reverse and (i - 2 + #wins) % #wins + 1 or i % #wins + 1
+      vim.api.nvim_set_current_win(wins[idx])
       return
     end
   end
 end
 -- }}}
 
-vim.keymap.set('n', '[WINDOW]n', next_window, { desc = 'Move cursor to next window' })
 vim.keymap.set('n', '[WINDOW]c', function() -- {{{
   vim.cmd('only')
 end, { desc = 'Close other windows' }) -- }}}
+vim.keymap.set('n', '[WINDOW]n', function()
+  next_window()
+end, { desc = 'Move cursor to next window' })
+vim.keymap.set('n', '[WINDOW]p', function()
+  next_window({ reverse = true })
+end, { desc = 'Move cursor to previous window' })
 vim.keymap.set('n', '[WINDOW]s', function() -- {{{
   vim.cmd('split')
 end, { desc = 'split' }) -- }}}
