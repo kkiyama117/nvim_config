@@ -21,7 +21,7 @@ vim.g['denops#deno'] = vim.env.MISE_DATA_DIR .. '/installs/deno/latest/bin/deno'
 -- }}}
 
 -- Default `MyAutoCmd`
-vim.api.nvim_create_augroup('MyAutoCmd', { clear = true })
+myautocmd = vim.api.nvim_create_augroup('MyAutoCmd', { clear = true })
 
 -- vim.api.nvim_create_autocmd({"filetype","syntax","bufnewfile","bufnew","bufread"}, {
 --   pattern = "*?",

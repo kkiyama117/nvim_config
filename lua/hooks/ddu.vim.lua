@@ -140,6 +140,30 @@ vim.keymap.set('n', '[DP]f', function() -- {{{
 end, { desc = 'ddu-ui-filer: open' })
 -- }}}
 
+-- Files inside `git root`
+local function git_worktree_path(bufnr) -- {{{
+  local bufname = vim.api.nvim_buf_get_name(bufnr)
+  local found, path = pcall(vim.fn['gin#util#worktree'], bufname)
+  if found then
+    return path
+  end
+end -- }}}
+vim.keymap.set('n', '[DP]g', function() -- {{{
+  vim.fn['ddu#start']({
+    sources = {
+      {
+        name = 'file_external',
+        params = {
+          cmd = { 'fd', '-t', 'file' },
+        },
+        options = {
+          path = git_worktree_path(vim.api.nvim_get_current_buf()),
+        },
+      },
+    },
+  })
+end) -- }}}
+
 -- Open files/Uri from pointed word
 vim.keymap.set('n', '[DP]p', function() -- {{{
   -- moved from `sf`

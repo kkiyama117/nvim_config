@@ -30,11 +30,24 @@ hook_source = '''
 [[plugins]]
 repo = "lambdalisue/vim-guise"
 depends = "denops.vim"
+# loaded when `ddt.vim` is sourced.
 on_source = "ddt.vim"
-on_if = 'exists("g:guise_child_session")'
+# or if this is "child" nvim process, load on events [`VimEnter`, ... etc ];
+on_event = ["VimEnter"]
+# see `:h dpp_plugin_option_on_if`
+# TODO: Not use `$NVIM` directly now, but set variable to show `is_parent`
+# and check `(is_parent flag exists) and (not is_parent)` to source in the future.
+on_if = "exists('$NVIM')"
 lua_add = '''
-  if vim.env.GUISE_NVIM_ADDRESS and vim.env.GUISE_NVIM_ADDRESS ~= '' then
-    vim.g.guise_child_session = 1
-  end
+  vim.notify("GUISE ADDED")
 '''
+lua_source = '''
+  vim.notify("GUISE LOADED")
+'''
+
+[[plugins]]
+repo = "lambdalisue/vim-gin"
+depends = "denops.vim"
+# called by `[DP]g`
+on_source = ["ddu.vim"]
 
