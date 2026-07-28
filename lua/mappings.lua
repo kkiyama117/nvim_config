@@ -162,6 +162,16 @@ vim.keymap.set('n', '<Leader><Leader>', function() -- {{{
   vim.cmd('update')
 end, { silent = true }) -- }}}
 
+-- Git
+-- See "$NVIM_CONFIG_HOME/lua/hooks/vim-gin.lua" to check the mappings using `[GIT]`
+-- `<Leader>g`=[GIT] {{{
+vim.keymap.set({ 'n' }, '<Leader>g', '[GIT]', { remap = true })
+vim.keymap.set({ 'n' }, '[GIT]', '<Nop>')
+-- }}}
+
+vim.keymap.set('n', '<Leader>g', function() -- {{{
+end) -- }}}
+
 -- Quickfix
 vim.keymap.set('n', '<Leader>q', function() -- {{{
   vimrc.diagnostics_to_location_list()
@@ -338,6 +348,11 @@ vim.keymap.set('n', 'qq', function() -- {{{
   -- default is `enew`
   vim.cmd('enew')
 end, { desc = 'smart exit' }) -- }}}
+
+-- quit tab
+vim.keymap.set('n', 'qt', function() -- {{{
+  vim.cmd['tabclose']()
+end) -- }}}
 
 -- Call `dpp#make_state` and then restart Nvim
 vim.keymap.set('n', 'qr', function() -- {{{
