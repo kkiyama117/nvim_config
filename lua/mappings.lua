@@ -312,8 +312,7 @@ vim.api.nvim_create_autocmd('RecordingEnter', {
 -- }}}
 -- smart quit {{{
 -- normal smart quit
-vim.keymap.set('n', 'qq', function()
-  -- {{{
+vim.keymap.set('n', 'qq', function() -- {{{
   if vim.fn.winnr('$') == 1 then
     vim.cmd('enew')
     return
@@ -341,8 +340,7 @@ vim.keymap.set('n', 'qq', function()
 end, { desc = 'smart exit' }) -- }}}
 
 -- Call `dpp#make_state` and then restart Nvim
-vim.keymap.set('n', 'qr', function()
-  -- {{{
+vim.keymap.set('n', 'qr', function() -- {{{
   if vim.fn.exists(':restart') == 2 then
     if vim.fn.exists('*dpp#make_state') == 1 then
       vim.g.dpp_make_state_in_progress = true

@@ -13,7 +13,8 @@ vim.keymap.set('n', 'srb', '<Plug>(sandwich-replace-auto)', { desc = 'replace `s
 -- }}}
 
 -- TODO: consider using operator directly
--- `sandwich` operator {{{ }}}
+-- `sandwich` operator {{{
+-- }}}
 
 -- text objects (auto = search outward, query = prompt for char) {{{
 -- Use like `iw`, `ip`, `is`, `at`
