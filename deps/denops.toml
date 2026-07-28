@@ -30,8 +30,8 @@ hook_source = '''
 [[plugins]]
 repo = "lambdalisue/vim-guise"
 depends = "denops.vim"
-# loaded when `ddt.vim` is sourced.
-on_source = "ddt.vim"
+# loaded when `ddt.vim` or `gin` is sourced.
+on_source = ["ddt.vim", "gin"]
 # or if this is "child" nvim process, load on events [`VimEnter`, ... etc ];
 on_event = ["VimEnter"]
 # see `:h dpp_plugin_option_on_if`

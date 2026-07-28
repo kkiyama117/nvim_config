@@ -169,9 +169,6 @@ vim.keymap.set({ 'n' }, '<Leader>g', '[GIT]', { remap = true })
 vim.keymap.set({ 'n' }, '[GIT]', '<Nop>')
 -- }}}
 
-vim.keymap.set('n', '<Leader>g', function() -- {{{
-end) -- }}}
-
 -- Quickfix
 vim.keymap.set('n', '<Leader>q', function() -- {{{
   vimrc.diagnostics_to_location_list()
