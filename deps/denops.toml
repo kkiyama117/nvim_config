@@ -3,10 +3,12 @@
 repo = "vim-denops/denops.vim"
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/denops.vim.lua"
 
+# Search engine of Japanese (by Roma-ji)
 [[plugins]]
 repo = "lambdalisue/kensaku.vim"
 denops_wait = false
 
+# Japanese input engine
 [[plugins]]
 repo = "vim-skk/skkeleton"
 on_map = { ict = "<Plug>(skkeleton-" }
@@ -27,6 +29,7 @@ hook_source = '''
   \ gui=underline,reverse term=underline,reverse cterm=underline,reverse
 '''
 
+# NVIM inside NVIM
 [[plugins]]
 repo = "lambdalisue/vim-guise"
 depends = "denops.vim"
@@ -40,6 +43,7 @@ on_event = ["VimEnter"]
 # and check `(is_parent flag exists) and (not is_parent)` to source in the future.
 on_if = "exists('$NVIM')"
 
+# Utilities of Git
 [[plugins]]
 repo = "lambdalisue/vim-gin"
 depends = "denops.vim"
