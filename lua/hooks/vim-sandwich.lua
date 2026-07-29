@@ -1,5 +1,4 @@
 -- lua_add {{{
---vim.notify('vim-sandwich is added')
 -- Check `:h operator-sandwich.jax`
 vim.g['operator_sandwich_no_default_key_mappings'] = 1
 

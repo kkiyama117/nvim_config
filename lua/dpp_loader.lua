@@ -50,7 +50,7 @@ end
 -- `name` should be `username/name` pattern
 -- And return `dest`, local path that installed
 local function install_github_plugin(plugin_name, dest_path)
-  vim.notify(('[dpp] cloning %s'):format(plugin_name), vim.log.levels.INFO)
+  vim.notify(('[DPP] cloning %s'):format(plugin_name), vim.log.levels.INFO)
   vim.fn.system({
     'git',
     'clone',
@@ -60,7 +60,7 @@ local function install_github_plugin(plugin_name, dest_path)
     dest_path,
   })
   if vim.v.shell_error ~= 0 then
-    vim.notify(('[dpp] failed to clone %s'):format(plugin_name), vim.log.levels.ERROR)
+    vim.notify(('[DPP] failed to clone %s'):format(plugin_name), vim.log.levels.ERROR)
     return nil
   end
   return dest_path

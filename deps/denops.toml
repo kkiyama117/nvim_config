@@ -33,6 +33,7 @@ depends = "denops.vim"
 # loaded when `ddt.vim` or `gin` is sourced.
 on_source = ["ddt.vim", "gin"]
 # or if this is "child" nvim process, load on events [`VimEnter`, ... etc ];
+# then child nvim process is moved to new tab of the parent nvim
 on_event = ["VimEnter"]
 # see `:h dpp_plugin_option_on_if`
 # TODO: Not use `$NVIM` directly now, but set variable to show `is_parent`
@@ -42,7 +43,6 @@ on_if = "exists('$NVIM')"
 [[plugins]]
 repo = "lambdalisue/vim-gin"
 depends = "denops.vim"
-# called by `[DP]g`
-on_source = ["ddu.vim"]
+on_cmd = "Gin*"
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-gin.lua"
 

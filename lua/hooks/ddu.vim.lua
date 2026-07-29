@@ -300,27 +300,8 @@ end, { desc = 'Ddu: ripgrep' }) -- }}}}
 
 -- GIT branch
 vim.keymap.set('n', ';gb', function()
-  -- {{{
-  vim.fn['ddu#start']({
-    name = 'git_branch',
-    sources = {
-      {
-        name = 'git_branch',
-      },
-    },
-    sourceOptions = {
-      register = {
-        defaultAction = vim.fn.col('.') == 1 and 'insert' or 'append',
-      },
-    },
-    uiParams = {
-      ff = {
-        ignoreEmpty = true,
-        displayTree = true,
-      },
-    },
-  })
-end, { desc = 'Ddu: markdown outline' }) -- }}}
+  require('shared.ddu_git_branch').start()
+end, { desc = 'Ddu: git branch' }) -- }}}
 
 -- help
 vim.keymap.set('n', ';h', function()

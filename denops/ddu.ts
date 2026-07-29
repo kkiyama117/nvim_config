@@ -30,7 +30,6 @@ export class Config extends BaseConfig {
       "matcher_ignore_current_buffer",
       "matcher_ignores",
     );
-    args.setAlias("_", "action", "tabopen", "open");
 
     // Global config of the ddu.vim
     args.contextBuilder.patchGlobal({
@@ -187,6 +186,18 @@ export class Config extends BaseConfig {
                   ],
                 });
 
+                return Promise.resolve(ActionFlags.None);
+              },
+            },
+            tabopen: {
+              description: "Open in tab",
+              callback: async (args: ActionArguments<Params>) => {
+                const action = args.items[0]?.action as FileAction;
+                await args.denops.call(
+                  "ddu#util#execute_path",
+                  "tabedit",
+                  action.path,
+                );
                 return Promise.resolve(ActionFlags.None);
               },
             },

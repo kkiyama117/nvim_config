@@ -20,6 +20,17 @@ vim.env.NVIM_CACHE_HOME = vim.g.nvim_cache_home
 vim.g['denops#deno'] = vim.env.MISE_DATA_DIR .. '/installs/deno/latest/bin/deno' or 'deno'
 -- }}}
 
+-----------------------------------------------------------------------------
+-- DEBUG MODE config
+-----------------------------------------------------------------------------
+-- Define `vim.env.NVIM_DEBUG to enable debug mode. {{{
+if vim.env.NVIM_DEBUG == 'true' then
+  vim.o.verbose = 3 -- increase verbosity in debug mode
+  vim.notify('[DEBUG] init.lua loaded', vim.log.levels.DEBUG)
+  vim.notify(('$NVIM_DEBUG: %s'):format(vim.env.NVIM_DEBUG), vim.log.levels.WARN)
+end
+-- }}}
+
 -- Default `MyAutoCmd`
 myautocmd = vim.api.nvim_create_augroup('MyAutoCmd', { clear = true })
 
@@ -47,4 +58,8 @@ require('dpp_loader')
 
 vim.cmd('filetype indent plugin on')
 vim.cmd('syntax on')
+
+if vim.env.NVIM_DEBUG == 'true' then
+  vim.notify('loaded $NVIM_CONFIG_HOME/init.lua')
+end
 

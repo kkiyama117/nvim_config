@@ -219,7 +219,7 @@ vim.api.nvim_create_autocmd('ModeChanged', {
   callback = function()
     if vim.o.paste then
       vim.opt_local.paste = false
-      vim.notify('nopaste')
+      vim.notify('nopaste', vim.log.levels.INFO)
     end
     if vim.wo.diff then
       vim.cmd('diffupdate')
@@ -293,5 +293,4 @@ vim.cmd([[
 --  highlight Normal ctermbg=none
 --  highlight NonText ctermbg=none
 --  highlight NormalSB guibg=none
-
 

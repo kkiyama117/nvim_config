@@ -10,13 +10,13 @@ function M.toggle_option(name)
   else
     vim.opt_local[name] = not vim.opt_local[name]:get()
   end
-  vim.notify(string.format('%s=%s', name, vim.inspect(vim.opt_local[name]:get())))
+  vim.notify(string.format('%s=%s', name, vim.inspect(vim.opt_local[name]:get())), vim.log.levels.INFO)
 end
 
 function M.toggle_conceal()
   local cur = vim.opt_local.conceallevel:get()
   vim.opt_local.conceallevel = cur == 0 and 3 or 0
-  vim.notify(string.format('conceallevel=%s', vim.inspect(vim.opt_local.conceallevel:get())))
+  vim.notify(string.format('conceallevel=%s', vim.inspect(vim.opt_local.conceallevel:get())), vim.log.levels.INFO)
 end
 -- }}}
 
@@ -44,7 +44,7 @@ function M.diagnostics_to_location_list()
     :totable()
 
   if vim.tbl_isempty(qflist) then
-    vim.notify('LSP Quick fix is empty')
+    vim.notify('LSP Quick fix is empty', vim.log.levels.INFO)
     vim.cmd('lclose')
   else
     vim.fn.setloclist(vim.fn.win_getid(), qflist)

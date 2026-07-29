@@ -27,6 +27,9 @@ end, { desc = 'Git: amend commit' }) -- }}}
 
 -- branch
 -- Use `;gb` (ddu-source-git_branch) and `itemAction`
+vim.keymap.set('n', '[GIT]b', function()
+  require('shared.ddu_git_branch').start()
+end, { desc = 'Ddu: git branch' })
 
 -- Commit (added): [GIT]c
 vim.keymap.set('n', '[GIT]c', function()

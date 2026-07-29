@@ -257,8 +257,8 @@ vim.keymap.set('n', '[TOGGLE]h', function()
     vim.opt.messagesopt = table.concat(filtered, ',')
     vim.opt.more = false
   end
-  vim.notify(string.format('messagesopt=%s', vim.opt.messagesopt:get()))
-  vim.notify(string.format('more=%s', tostring(vim.opt.more:get())))
+  vim.notify(string.format('messagesopt=%s', vim.opt.messagesopt:get()), vim.log.levels.INFO)
+  vim.notify(string.format('more=%s', tostring(vim.opt.more:get())), vim.log.levels.INFO)
 end, { silent = true, desc = 'Toggle hit-enter prompt' }) -- }}}
 -- spelllang
 vim.keymap.set({ 'n' }, '[TOGGLE]s', function()
@@ -366,6 +366,9 @@ vim.keymap.set('n', 'qr', function() -- {{{
       vim.g.dpp_make_state_in_progress = true
       vim.fn['dpp#make_state']('~/.cache/dpp')
     end
+    if vim.env.NVIM_DEBUG == 'true' then
+      vim.notify('[NVIM]: RESTART', vim.log.levels.DEBUG)
+    end
     vim.cmd('restart +xall')
   else
     print('No RESTART COMMAND')
@@ -374,7 +377,9 @@ end) -- }}}
 
 -- Redraw.
 vim.keymap.set('n', 'qR', function()
-  vim.notify('Redraw')
+  if vim.env.NVIM_DEBUG == 'true' then
+    vim.notify('[NVIM]: Redraw', vim.log.levels.DEBUG)
+  end
   vim.cmd('redraw!')
 end, { desc = 'call redraw!' })
 

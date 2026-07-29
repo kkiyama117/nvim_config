@@ -2,6 +2,7 @@
 [[plugins]]
 repo = "shougo/ddu.vim"
 depends = "denops.vim"
+on_source = "vim-gin"
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.lua"
 
 # Add `Ddu` command
@@ -28,7 +29,6 @@ hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu-ui-filer.lua"
 # ---------------------------------------------------------------------------
 # SOURCE
 # ---------------------------------------------------------------------------
-# TODO: add `;a`
 [[plugins]]
 repo = "Shougo/ddu-source-action"
 group = "ddu"
