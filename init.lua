@@ -1,8 +1,7 @@
-if vim.loader then
-  vim.loader.enable()
-end
+-- ROOT OF NVIM CONFIG FILES
 
--- Define `vim.env.NVIM_DEBUG to enable debug mode.
+-- Define `vim.env.NVIM_DEBUG to enable debug mode. {{{
+-- TODO: make `switcher` to toggle `NVIM_DEBUG`
 local is_debug = vim.env.NVIM_DEBUG == 'true'
 -- verbose level set to 3 {{{
 if vim.env.NVIM_DEBUG == 'true' then
@@ -11,19 +10,36 @@ if vim.env.NVIM_DEBUG == 'true' then
   vim.notify(('$NVIM_DEBUG: %s'):format(vim.env.NVIM_DEBUG), vim.log.levels.WARN)
 end
 -- }}}
+-- }}}
 
 -- Default `MyAutoCmd`
 myautocmd = vim.api.nvim_create_augroup('MyAutoCmd', { clear = true })
 
 -- ENVIRONMENT VARIABLES with neovim {{{
 -- STDPATH {{{
+vim.g.home_dir = vim.env.HOME
+-- XDG{{{
+vim.g.xdg_cache_home = vim.env.XDG_CACHE_HOME or vim.fn.fnamemodify(vim.g.home_dir, ':p:h') .. '/.cache'
+vim.g.xdg_config_home = vim.env.XDG_CONFIG_HOME or vim.fn.fnamemodify(vim.g.home_dir, ':p:h') .. '/.config'
+-- }}}
+-- NVIM{{{
 vim.g.nvim_config_home = vim.fn.stdpath('config')
 vim.env.NVIM_CONFIG_HOME = vim.g.nvim_config_home
 vim.g.nvim_cache_home = vim.fn.stdpath('cache')
 vim.env.NVIM_CACHE_HOME = vim.g.nvim_cache_home
 -- }}}
+-- DPP{{{
+-- cache of dpp
+-- They should be matched with `dpp-ext` plugins
+vim.g.dpp_cache_home = vim.fs.joinpath(vim.g.xdg_cache_home, 'dpp')
+vim.g.dpp_cache_github = vim.fs.joinpath(vim.g.dpp_cache_home, 'repos', 'github.com')
+vim.g.dpp_cache_local = vim.fs.joinpath(vim.g.dpp_cache_home, 'local')
+--local dpp_denops_script = vim.fs.joinpath(vim.g.nvim_config_home, 'denops', 'dpp.ts')
+--
+-- }}}
+-- }}}
 
--- RUNTIMEPATH {{{
+-- minimum RUNTIMEPATH {{{
 vim.opt.runtimepath = table.concat({
   vim.g.nvim_config_home,
   vim.g.nvim_config_home .. '/local',
@@ -32,9 +48,6 @@ vim.opt.runtimepath = table.concat({
   vim.g.nvim_config_home .. '/local/after',
 }, ',')
 -- }}}
-
--- Deno binary path for denops
-vim.g['denops#deno'] = vim.env.MISE_DATA_DIR .. '/installs/deno/latest/bin/deno' or 'deno'
 -- }}}
 
 -- LANG {{{
@@ -50,6 +63,8 @@ vim.opt.langmenu = vim.env.LANG
 -- LOAD OTHER SETTING FILES (ex. loader of dpp.vim):
 -- TODO: `if !v:vim_did_enter` を入れる.
 require('dpp_loader')
+-- use dpp
+-- require('bootloader')
 
 vim.cmd('filetype indent plugin on')
 vim.cmd('syntax on')
