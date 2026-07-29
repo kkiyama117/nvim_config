@@ -299,7 +299,7 @@ vim.keymap.set('n', ';fm', function()
 end, { desc = 'Ddu: ripgrep' }) -- }}}}
 
 -- GIT branch
-vim.keymap.set('n', ';gb', function()
+vim.keymap.set('n', ';gb', function() -- {{{
   require('shared.ddu_git_branch').start()
 end, { desc = 'Ddu: git branch' }) -- }}}
 
