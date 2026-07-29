@@ -181,7 +181,6 @@ end, { silent = true }) -- }}}
 vim.keymap.set({ 'n' }, '<Leader>w', '[WINDOW]', { remap = true })
 vim.keymap.set({ 'n' }, '[WINDOW]', '<C-w>', { remap = true })
 -- }}}
--- }}}
 
 -- Plugin mapped keys with `<Leader>`. See `$NVIM_CONFIG_HOME/lua/hooks` files also. {{{
 -- `<Leader>d`=[DP]{{{
@@ -295,8 +294,7 @@ vim.api.nvim_create_autocmd('RecordingEnter', {
 -- }}}
 -- smart quit {{{
 -- normal smart quit
-vim.keymap.set('n', 'qq', function()
-  -- {{{
+vim.keymap.set('n', 'qq', function() -- {{{
   if vim.fn.winnr('$') == 1 then
     vim.cmd('enew')
     return
@@ -324,14 +322,12 @@ vim.keymap.set('n', 'qq', function()
 end, { desc = 'smart exit' }) -- }}}
 
 -- quit tab
-vim.keymap.set('n', 'qt', function()
-  -- {{{
+vim.keymap.set('n', 'qt', function() -- {{{
   vim.cmd['tabclose']()
 end) -- }}}
 
 -- Call `dpp#make_state` and then restart Nvim
-vim.keymap.set('n', 'qr', function()
-  -- {{{
+vim.keymap.set('n', 'qr', function() -- {{{
   if vim.fn.exists(':restart') == 2 then
     if vim.fn.exists('*dpp#make_state') == 1 then
       vim.g.dpp_make_state_in_progress = true
