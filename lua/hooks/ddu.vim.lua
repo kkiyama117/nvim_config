@@ -50,17 +50,6 @@ vim.keymap.set('n', 'n', function()
   })
 end) -- }}}
 
-vim.keymap.set('n', 'sm', function()
-  -- {{{
-  vim.fn['ddu#start']({
-    sources = {
-      {
-        name = 'dpp',
-      },
-    },
-  })
-end) -- }}}
-
 -- }}}
 
 -- Dark powered plugins are mapped to `<Leader>d` = `[DP]`
@@ -201,6 +190,16 @@ vim.keymap.set('n', '[DP]p', function()
   })
 end, { desc = 'Ddu: extract file paths from cursor line' }) -- }}}
 
+vim.keymap.set('n', '[DP]l', function()
+  -- {{{
+  vim.fn['ddu#start']({
+    sources = {
+      {
+        name = 'dpp',
+      },
+    },
+  })
+end) -- }}}
 -- }}}
 
 -- Fuzzy finder mappings that start from `;` {{{
