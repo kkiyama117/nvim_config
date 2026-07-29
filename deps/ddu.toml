@@ -66,6 +66,21 @@ group = "ddu"
 repo = "Shougo/ddu-source-file_point"
 group = "ddu"
 
+# Git branch
+[[plugins]]
+repo = "kyoh86/ddu-source-git_branch"
+group = "ddu"
+
+# Git stash
+[[plugins]]
+repo = "peacock0803sz/ddu-source-git_stash"
+group = "ddu"
+
+# Git status
+[[plugins]]
+repo = "kuuote/ddu-source-git_status"
+group = "ddu"
+
 # help
 [[plugins]]
 repo = "Matsui54/ddu-source-help"

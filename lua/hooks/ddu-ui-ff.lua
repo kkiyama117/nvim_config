@@ -13,6 +13,7 @@ end -- }}}
 local function current_options() -- {{{
   return vim.fn['ddu#custom#get_current'](vim.b.ddu_ui_name) or {}
 end -- }}}
+
 -- KEYMAP {{{
 -- itemAction: narrow (directory) / default (file)
     vim.keymap.set('n', '<CR>', function () -- {{{

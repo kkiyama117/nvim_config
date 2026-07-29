@@ -192,6 +192,7 @@ export class Config extends BaseConfig {
             },
           },
         },
+        git_branch: { defaultAction: "switch" },
         help: { defaultAction: "open" },
         // TODO: setup `viewer`
         readme_viewer: { defaultAction: "open" },
@@ -245,6 +246,14 @@ export class Config extends BaseConfig {
           converters: ["converter_hl_dir", "converter_devicon"],
         },
         file_git: {
+          matchers: [
+            "matcher_substring",
+            "matcher_hidden",
+          ],
+          sorters: ["sorter_alpha"],
+          converters: ["converter_hl_dir", "converter_devicon"],
+        },
+        file_external: {
           matchers: [
             "matcher_substring",
             "matcher_hidden",
