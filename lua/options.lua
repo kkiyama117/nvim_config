@@ -1,5 +1,6 @@
--- dpp.vim manages plugins itself; no need for Vim's built-in packpath.
-vim.o.packpath = ''
+-- local env
+local is_debug = true
+-- local is_debug = vim.env.NVIM_DEBUG == 'true'
 
 -- APPEARANCE {{{
 -- SideBar {{{

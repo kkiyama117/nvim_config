@@ -1,16 +1,9 @@
--- $VIMRUNTIME/defaults.vim is skipped in /etc/vimrc
-
--- new vim loader for bite code cache
 if vim.loader then
   vim.loader.enable()
 end
 
------------------------------------------------------------------------------
--- DEBUG MODE config
------------------------------------------------------------------------------
 -- Define `vim.env.NVIM_DEBUG to enable debug mode.
 local is_debug = vim.env.NVIM_DEBUG == 'true'
-
 -- verbose level set to 3 {{{
 if vim.env.NVIM_DEBUG == 'true' then
   vim.o.verbose = 3 -- increase verbosity in debug mode
@@ -19,9 +12,6 @@ if vim.env.NVIM_DEBUG == 'true' then
 end
 -- }}}
 
------------------------------------------------------------------------------
--- General ENVIRONMENT VARIABLES
------------------------------------------------------------------------------
 -- Default `MyAutoCmd`
 myautocmd = vim.api.nvim_create_augroup('MyAutoCmd', { clear = true })
 
@@ -47,12 +37,6 @@ vim.opt.runtimepath = table.concat({
 vim.g['denops#deno'] = vim.env.MISE_DATA_DIR .. '/installs/deno/latest/bin/deno' or 'deno'
 -- }}}
 
--- vim.api.nvim_create_autocmd({"filetype","syntax","bufnewfile","bufnew","bufread"}, {
---   pattern = "*?",
---   group = "myautocmd",
---   command = [[ call vimrc#on_filetype() ]]
--- })
-
 -- LANG {{{
 if vim.fn.has('unix') then
   vim.env.LANG = 'ja_JP.UTF_8'
@@ -63,24 +47,33 @@ end
 vim.opt.langmenu = vim.env.LANG
 -- }}}
 
------------------------------------------------------------------------------
 -- LOAD OTHER SETTING FILES (ex. loader of dpp.vim):
------------------------------------------------------------------------------
--- {{{
--- Use `dpp` as a default
-if is_debug then
-  vim.notify('[DEBUG] dpp_loader start', vim.log.levels.DEBUG)
-end
+-- TODO: `if !v:vim_did_enter` を入れる.
 require('dpp_loader')
-if is_debug then
-  vim.notify('[DEBUG] dpp_loader end', vim.log.levels.DEBUG)
-end
--- }}}
 
 vim.cmd('filetype indent plugin on')
 vim.cmd('syntax on')
 
+-- Disable default plugins {{{
+-- dpp.vim manages plugins itself; no need for Vim's built-in packpath. (Really???)
+vim.opt.packpath = ''
+local save_rtp = vim.opt.runtimepath
+-- TODO: do like `kuuote` does; like below
+-- vim.opt.runtimepath:remove(vim.env.VIMRUNTIME)
+-- vim.api.nvim_create_autocmd('SourcePre', {
+--   pattern = '*/plugin/*',
+--   group = 'MyAutoCmd',
+--   once = true,
+--   callback = function()
+--     vim.o.runtimepath = save_rtp
+--   end,
+-- })
 if is_debug then
-  vim.notify('loaded $NVIM_CONFIG_HOME/init.lua')
+  vim.notify_once('[DEBUG]: Default plugins disabled')
+end
+-- }}}
+
+if is_debug then
+  vim.notify('loaded $NVIM_CONFIG_HOME/init.lua', vim.log.levels.DEBUG)
 end
 
