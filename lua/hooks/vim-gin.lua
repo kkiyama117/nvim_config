@@ -26,9 +26,7 @@ vim.keymap.set('n', '[GIT]am', function()
 end, { desc = 'Git: amend commit' }) -- }}}
 
 -- branch
-vim.keymap.set('n', '[GIT]b', function()
-  -- todo
-end)
+-- Use `;gb` (ddu-source-git_branch) and `itemAction`
 
 -- Commit (added): [GIT]c
 vim.keymap.set('n', '[GIT]c', function()
