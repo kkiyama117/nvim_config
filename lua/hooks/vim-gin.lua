@@ -5,28 +5,19 @@ vim.g.gin_proxy_disable_editor = true
 
 -- Gin: patch
 vim.keymap.set('n', '[GIT]ad', function()
-  -- {{{
   vim.cmd.GinPatch('++opener=tabnew', '%')
-end, { desc = 'Gin: patch (tabnew)' }) -- }}}
--- Add points ( `%`: current buffer, cancel is may `:cq`)
-vim.keymap.set('n', '[GIT]aD', function()
-  -- {{{
-  vim.notify('TODO: implements to call `!git add --patch<Space>` with `ddt`')
-end, { desc = 'git add patch' }) -- }}}
--- Add file
-vim.keymap.set('n', '[GIT]ai', function()
-  -- {{{
-  vim.notify('TODO: implements to call `<Cmd>!git add --interactive<CR>` with `ddt`')
-end, { desc = 'git add interactive' }) -- }}}
+end, { desc = 'Gin: patch (tabnew)' })
+
+-- TODO: ponder them
+-- Add points ( `%`: current buffer, cancel is may `:cq`) by `--patch`
+-- Add file by `--interactive`
 
 -- Amend commit
 vim.keymap.set('n', '[GIT]am', function()
-  -- {{{
   vim.cmd('terminal git commit --amend')
-end, { desc = 'Git: amend commit' }) -- }}}
+end, { desc = 'Git: amend commit' })
 
--- branch
--- Use `;gb` (ddu-source-git_branch) and `itemAction`
+-- Branch; Use `;gb` (ddu-source-git_branch) and `itemAction`
 vim.keymap.set('n', '[GIT]b', function()
   require('shared.ddu_git_branch').start()
 end, { desc = 'Ddu: git branch' })
@@ -76,12 +67,44 @@ vim.keymap.set('n', '[GIT]S', function()
   vim.cmd('!git status -v')
 end, { desc = 'Git: status' }) -- }}}
 
+-- Open browser; If visualmode, select current line's URL
+vim.keymap.set({ 'n', 'x' }, '[GIT]o', function()
+  -- {{{
+  vim.notify_once('TODO: add browser or `xdg-open` to open URL', vim.log.levels.WARN)
+  vim.cmd.GinBrowse()
+end, { silent = true, desc = 'GIN: yank github url' }) -- }}}
+
 -- Update: [GIT]u
 vim.keymap.set('n', '[GIT]u', function()
   -- {{{
   vim.cmd('silent !git add --update')
 end, { silent = true, desc = 'git add --update' }) -- }}}
+
+-- Yank; If visualmode, select current line's URL
+vim.keymap.set({ 'n', 'x' }, '[GIT]y', function()
+  -- {{{
+  vim.cmd.GinBrowse('++yank=+', '-n')
+end, { silent = true, desc = 'GIN: yank github url' }) -- }}}
+
 -- }}}
 
+-- }}}
+
+-- lua_source {{{
+-- For debugging
+if vim.env.NVIM_DEBUG == 'true' then
+  vim.notify('[GIT]: GIN loaded', vim.log.levels.INFO)
+end
+-- }}}
+
+-- gin-log {{{
+lua << EOF
+vim.keymap.set('n', 'P', function()
+  local choice = vim.fn.confirm('Do :Gin push?', '&Yes\n&No', 2)
+  if choice == 1 then
+    vim.cmd.Gin("push")
+  end
+end, { buffer = true, nowait = true, desc = 'Gin: push (confirm)' })
+EOF
 -- }}}
 

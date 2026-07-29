@@ -1,4 +1,6 @@
 # ddu.vim and related files
+# TODO: think about the load timing;
+# See https://github.com/kuuote/dotvim/blob/version5/conf/plug/ddu.toml#L99
 [[plugins]]
 repo = "shougo/ddu.vim"
 depends = "denops.vim"
@@ -71,6 +73,11 @@ group = "ddu"
 repo = "kyoh86/ddu-source-git_branch"
 group = "ddu"
 
+# Git diff (for git_status kind action)
+[[plugins]]
+repo = "kuuote/ddu-source-git_diff"
+group = "ddu"
+
 # Git stash
 [[plugins]]
 repo = "peacock0803sz/ddu-source-git_stash"
@@ -102,6 +109,13 @@ group = "ddu"
 [[plugins]]
 repo = "uga-rosa/ddu-source-lsp"
 group = "ddu"
+lua_add = '''
+vim.api.nvim_create_autocmd('LspAttach', {
+  pattern = '*',
+  group = 'MyAutoCmd',
+  command = 'let b:ddu_source_lsp_clientName = "nvim-lsp"',
+})
+'''
 
 # Outputs of command
 [[plugins]]
@@ -110,6 +124,10 @@ group = "ddu"
 
 [[plugins]]
 repo = "Shougo/ddu-source-path_history"
+group = "ddu"
+
+[[plugins]]
+repo = "flow6852/ddu-source-qf"
 group = "ddu"
 
 # registers of vim

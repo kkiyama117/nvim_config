@@ -302,6 +302,10 @@ vim.keymap.set('n', ';gb', function() -- {{{
   require('shared.ddu_git_branch').start()
 end, { desc = 'Ddu: git branch' }) -- }}}
 
+vim.keymap.set('n', ';gs', function() -- {{{
+  require('shared.ddu_git_status').start()
+end, { desc = 'Ddu: git status' }) -- }}}
+
 -- help
 vim.keymap.set('n', ';h', function()
   -- {{{
@@ -314,6 +318,19 @@ vim.keymap.set('n', ';h', function()
     },
   })
 end, { desc = 'Ddu: help' }) -- }}}
+
+-- line
+vim.keymap.set('n', ';l', function()
+  -- {{{
+  vim.fn['ddu#start']({
+    --name = 'search',
+    sources = {
+      {
+        name = 'line',
+      },
+    },
+  })
+end, { desc = 'Ddu: line' }) -- }}}
 
 -- Command output
 vim.keymap.set('n', ';o', function()

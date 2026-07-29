@@ -163,6 +163,12 @@ vim.keymap.set('n', '<Leader><Leader>', function()
   vim.cmd('update')
 end, { silent = true }) -- }}}
 
+-- Agentic.nvim
+-- `<Leader>a`=[AGENTIC] {{{
+vim.keymap.set({ 'n' }, '<Leader>a', '[AGENTIC]', { remap = true })
+vim.keymap.set({ 'n' }, '[AGENTIC]', '<Nop>')
+-- }}}
+
 -- Git
 -- See "$NVIM_CONFIG_HOME/lua/hooks/vim-gin.lua" to check the mappings using `[GIT]`
 -- `<Leader>g`=[GIT] {{{
