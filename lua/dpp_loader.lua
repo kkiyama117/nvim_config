@@ -132,10 +132,9 @@ local function initialize_dpp()
       pattern = '*.toml,*.lua',
       group = my_autocmds,
       callback = function()
-        local not_installed = vim.fn['dpp#sync_ext_action']('installer', 'getNotInstalled')
-        if type(not_installed) == 'table' and not vim.tbl_isempty(not_installed) then
-          dpp.async_ext_action('installer', 'install')
-        end
+        local dpp_installer = require('dpp_installer')
+        local install_names, reinstall_names = dpp_installer.collect_targets()
+        dpp_installer.apply(install_names, reinstall_names)
       end,
     })
   end
