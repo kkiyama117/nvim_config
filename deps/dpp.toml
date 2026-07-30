@@ -2,17 +2,17 @@
 # These plugin loaded eager.
 
 [[plugins]]
-repo = 'Shougo/dpp.vim'
-description = 'Dark powered plugin manager for Vim/Neovim'
-rtp = ''
-hooks_file = '$NVIM_CONFIG_HOME/lua/hooks/dpp.vim.lua'
+repo = "Shougo/dpp.vim"
+description = "Dark powered plugin manager for Vim/Neovim"
+rtp = ""
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/dpp.vim.lua"
 
 [[plugins]]
-repo = 'Shougo/dpp-ext-lazy'
-rtp = ''
+repo = "Shougo/dpp-ext-lazy"
+rtp = ""
 
 [[plugins]]
-repo = 'Shougo/dpp-ext-toml'
+repo = "Shougo/dpp-ext-toml"
 hook_add = '''
 " Enable dpp toml syntax.
 if !has('nvim')
@@ -21,17 +21,17 @@ endif
 '''
 
 [[plugins]]
-repo = 'Shougo/dpp-ext-local'
+repo = "Shougo/dpp-ext-local"
 
 [[plugins]]
-repo = 'Shougo/dpp-ext-installer'
+repo = "Shougo/dpp-ext-installer"
 
 [[plugins]]
-repo = 'Shougo/dpp-ext-packspec'
+repo = "Shougo/dpp-ext-packspec"
 
 [[plugins]]
-repo = 'Shougo/dpp-protocol-git'
+repo = "Shougo/dpp-protocol-git"
 
 [[plugins]]
-repo = 'Shougo/dpp-protocol-http'
+repo = "Shougo/dpp-protocol-http"
 
