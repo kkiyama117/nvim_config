@@ -139,7 +139,10 @@ function make_state(args)
     local error_msg =
       "`dpp#make_state` failed; dpp isn't loaded or variables related dpp.vim are missing"
     vim.notify(error_msg, vim.log.levels.ERROR)
-    return require('bootloader/fallback').fallback({ error_number = 2 })
+    return require('bootloader/fallback').startup({
+      error_number = 2,
+      missing_plugins = vim.g['vimrc#dpp#minimum_deps'],
+    })
   else
     if result == 1 then
       vim.notify(
