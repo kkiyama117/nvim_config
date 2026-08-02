@@ -112,7 +112,7 @@ group = "ddu"
 lua_add = '''
 vim.api.nvim_create_autocmd('LspAttach', {
   pattern = '*',
-  group = 'MyAutoCmd',
+  group = vim.api.nvim_create_augroup('vimrc#augroup', { clear = false }),
   command = 'let b:ddu_source_lsp_clientName = "nvim-lsp"',
 })
 '''

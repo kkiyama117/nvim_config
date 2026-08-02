@@ -8,7 +8,7 @@ local deno_args_list = {
 }
 if vim.env.NVIM_DEBUG == 'true' then
   vim.g['denops#debug'] = true
-  deno_args_list:append('--inspect')
+  table.insert(deno_args_list, '--inspect')
 end
 
 -- denops.vim's default is ['-q', '--no-lock', '-A'];

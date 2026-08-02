@@ -18,7 +18,10 @@ local function to_argv(cmd)
   end
 
   local argv = vim.split(vim.o.shell, ' ', { trimempty = true })
-  vim.list_extend(argv, vim.split(vim.o.shellcmdflag, ' ', { trimempty = true }))
+  vim.list_extend(
+    argv,
+    vim.split(vim.o.shellcmdflag, ' ', { trimempty = true })
+  )
   table.insert(argv, cmd)
   return argv
 end
@@ -62,3 +65,4 @@ function M.status()
 end
 
 return M
+

@@ -1,4 +1,5 @@
 -- lua_add {{{
+-- TODO: fix UI bug when called `N` key and new files created
 -- Global Key mapping to call Ddu-ui-filer.
 -- }}}
 

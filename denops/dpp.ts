@@ -37,36 +37,17 @@ import type { Denops } from "@denops/std";
 import * as fn from "@denops/std/function";
 
 // std
-import { join } from "@std/path";
+import { basename, join } from "@std/path";
 
 // consts
-import { nvimConfigHome, nvimLuaHome, xdgCacheHome } from "./consts.ts";
+import { nvimCacheHome, nvimConfigHome } from "./consts.ts";
+import { gatherGlobs } from "./dpp/utils.ts";
 
 // --------------------------------------------------------------------------
-// Config and Cachepath
+// Config and Cache path
 // --------------------------------------------------------------------------
-// Where plugin definition TOMLs live.
-const dppTomlDir = join(nvimConfigHome, "deps");
-
-// Caches
-const dppCacheHome = join(xdgCacheHome, "dpp");
+const dppCacheHome = join(nvimCacheHome, "dpp");
 const dppCacheLocal = join(dppCacheHome, "local");
-
-// --------------------------------------------------------------------------
-// Util functions
-// --------------------------------------------------------------------------
-async function gatherCheckFiles(
-  denops: Denops,
-  path: string,
-  globs: string[],
-): Promise<string[]> {
-  const checkFiles: string[] = [];
-  for (const glob of globs) {
-    checkFiles.push(await fn.globpath(denops, path, glob, true, true));
-  }
-
-  return checkFiles.flat();
-}
 
 // --------------------------------------------------------------------------
 // Dpp Config
@@ -78,24 +59,21 @@ export class Config extends BaseConfig {
     contextBuilder: ContextBuilder;
     basePath: string;
   }): Promise<ConfigReturn> {
-    // List up vimrc/lua files
-    console.debug("Load Dpp Config");
-    // TODO: List up all files under `lua` (but avoid including sub dir like `lua/hooks`)
-    const inlineVimrcs = [
-      join(nvimLuaHome, "options.lua"),
-      join(nvimLuaHome, "commands.lua"),
-      join(nvimLuaHome, "mappings.lua"),
-      join(nvimLuaHome, "filetype.lua"),
-    ];
     const hasNvim = args.denops.meta.host === "nvim";
     const hasWindows = await fn.has(args.denops, "win32");
-    // const hasGui = await fn.has(args.denops, "gui_running");
-    if (hasNvim) {
-      inlineVimrcs.push(join(nvimLuaHome, "specific/neovim.lua"));
-    }
-    if (hasWindows) {
-      inlineVimrcs.push(join(nvimLuaHome, "specific/unix.lua"));
-    }
+
+    // ----------------------------------------------------------------------
+    // Collect Inline Vimrcs
+    // ----------------------------------------------------------------------
+    const inlineVimrcs = (await gatherGlobs(
+      args.denops,
+      [
+        "lua/vimrc/*",
+        hasNvim ? ["lua/vimrc/nvim/*"] : ["lua/vimrc/vim/*"],
+        hasWindows ? ["lua/vimrc/windows/*"] : ["lua/vimrc/unix/*"],
+      ].flat(),
+      nvimConfigHome,
+    )).filter((path: string) => path.match(/\.(?:vim|lua)$/));
 
     // Dpp ContextBuilder
     args.contextBuilder.setGlobal({
@@ -122,15 +100,14 @@ export class Config extends BaseConfig {
       Protocol
     >;
 
-    // TODO: implement
     const recordPlugins: Record<string, Plugin> = {};
-    // TODO: implement
     const ftplugins: Record<string, string> = {};
-    // TODO: implement
     const hooksFiles: string[] = [];
-    // TODO: implement
     let multipleHooks: MultipleHook[] = [];
 
+    // ----------------------------------------------------------------------
+    // Collect Plugins defined in Toml
+    // ----------------------------------------------------------------------
     // avoid lazy loading
     const noLazyTomls = ["merge.toml", "dpp.toml"];
 
@@ -143,37 +120,41 @@ export class Config extends BaseConfig {
     ) as [TomlExt | undefined, ExtOptions, TomlParams];
 
     if (tomlExt) {
-      const tomls: Toml[] = [];
-      // Load Dpp toml files and push into `tomls`
-      for (const tomlFile of Deno.readDirSync(dppTomlDir)) {
-        if (!tomlFile.isFile || !tomlFile.name.endsWith(".toml")) continue;
-        const isLazy = !noLazyTomls.includes(tomlFile.name);
-        tomls.push(
-          await tomlExt.actions.load.callback({
-            denops: args.denops,
-            context,
-            options,
-            protocols,
-            extOptions: tomlOptions,
-            extParams: tomlParams,
-            actionParams: {
-              path: join(dppTomlDir, tomlFile.name),
-              options: {
-                lazy: isLazy,
+      const tomlGlobs = ["deps/*.toml"];
+      const tomlPaths = await gatherGlobs(
+        args.denops,
+        tomlGlobs,
+        nvimConfigHome,
+      );
+
+      const tomls = await Promise.all(
+        tomlPaths
+          .filter((tomlPath) => tomlPath.endsWith(".toml"))
+          .map((tomlPath) => {
+            const isLazy = !noLazyTomls.includes(basename(tomlPath));
+            return tomlExt.actions.load.callback({
+              denops: args.denops,
+              context,
+              options,
+              protocols,
+              extOptions: tomlOptions,
+              extParams: tomlParams,
+              actionParams: {
+                path: tomlPath,
+                options: {
+                  lazy: isLazy,
+                },
               },
-            },
-          }) as Toml,
-        );
-      }
+            }) as Promise<Toml>;
+          }),
+      );
 
       // Merge toml results
-      for (const toml of tomls) {
-        if (!toml) continue;
-        if (toml.plugins) {
-          for (const plugin of toml.plugins) {
-            recordPlugins[plugin.name] = plugin;
-          }
-        }
+      tomls.forEach((toml) => {
+        toml.plugins?.forEach((plugin) => {
+          recordPlugins[plugin.name] = plugin;
+        });
+
         if (toml.ftplugins) {
           mergeFtplugins(ftplugins, toml.ftplugins);
         }
@@ -185,7 +166,7 @@ export class Config extends BaseConfig {
           // dpp#util#_expand as a List and fails with E691.
           hooksFiles.push(...[toml.hooks_file].flat());
         }
-      }
+      });
     }
 
     // Local plugins (library)
@@ -295,13 +276,18 @@ export class Config extends BaseConfig {
       });
     }
 
-    const checkFiles = await gatherCheckFiles(args.denops, nvimConfigHome, [
+    // Call `make_state` if these files are updated
+    const checkFiles = await gatherGlobs(args.denops, [
+      "init.lua",
       "lua/**/*.lua",
-      "deps/*.toml",
+      "deps/**/*.toml",
       "denops/**/*.ts",
       "**/*.vim",
-    ]);
+    ], nvimConfigHome);
     const groups = {
+      dpp: {
+        on_source: "dpp.vim",
+      },
       ddc: {
         on_source: "ddc.vim",
       },

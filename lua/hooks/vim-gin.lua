@@ -14,8 +14,8 @@ end, { desc = 'Gin: patch (tabnew)' })
 
 -- Amend commit
 vim.keymap.set('n', '[GIT]am', function()
-  vim.cmd('terminal git commit --amend')
-end, { desc = 'Git: amend commit' })
+  vim.cmd('Gin commit --amend')
+end, { desc = 'Gin: amend commit' })
 
 -- Branch; Use `;gb` (ddu-source-git_branch) and `itemAction`
 vim.keymap.set('n', '[GIT]b', function()
@@ -25,8 +25,8 @@ end, { desc = 'Ddu: git branch' })
 -- Commit (added): [GIT]c
 vim.keymap.set('n', '[GIT]c', function()
   -- {{{
-  vim.cmd('terminal git commit -v')
-end, { desc = 'Git: commit' }) -- }}}
+  vim.cmd('Gin commit -v')
+end, { desc = 'Gin: commit' }) -- }}}
 
 -- Diff
 vim.keymap.set('n', '[GIT]d', function()

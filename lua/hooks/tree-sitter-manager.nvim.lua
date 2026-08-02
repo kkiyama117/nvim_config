@@ -1,0 +1,48 @@
+-- lua_add {{{
+
+--}}}
+
+-- lua_source {{{
+-- Re-enable Treesitter with opt-out for specific filetypes/languages
+-- and huge files. Treesitter is disabled by default in options.lua;
+-- this runs when tree-sitter-manager.nvim is sourced (dpp succeeded).
+-- https://github.com/neovim/neovim/pull/26347#issuecomment-1837508178
+vim.treesitter.start = (function(wrapped)
+  return function(bufnr, lang)
+    local disables_ft = { 'help' }
+    local disables_lang = { 'diff', 'latex' }
+
+    local ft = vim.fn.getbufvar(bufnr or vim.fn.bufnr(''), '&filetype')
+    if
+      vim.tbl_contains(disables_ft, ft)
+      or vim.tbl_contains(disables_lang, lang)
+    then
+      return
+    end
+
+    if bufnr then
+      local max_filesize = 50 * 1024
+      local ok, stats = pcall(vim.fs_stat, vim.api.nvim_buf_get_name(bufnr))
+      if ok and stats and stats.size > max_filesize then
+        return
+      end
+    end
+
+    wrapped(bufnr, lang)
+  end
+end)(vim.treesitter.start)
+
+-- Install parsers
+require('tree-sitter-manager').setup({
+  ensure_installed = {
+    'lua',
+    'rust',
+    'python',
+    'toml',
+    'typescript',
+    'vim',
+    'vimdoc',
+  },
+})
+--}}}
+

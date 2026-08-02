@@ -15,7 +15,17 @@ require('agentic').setup({
   --provider = "claude-agent-acp",
   acp_providers = {
     ['pi-acp'] = {
-      command = '/home/kiyama/.local/share/mise/installs/npm-pi-acp/latest/bin/pi-acp',
+      command = vim.fn.expand(
+        vim.fs.joinpath(
+          '$XDG_DATA_HOME',
+          'mise',
+          'installs',
+          'npm-pi-acp',
+          'latest',
+          'bin',
+          'pi-acp'
+        )
+      ),
       initial_model = 'ollama-cloud/deepseek-v4-flash',
       default_thought_level = 'high',
     },

@@ -39,7 +39,7 @@ local function commandline_pre(mode) -- {{{
   end
   vim.api.nvim_create_autocmd('User', {
     pattern = 'DDCCmdlineLeave',
-    group = 'MyAutoCmd',
+    group = vim.g['vimrc#augroup'],
     once = true,
     callback = commandline_post,
   })
@@ -76,7 +76,9 @@ end, { desc = 'Cmdline with pre-processing (visual)' })
 -- }}}
 
 -- lua_source {{{
-vim.fn['ddc#custom#load_config'](vim.g.nvim_config_home .. '/denops/ddc.ts')
+vim.fn['ddc#custom#load_config'](
+  vim.fn.expand(vim.fs.joinpath(vim.env.NVIM_CONFIG_HOME, 'denops', 'ddc.ts'))
+)
 -- KEYBINDS {{{
 -- Keys may sorted alphabetally.
 
@@ -91,7 +93,12 @@ vim.keymap.set('i', '<TAB>', function()
     return ''
   elseif vim.fn.col('.') <= 1 then
     return '<TAB>'
-  elseif vim.fn.getline('.'):sub(vim.fn.col('.') - 1, vim.fn.col('.') - 1):match('%s') then
+  elseif
+    vim.fn
+      .getline('.')
+      :sub(vim.fn.col('.') - 1, vim.fn.col('.') - 1)
+      :match('%s')
+  then
     return '<TAB>'
   else
     return vim.fn['ddc#map#manual_complete']()
