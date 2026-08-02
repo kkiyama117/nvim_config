@@ -3,6 +3,7 @@
 -- KEYMAPS
 -- ==========================================================================
 local split = vim.fn.has('nvim') == 1 and 'floating' or 'horizontal'
+local augroup = vim.api.nvim_create_augroup('vimrc#augroup', { clear = false })
 
 -- `Dark Powered` alternative keys; `/`, `*`, `n` --{{{
 vim.keymap.set('n', '/', function()
@@ -63,7 +64,10 @@ vim.keymap.set('n', '[DP]a', function()
     resume = true,
     unique = true,
     expandInput = true,
-    sources = vim.fn.filter({ { name = 'file_old' }, { name = git_source }, { name = 'file' } }, 'v:val.name != ""'),
+    sources = vim.fn.filter(
+      { { name = 'file_old' }, { name = git_source }, { name = 'file' } },
+      'v:val.name != ""'
+    ),
     sourceOptions = {
       file = {
         volatile = true,
@@ -267,7 +271,11 @@ vim.keymap.set('n', ';fc', function()
     },
     sourceOptions = {
       rg = {
-        path = vim.fn['cmdline#input']('Directory: ', vim.fn.getcwd() .. '/', 'dir'),
+        path = vim.fn['cmdline#input'](
+          'Directory: ',
+          vim.fn.getcwd() .. '/',
+          'dir'
+        ),
       },
     },
   })
@@ -286,7 +294,10 @@ vim.keymap.set('n', ';fm', function()
     },
     sourceParams = {
       rg = {
-        input = vim.fn.escape(vim.fn['cmdline#input']('Pattern: ', vim.fn.expand('<cword>')), ' '),
+        input = vim.fn.escape(
+          vim.fn['cmdline#input']('Pattern: ', vim.fn.expand('<cword>')),
+          ' '
+        ),
       },
     },
     uiParams = {
@@ -385,7 +396,10 @@ vim.keymap.set('x', ';gr', function()
     },
     sourceParams = {
       rg = {
-        input = vim.fn.escape(vim.fn['cmdline#input']('Pattern: ', vim.fn.getreg('"')), ' '),
+        input = vim.fn.escape(
+          vim.fn['cmdline#input']('Pattern: ', vim.fn.getreg('"')),
+          ' '
+        ),
       },
     },
     uiParams = {
@@ -399,7 +413,11 @@ end, { desc = 'Ddu: ripgrep (visual)' }) -- }}}
 -- URL action (visual)
 vim.keymap.set('x', ';G', function()
   -- {{{
-  local region = vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos('.'), { type = vim.fn.mode() })
+  local region = vim.fn.getregion(
+    vim.fn.getpos("'<"),
+    vim.fn.getpos('.'),
+    { type = vim.fn.mode() }
+  )
   if vim.fn.empty(region) == 1 then
     return
   end
@@ -458,7 +476,7 @@ end, { expr = true, desc = 'Ddu: register (visual)' }) -- }}}
 -- AutoCmd for Filter window (keymap `<C-f>` and `<C-b>`) -- {{{
 vim.api.nvim_create_autocmd('User', {
   pattern = 'Ddu:uiOpenFilterWindow',
-  group = 'MyAutoCmd',
+  group = augroup,
   callback = function()
     -- {{{
     vim.opt.cursorline = true
@@ -482,7 +500,7 @@ vim.api.nvim_create_autocmd('User', {
 
 vim.api.nvim_create_autocmd('User', {
   pattern = 'Ddu:uiCloseFilterWindow',
-  group = 'MyAutoCmd',
+  group = augroup,
   callback = function()
     -- {{{
     vim.opt.cursorline = false
@@ -494,6 +512,8 @@ vim.api.nvim_create_autocmd('User', {
 -- }}}
 
 -- lua_source {{{
-vim.fn['ddu#custom#load_config'](vim.fn.stdpath('config') .. '/denops/ddu.ts')
+vim.fn['ddu#custom#load_config'](
+  vim.fn.expand(vim.fs.joinpath(vim.env.NVIM_CONFIG_HOME, 'denops', 'ddu.ts'))
+)
 -- }}}
 

@@ -5,7 +5,6 @@
 repo = "Shougo/dpp.vim"
 description = "Dark powered plugin manager for Vim/Neovim"
 rtp = ""
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/dpp.vim.lua"
 
 [[plugins]]
 repo = "Shougo/dpp-ext-lazy"
@@ -16,7 +15,7 @@ repo = "Shougo/dpp-ext-toml"
 hook_add = '''
 " Enable dpp toml syntax.
 if !has('nvim')
-  autocmd MyAutoCmd CursorHold */rc/*.toml call dpp#ext#toml#syntax()
+  autocmd vimrc CursorHold */deps/*.toml call dpp#ext#toml#syntax()
 endif
 '''
 

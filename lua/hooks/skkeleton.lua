@@ -6,7 +6,11 @@ vim.keymap.set('n', '<C-j>', 'i<Plug>(skkeleton-enable)')
 -- }}}
 
 -- lua_source {{{
--- vim.g["skkeleton#debug"] = true
+if vim.g['vimrc#is_debug'] == 'true' then
+  vim.g['skkeleton#debug'] = true
+end
+local myAuGroup =
+  vim.api.nvim_create_augroup('vimrc#augroup', { clear = false })
 -- Script-local state: saved cursor highlight (table for Neovim, list for Vim)
 local hl_cursor = nil
 
@@ -14,7 +18,8 @@ local hl_cursor = nil
 -- highlight_cursor (shared helper)
 -- --------------------------------------------------------------------------
 local function highlight_cursor(highlight)
-  local is_cmdline = vim.fn.exists('*cmdline#_get') == 1 and not vim.tbl_isempty(vim.fn['cmdline#_get']().pos)
+  local is_cmdline = vim.fn.exists('*cmdline#_get') == 1
+    and not vim.tbl_isempty(vim.fn['cmdline#_get']().pos)
   local highlight_name = is_cmdline and 'CmdlineCursor' or 'Cursor'
 
   if vim.fn.has('nvim') == 1 then
@@ -63,11 +68,15 @@ end
 -- --------------------------------------------------------------------------
 -- skkeleton#config
 -- --------------------------------------------------------------------------
-local skk_jisho_path = vim.fn.expand('$XDG_STATE_HOME' .. '/SKK-JISYO.L')
+local skk_jisho_path =
+  vim.fn.expand(vim.fs.joinpath(vim.env.XDG_STATE_HOME, 'SKK-JISYO.L'))
 vim.fn['skkeleton#config']({
-  databasePath = vim.fn.expand('~/.cache/skkeleton.db'),
+  databasePath = vim.fn.expand(
+    vim.fs.joinpath('$XDG_CACHE_HOME', 'skkeleton.db')
+  ),
   eggLikeNewline = true,
-  globalDictionaries = vim.fn.has('win32') == 1 and { skk_jisho_path } or { '/usr/share/skk/SKK-JISYO.L' },
+  globalDictionaries = vim.fn.has('win32') == 1 and { skk_jisho_path }
+    or { '/usr/share/skk/SKK-JISYO.L' },
   markerHenkan = '',
   markerHenkanSelect = '',
   registerConvertResult = true,
@@ -98,13 +107,17 @@ vim.fn['skkeleton#register_kanatable']('rom', {
 -- --------------------------------------------------------------------------
 vim.api.nvim_create_autocmd('User', {
   pattern = 'skkeleton-enable-pre',
-  group = 'MyAutoCmd',
+  group = myAuGroup,
   callback = function()
-    if (vim.fn.has('nvim') ~= 1 or vim.env.DISPLAY ~= '') and vim.fn.has('clipboard') == 1 then
+    if
+      (vim.fn.has('nvim') ~= 1 or vim.env.DISPLAY ~= '')
+      and vim.fn.has('clipboard') == 1
+    then
       -- Copy to clipboard to use Vim as IME
+      -- TODO: configure Clipboard
       vim.api.nvim_create_autocmd('ModeChanged', {
         pattern = '*:n',
-        group = 'MyAutoCmd',
+        group = myAuGroup,
         once = true,
         callback = function()
           vim.fn.setreg('*', vim.fn.getline('.'))
@@ -113,7 +126,8 @@ vim.api.nvim_create_autocmd('User', {
       })
     end
 
-    local is_cmdline = vim.fn.exists('*cmdline#_get') == 1 and not vim.tbl_isempty(vim.fn['cmdline#_get']().pos)
+    local is_cmdline = vim.fn.exists('*cmdline#_get') == 1
+      and not vim.tbl_isempty(vim.fn['cmdline#_get']().pos)
     local hl_name = is_cmdline and 'CmdlineCursor' or 'Cursor'
 
     if vim.fn.has('nvim') == 1 then
@@ -129,7 +143,7 @@ vim.api.nvim_create_autocmd('User', {
 -- --------------------------------------------------------------------------
 vim.api.nvim_create_autocmd('User', {
   pattern = 'skkeleton-mode-changed',
-  group = 'MyAutoCmd',
+  group = myAuGroup,
   callback = skkeleton_changed,
 })
 
@@ -138,7 +152,7 @@ vim.api.nvim_create_autocmd('User', {
 -- --------------------------------------------------------------------------
 vim.api.nvim_create_autocmd('User', {
   pattern = 'skkeleton-handled',
-  group = 'MyAutoCmd',
+  group = myAuGroup,
   callback = function()
     if vim.g['skkeleton#mode'] == '' then
       return
@@ -146,7 +160,11 @@ vim.api.nvim_create_autocmd('User', {
 
     -- Change the cursor color
     local phase = vim.g['skkeleton#state'].phase
-    if phase == 'henkan' or phase == 'input:okurinasi' or phase == 'input:okuriari' then
+    if
+      phase == 'henkan'
+      or phase == 'input:okurinasi'
+      or phase == 'input:okuriari'
+    then
       local hl = vim.deepcopy(hl_cursor)
       local color = '#a0f0a0'
       if vim.fn.has('nvim') == 1 then

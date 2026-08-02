@@ -4,11 +4,36 @@ vim.g['operator_sandwich_no_default_key_mappings'] = 1
 
 -- High level API ( operator-sandwich-delete -> textobj-sandwich-query-i ) {{{
 -- Use like `saiw"`
-vim.keymap.set({ 'n', 'o', 'x' }, 'sa', '<Plug>(sandwich-add)', { desc = 'add `sandwich`' })
-vim.keymap.set({ 'n', 'x' }, 'sd', '<Plug>(sandwich-delete)', { desc = 'delete `sandwich`' })
-vim.keymap.set('n', 'sdb', '<Plug>(sandwich-delete-auto)', { desc = 'delete `sandwich`' })
-vim.keymap.set({ 'n', 'x' }, 'sr', '<Plug>(sandwich-replace)', { desc = 'replace `sandwich`' })
-vim.keymap.set('n', 'srb', '<Plug>(sandwich-replace-auto)', { desc = 'replace `sandwich`' })
+vim.keymap.set(
+  { 'n', 'o', 'x' },
+  'sa',
+  '<Plug>(sandwich-add)',
+  { desc = 'add `sandwich`' }
+)
+vim.keymap.set(
+  { 'n', 'x' },
+  'sd',
+  '<Plug>(sandwich-delete)',
+  { desc = 'delete `sandwich`' }
+)
+vim.keymap.set(
+  'n',
+  'sdb',
+  '<Plug>(sandwich-delete-auto)',
+  { desc = 'delete `sandwich`' }
+)
+vim.keymap.set(
+  { 'n', 'x' },
+  'sr',
+  '<Plug>(sandwich-replace)',
+  { desc = 'replace `sandwich`' }
+)
+vim.keymap.set(
+  'n',
+  'srb',
+  '<Plug>(sandwich-replace-auto)',
+  { desc = 'replace `sandwich`' }
+)
 -- }}}
 
 -- TODO: consider using operator directly
@@ -17,10 +42,30 @@ vim.keymap.set('n', 'srb', '<Plug>(sandwich-replace-auto)', { desc = 'replace `s
 
 -- text objects (auto = search outward, query = prompt for char) {{{
 -- Use like `iw`, `ip`, `is`, `at`
-vim.keymap.set({ 'o', 'x' }, 'ib', '<Plug>(textobj-sandwich-auto-i)', { desc = 'inside nearest sandwich (auto)' })
-vim.keymap.set({ 'o', 'x' }, 'ab', '<Plug>(textobj-sandwich-auto-a)', { desc = 'around nearest sandwich (auto)' })
-vim.keymap.set({ 'o', 'x' }, 'is', '<Plug>(textobj-sandwich-query-i)', { desc = 'inside sandwich (query char)' })
-vim.keymap.set({ 'o', 'x' }, 'as', '<Plug>(textobj-sandwich-query-a)', { desc = 'around sandwich (query char)' })
+vim.keymap.set(
+  { 'o', 'x' },
+  'ib',
+  '<Plug>(textobj-sandwich-auto-i)',
+  { desc = 'inside nearest sandwich (auto)' }
+)
+vim.keymap.set(
+  { 'o', 'x' },
+  'ab',
+  '<Plug>(textobj-sandwich-auto-a)',
+  { desc = 'around nearest sandwich (auto)' }
+)
+vim.keymap.set(
+  { 'o', 'x' },
+  'is',
+  '<Plug>(textobj-sandwich-query-i)',
+  { desc = 'inside sandwich (query char)' }
+)
+vim.keymap.set(
+  { 'o', 'x' },
+  'as',
+  '<Plug>(textobj-sandwich-query-a)',
+  { desc = 'around sandwich (query char)' }
+)
 -- }}}
 
 -- }}}

@@ -72,7 +72,7 @@ export class Config extends BaseConfig {
           ],
           userPrompt:
             "'| ' .. fnamemodify(getcwd(), ':~') .. v:lua.MyGitStatus()",
-          shellHistoryPath: "~/.cache/ddt-shell-history",
+          shellHistoryPath: "$XDG_CACHE_HOME/ddt-shell-history",
         },
       },
     });
