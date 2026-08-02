@@ -207,24 +207,6 @@ vim.keymap.set('n', 'I', function() -- {{{
     },
   })
 end, { buffer = true, desc = 'ddt-terminal: launch ddu' }) -- }}}
--- Aliases {{{
-vim.keymap.set('n', '<Leader>gd', function() -- {{{
-  vim.fn['ddt#ui#do_action']('send', { str = 'git diff' })
-end, { buffer = true, desc = 'ddt-terminal: git diff' }) -- }}}
-vim.keymap.set('n', '<Leader>gc', function() -- {{{
-  vim.fn['ddt#ui#do_action']('send', { str = 'git commit' })
-end, { buffer = true, desc = 'ddt-terminal: git commit' }) -- }}}
-vim.keymap.set('n', '<Leader>gs', function() -- {{{
-  vim.fn['ddt#ui#do_action']('send', { str = 'git status' })
-end, { buffer = true, desc = 'ddt-terminal: git status' }) -- }}}
-vim.keymap.set('n', '<Leader>ga', function() -- {{{
-  vim.fn['ddt#ui#do_action']('setPrompt', { str = 'git add ' })
-  vim.api.nvim_feedkeys('A', 'n', false)
-end, { buffer = true, desc = 'ddt-terminal: git add' }) -- }}}
-vim.keymap.set('n', '<Leader>gA', function() -- {{{
-  vim.fn['ddt#ui#do_action']('send', { str = 'git commit --amend' })
-end, { buffer = true, desc = 'ddt-terminal: git commit --amend' }) -- }}}
--- }}}
 -- }}}
 -- Visual Mode {{{
 vim.keymap.set('x', '<CR>', function() -- {{{
@@ -282,27 +264,6 @@ vim.keymap.set('n', '<C-h>', function() -- {{{
     },
   })
 end, { buffer = true, desc = 'ddt-shell: shell history' }) -- }}}
--- Aliases {{{
-vim.keymap.set('n', '<Leader>gd', function() -- {{{
-  vim.fn['ddt#ui#do_action']('send', { str = 'git diff' })
-end, { buffer = true, desc = 'ddt-shell: git diff' }) -- }}}
-vim.keymap.set('n', '<Leader>gc', function() -- {{{
-  vim.fn['ddt#ui#do_action']('send', { str = 'git commit' })
-end, { buffer = true, desc = 'ddt-shell: git commit' }) -- }}}
-vim.keymap.set('n', '<Leader>gs', function() -- {{{
-  vim.fn['ddt#ui#do_action']('send', { str = 'git status' })
-end, { buffer = true, desc = 'ddt-shell: git status' }) -- }}}
-vim.keymap.set('n', '<Leader>ga', function() -- {{{
-  vim.fn['ddt#ui#do_action']('setPrompt', { str = 'git add ' })
-  vim.api.nvim_feedkeys('A', 'n', false)
-end, { buffer = true, desc = 'ddt-shell: git add' }) -- }}}
-vim.keymap.set('n', '<Leader>gA', function() -- {{{
-  vim.fn['ddt#ui#do_action']('send', { str = 'git commit --amend' })
-end, { buffer = true, desc = 'ddt-shell: git commit --amend' }) -- }}}
-vim.keymap.set('n', '<Leader>gp', function() -- {{{
-  vim.fn['ddt#ui#do_action']('setPrompt', { str = 'git push' })
-end, { buffer = true, desc = 'ddt-shell: git push' }) -- }}}
--- }}}
 -- }}}
 -- Insert Mode {{{
 vim.keymap.set('i', '<C-n>', function() -- {{{

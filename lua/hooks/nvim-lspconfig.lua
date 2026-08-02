@@ -5,6 +5,7 @@ require('vim.lsp._watchfiles')._watchfunc = function()
   return function() end
 end
 
+-- TODO: check LSP warnings `vim.diagnostic.Opts`
 vim.diagnostic.config({
   update_in_insert = false,
   virtual_text = {
@@ -14,7 +15,12 @@ vim.diagnostic.config({
     severity_sort = true,
     format = function(diagnostic)
       if diagnostic.code then
-        return string.format('%s (%s: %s)', diagnostic.message, diagnostic.source, diagnostic.code)
+        return string.format(
+          '%s (%s: %s)',
+          diagnostic.message,
+          diagnostic.source,
+          diagnostic.code
+        )
       else
         return string.format('%s (%s)', diagnostic.message, diagnostic.source)
       end
@@ -26,7 +32,8 @@ vim.diagnostic.config({
 -- Uses Neovim builtin `vim.lsp.buf.format` (sync within BufWritePre).
 -- Skips buffers with no attached client supporting formatting, so
 -- non-LSP filetypes and servers without formatting are left untouched.
-local format_grp = vim.api.nvim_create_augroup('LspFormatOnSave', { clear = true })
+local format_grp =
+  vim.api.nvim_create_augroup('LspFormatOnSave', { clear = true })
 vim.api.nvim_create_autocmd('BufWritePre', {
   group = format_grp,
   callback = function(args)
@@ -36,8 +43,14 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     end
     -- LSP formatting
     for _, client in ipairs(vim.lsp.get_clients({ bufnr = args.buf })) do
-      if client:supports_method('textDocument/formatting', { bufnr = args.buf }) then
-        vim.lsp.buf.format({ bufnr = args.buf, timeout_ms = 1000, async = false })
+      if
+        client:supports_method('textDocument/formatting', { bufnr = args.buf })
+      then
+        vim.lsp.buf.format({
+          bufnr = args.buf,
+          timeout_ms = 1000,
+          async = false,
+        })
         return
       end
     end
@@ -46,7 +59,8 @@ vim.api.nvim_create_autocmd('BufWritePre', {
 
 -- StyLua formatter for Lua files (external command, not LSP).
 -- LSP formatting is skipped for Lua files, so StyLua always runs when installed.
-local stylua_grp = vim.api.nvim_create_augroup('StyLuaFormatOnSave', { clear = true })
+local stylua_grp =
+  vim.api.nvim_create_augroup('StyLuaFormatOnSave', { clear = true })
 vim.api.nvim_create_autocmd('BufWritePre', {
   group = stylua_grp,
   pattern = '*.lua',
@@ -60,8 +74,12 @@ vim.api.nvim_create_autocmd('BufWritePre', {
         return
       end
 
-      local result =
-        vim.fn.system('stylua --stdin-filepath ' .. vim.fn.shellescape(vim.api.nvim_buf_get_name(bufnr)) .. ' -', input)
+      local result = vim.fn.system(
+        'stylua --stdin-filepath '
+          .. vim.fn.shellescape(vim.api.nvim_buf_get_name(bufnr))
+          .. ' -',
+        input
+      )
       if vim.v.shell_error == 0 and result ~= '' then
         local new_lines = vim.split(result, '\n', { plain = true })
         -- stylua always adds a trailing newline; remove the extra empty line
@@ -77,7 +95,8 @@ vim.api.nvim_create_autocmd('BufWritePre', {
 -- Ensure the file ends with exactly one empty line.
 -- Runs after all other formatters (LSP, StyLua) to guarantee a trailing newline
 -- followed by a blank line, which many linters and POSIX tools expect.
-local trailing_newline_grp = vim.api.nvim_create_augroup('TrailingNewlineOnSave', { clear = true })
+local trailing_newline_grp =
+  vim.api.nvim_create_augroup('TrailingNewlineOnSave', { clear = true })
 vim.api.nvim_create_autocmd('BufWritePre', {
   group = trailing_newline_grp,
   callback = function(args)
@@ -95,3 +114,4 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   end,
 })
 -- }}}
+

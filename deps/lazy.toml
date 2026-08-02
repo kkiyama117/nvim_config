@@ -14,7 +14,7 @@ hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/cmdline.vim.lua"
 [[plugins]]
 repo = "lewis6991/gitsigns.nvim"
 on_event = ["BufReadPost", "BufNewFile"]
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/gitsigns.vim.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/gitsigns.nvim.lua"
 
 # ---------------------------------------------------------------------------
 # heirline.nvim - statusline
@@ -54,7 +54,8 @@ hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-niceblock.lua"
 # ---------------------------------------------------------------------------
 [[plugins]]
 repo = "machakann/vim-sandwich"
-on_map = { n = "<Plug>", o = "<Plug>", x = "<Plug>" }
+on_map = { n = ["<Plug>"], o = "<Plug>", x = "<Plug>" }
+# on_map = { n = ["<Plug>", "s"], o = "<Plug>", x = "<Plug>" }
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-sandwich.lua"
 
 # ---------------------------------------------------------------------------

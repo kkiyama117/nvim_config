@@ -1,0 +1,110 @@
+-- lua_add {{{
+vim.g.gin_proxy_disable_editor = true
+
+-- mappings (GIT) {{{
+
+-- Gin: patch
+vim.keymap.set('n', '[GIT]ad', function()
+  vim.cmd.GinPatch('++opener=tabnew', '%')
+end, { desc = 'Gin: patch (tabnew)' })
+
+-- TODO: ponder them
+-- Add points ( `%`: current buffer, cancel is may `:cq`) by `--patch`
+-- Add file by `--interactive`
+
+-- Amend commit
+vim.keymap.set('n', '[GIT]am', function()
+  vim.cmd('Gin commit --amend')
+end, { desc = 'Gin: amend commit' })
+
+-- Branch; Use `;gb` (ddu-source-git_branch) and `itemAction`
+vim.keymap.set('n', '[GIT]b', function()
+  require('shared.ddu_git_branch').start()
+end, { desc = 'Ddu: git branch' })
+
+-- Commit (added): [GIT]c
+vim.keymap.set('n', '[GIT]c', function()
+  -- {{{
+  vim.cmd('Gin commit -v')
+end, { desc = 'Gin: commit' }) -- }}}
+
+-- Diff
+vim.keymap.set('n', '[GIT]d', function()
+  -- {{{
+  vim.cmd.GinDiff('++opener=tabnew')
+end) -- }}}
+-- Diff (Staged)
+vim.keymap.set('n', '[GIT]D', function()
+  -- {{{
+  vim.cmd.GinDiff('++opener=tabnew', '--cached')
+end) -- }}}
+
+-- Log (with graph): [GIT]l(or L)
+vim.keymap.set('n', '[GIT]l', function()
+  -- {{{
+  vim.cmd.GinLog('--all', '--graph', '--max-count=100', '--oneline', '--decorate')
+end, { desc = 'Gin: log (all graph)' }) -- }}}
+
+-- git pull
+vim.keymap.set('n', '[GIT]p', function()
+  -- {{{
+  vim.cmd('!git pull origin @')
+end, { desc = 'Git: pull' }) -- }}}
+-- git push
+vim.keymap.set('n', '[GIT]P', function()
+  -- {{{
+  vim.cmd('!git push origin @')
+end, { desc = 'Git: push origin' }) -- }}}
+
+-- Gin status
+vim.keymap.set('n', '[GIT]s', function()
+  -- {{{
+  vim.cmd.GinStatus()
+end, { desc = 'Gin: status' }) -- }}}
+-- Git status
+vim.keymap.set('n', '[GIT]S', function()
+  -- {{{
+  vim.cmd('!git status -v')
+end, { desc = 'Git: status' }) -- }}}
+
+-- Open browser; If visualmode, select current line's URL
+vim.keymap.set({ 'n', 'x' }, '[GIT]o', function()
+  -- {{{
+  vim.notify_once('TODO: add browser or `xdg-open` to open URL', vim.log.levels.WARN)
+  vim.cmd.GinBrowse()
+end, { silent = true, desc = 'GIN: yank github url' }) -- }}}
+
+-- Update: [GIT]u
+vim.keymap.set('n', '[GIT]u', function()
+  -- {{{
+  vim.cmd('silent !git add --update')
+end, { silent = true, desc = 'git add --update' }) -- }}}
+
+-- Yank; If visualmode, select current line's URL
+vim.keymap.set({ 'n', 'x' }, '[GIT]y', function()
+  -- {{{
+  vim.cmd.GinBrowse('++yank=+', '-n')
+end, { silent = true, desc = 'GIN: yank github url' }) -- }}}
+
+-- }}}
+
+-- }}}
+
+-- lua_source {{{
+-- For debugging
+if vim.env.NVIM_DEBUG == 'true' then
+  vim.notify('[GIT]: GIN loaded', vim.log.levels.INFO)
+end
+-- }}}
+
+-- gin-log {{{
+lua << EOF
+vim.keymap.set('n', 'P', function()
+  local choice = vim.fn.confirm('Do :Gin push?', '&Yes\n&No', 2)
+  if choice == 1 then
+    vim.cmd.Gin("push")
+  end
+end, { buffer = true, nowait = true, desc = 'Gin: push (confirm)' })
+EOF
+-- }}}
+

@@ -5,11 +5,14 @@ import {
 } from "@shougo/ddu-vim/types";
 import { BaseConfig, type ConfigArguments } from "@shougo/ddu-vim/config";
 import type { ActionData as FileAction } from "@shougo/ddu-kind-file";
+import type { ActionData as GitStatusActionData } from "@kuuote/ddu-kind-git-status";
 import type { Params as FfParams } from "@shougo/ddu-ui-ff";
 import type { Params as FilerParams } from "@shougo/ddu-ui-filer";
 
 import type { Denops } from "@denops/std";
 import * as fn from "@denops/std/function";
+import * as stdpath from "@std/path";
+import * as u from "@core/unknownutil";
 import { shellHistoryPaths } from "./consts.ts";
 
 type Params = Record<string, unknown>;
@@ -30,7 +33,6 @@ export class Config extends BaseConfig {
       "matcher_ignore_current_buffer",
       "matcher_ignores",
     );
-    args.setAlias("_", "action", "tabopen", "open");
 
     // Global config of the ddu.vim
     args.contextBuilder.patchGlobal({
@@ -190,6 +192,57 @@ export class Config extends BaseConfig {
                 return Promise.resolve(ActionFlags.None);
               },
             },
+            tabopen: {
+              description: "Open in tab",
+              callback: async (args: ActionArguments<Params>) => {
+                const action = args.items[0]?.action as FileAction;
+                await args.denops.call(
+                  "ddu#util#execute_path",
+                  "tabedit",
+                  action.path,
+                );
+                return Promise.resolve(ActionFlags.None);
+              },
+            },
+          },
+        },
+        git_branch: { defaultAction: "switch" },
+        git_status: {
+          defaultAction: "open",
+          actions: {
+            diff: {
+              description: "Show git diff of the file",
+              callback: async (args: ActionArguments<Params>) => {
+                const action = args.items[0].action as GitStatusActionData;
+                const path = stdpath.join(action.worktree, action.path);
+                await args.denops.call("ddu#start", {
+                  name: "file:git_diff",
+                  sources: [{
+                    name: "git_diff",
+                    options: {
+                      path,
+                    },
+                    params: {
+                      ...u.maybe(args.actionParams, u.isRecord) ?? {},
+                      onlyFile: true,
+                    },
+                  }],
+                });
+                return ActionFlags.None;
+              },
+            },
+            patch: {
+              description: "Open GinPatch for the file",
+              callback: async (args: ActionArguments<Params>) => {
+                for (const item of args.items) {
+                  const action = item.action as GitStatusActionData;
+                  await args.denops.cmd("tabnew");
+                  await args.denops.cmd("tcd " + action.worktree);
+                  await args.denops.cmd("GinPatch ++no-head " + action.path);
+                }
+                return ActionFlags.None;
+              },
+            },
           },
         },
         help: { defaultAction: "open" },
@@ -245,6 +298,18 @@ export class Config extends BaseConfig {
           converters: ["converter_hl_dir", "converter_devicon"],
         },
         file_git: {
+          matchers: [
+            "matcher_substring",
+            "matcher_hidden",
+          ],
+          sorters: ["sorter_alpha"],
+          converters: ["converter_hl_dir", "converter_devicon"],
+        },
+        git_status: {
+          matchers: ["matcher_substring"],
+          converters: ["converter_hl_dir", "converter_git_status"],
+        },
+        file_external: {
           matchers: [
             "matcher_substring",
             "matcher_hidden",

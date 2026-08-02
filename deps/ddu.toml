@@ -1,7 +1,10 @@
 # ddu.vim and related files
+# TODO: think about the load timing;
+# See https://github.com/kuuote/dotvim/blob/version5/conf/plug/ddu.toml#L99
 [[plugins]]
 repo = "shougo/ddu.vim"
 depends = "denops.vim"
+on_source = "vim-gin"
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.lua"
 
 # Add `Ddu` command
@@ -28,7 +31,6 @@ hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu-ui-filer.lua"
 # ---------------------------------------------------------------------------
 # SOURCE
 # ---------------------------------------------------------------------------
-# TODO: add `;a`
 [[plugins]]
 repo = "Shougo/ddu-source-action"
 group = "ddu"
@@ -66,6 +68,26 @@ group = "ddu"
 repo = "Shougo/ddu-source-file_point"
 group = "ddu"
 
+# Git branch
+[[plugins]]
+repo = "kyoh86/ddu-source-git_branch"
+group = "ddu"
+
+# Git diff (for git_status kind action)
+[[plugins]]
+repo = "kuuote/ddu-source-git_diff"
+group = "ddu"
+
+# Git stash
+[[plugins]]
+repo = "peacock0803sz/ddu-source-git_stash"
+group = "ddu"
+
+# Git status
+[[plugins]]
+repo = "kuuote/ddu-source-git_status"
+group = "ddu"
+
 # help
 [[plugins]]
 repo = "Matsui54/ddu-source-help"
@@ -87,6 +109,13 @@ group = "ddu"
 [[plugins]]
 repo = "uga-rosa/ddu-source-lsp"
 group = "ddu"
+lua_add = '''
+vim.api.nvim_create_autocmd('LspAttach', {
+  pattern = '*',
+  group = vim.api.nvim_create_augroup('vimrc#augroup', { clear = false }),
+  command = 'let b:ddu_source_lsp_clientName = "nvim-lsp"',
+})
+'''
 
 # Outputs of command
 [[plugins]]
@@ -95,6 +124,10 @@ group = "ddu"
 
 [[plugins]]
 repo = "Shougo/ddu-source-path_history"
+group = "ddu"
+
+[[plugins]]
+repo = "flow6852/ddu-source-qf"
 group = "ddu"
 
 # registers of vim

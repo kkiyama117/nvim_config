@@ -1,27 +1,133 @@
 -- Filetype-specific indent settings
+
+-- Default
+-- _ {{{
+lua << EOF
+  -- Disable automatically insert comment
+  vim.opt_local.formatoptions:remove({ 't', 'c', 'r', 'o' })
+  vim.opt_local.formatoptions:append({ 'm', 'M', 'B', 'l' })
+  -- disable conceal
+  vim.opt_local.conceallevel = 0
+  -- Disable autowrap
+  if vim.bo.textwidth ~= 70 and vim.bo.filetype ~= 'help' then
+    vim.bo.textwidth = 0
+  end
+  if not vim.bo.modifiable then
+    vim.opt_local.foldenable = false
+    vim.opt_local.foldcolumn = '0'
+    vim.opt_local.colorcolumn = ''
+  end
+EOF
+-- }}}
+
+-- go {{{
+lua << EOF
+  vim.api.nvim_set_hl(0, 'goErr', { link = 'WarningMsg', default = true })
+  vim.fn.matchadd('goErr', [[\<err\>]])
+EOF
+-- }}}
+
+-- help {{{
+lua << EOF
+  -- Add { and } to iskeyword
+  vim.opt_local.iskeyword:append({ '^{', '^}' })
+
+  -- Link help highlight groups to Special
+  vim.api.nvim_set_hl(0, 'helpBar', { link = 'Special', default = true })
+  vim.api.nvim_set_hl(0, 'helpBacktick', { link = 'Special', default = true })
+  vim.api.nvim_set_hl(0, 'helpStar', { link = 'Special', default = true })
+  vim.api.nvim_set_hl(0, 'helpIgnore', { link = 'Special', default = true })
+
+  -- Right-align the last [*|]...[*|] tag on a line
+  local function right_align(linenr)
+    local line = vim.fn.getline(linenr)
+    local m = vim.fn.matchlist(line,
+      [[^\%(\S\+ \?\)\+\?\s\+\([*|].\+[*|]\)]])
+    if #m == 0 then
+      return
+    end
+    -- m[2] = text part, m[3] = tag part (matchlist is 1-indexed in Lua)
+    local spaces = string.rep(' ', vim.bo.textwidth - #m[2] - #m[3])
+    vim.fn.setline(linenr, m[2] .. spaces .. m[3])
+  end
+
+  local function right_aligns(start, end_)
+    for linenr = start, end_ do
+      right_align(linenr)
+    end
+  end
+
+  -- :RightAlign command (range)
+  vim.api.nvim_buf_create_user_command(0, 'RightAlign',
+    function(opts)
+      right_aligns(opts.line1, opts.line2)
+    end,
+    { range = true, desc = 'Right-align help tags' }
+  )
+
+  -- Mappings
+  vim.keymap.set('n', 'mm', '<Cmd>RightAlign<CR>',
+    { buffer = true, desc = 'Right-align help tags' })
+  vim.keymap.set('x', 'mm', ':RightAlign<CR>',
+    { buffer = true, silent = true, desc = 'Right-align help tags (visual)' })
+EOF
+-- }}}
+
 -- lua {{{
 lua << EOF
   vim.bo.shiftwidth = 2
   vim.bo.softtabstop = 2
   vim.bo.expandtab = true
   vim.bo.tabstop = 2
-  -- Disable automatically insert comment.
-  vim.opt_local.formatoptions:remove({ 't', 'c', 'r', 'o' })
-  vim.opt_local.formatoptions:append({ 'm', 'M', 'B', 'l' })
-  if vim.bo.textwidth ~= 70 and vim.bo.filetype ~= 'help' then
-    vim.bo.textwidth = 0
-  end
 EOF
 -- }}}
 
 -- python {{{
 lua << EOF
+  vim.bo.foldmethod = "indent"
   vim.bo.softtabstop = 4
   vim.bo.shiftwidth = 4
   vim.bo.tabstop = 4
   vim.bo.textwidth = 80
   vim.bo.smarttab = true
   vim.bo.expandtab = true
+  vim.bo.smartindent = false
+EOF
+-- }}}
+
+-- qf {{{
+lua << EOF
+  vim.bo.wrap = true
+EOF
+-- }}}
+
+-- qfreplace {{{
+lua << EOF
+  vim.bo.foldenable = false
+EOF
+-- }}}
+
+-- typescript {{{
+lua << EOF
+  vim.bo.shiftwidth = 2
+  -- disable indent
+  vim.bo.indentexpr = ""
+EOF
+-- }}}
+
+-- toml {{{
+lua << EOF
+  -- Fold blank / indented lines
+  _G.__toml_fold = function(lnum)
+    local line = vim.fn.getline(lnum)
+    if line == '' or line:match('^%s+') then
+      return '1'
+    end
+    return '0'
+  end
+  vim.opt_local.foldenable = true
+  vim.opt_local.foldmethod = 'expr'
+  vim.opt_local.foldexpr = 'v:lua.__toml_fold(v:lnum)'
 EOF
 -- }}}
 
@@ -31,6 +137,14 @@ lua << EOF
   vim.bo.shiftwidth = 2
   vim.bo.tabstop = 2
   vim.bo.textwidth = 78
+EOF
+-- }}}
+
+-- yaml {{{
+lua << EOF
+  vim.opt_local.iskeyword:append({ '-' })
+  -- Don't adjust indent by "#"
+  vim.opt_local.indentkeys:remove({ '0#' })
 EOF
 -- }}}
 

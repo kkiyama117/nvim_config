@@ -13,7 +13,7 @@ end -- }}}
 local function current_options() -- {{{
   return vim.fn['ddu#custom#get_current'](vim.b.ddu_ui_name) or {}
 end -- }}}
-local opts = { buffer = true, silent = true }
+
 -- KEYMAP {{{
 -- itemAction: narrow (directory) / default (file)
     vim.keymap.set('n', '<CR>', function () -- {{{
@@ -27,7 +27,7 @@ end, {buffer = true, desc = 'DDU: do_action'}) -- }}}
 -- Toggle Select Item
 vim.keymap.set({'n','x'}, '<Space>', function () -- {{{
   vim.fn['ddu#ui#do_action']('toggleSelectItem')
-end, {buffer = true, desc = 'DDU: toggle selection'}) -- }}}
+end, {buffer = true, silent=true, desc = 'DDU: toggle selection'}) -- }}}
 -- Toggle All Items
 vim.keymap.set('n', '*', function () -- {{{
   vim.fn['ddu#ui#do_action']('toggleAllItems')
@@ -108,7 +108,7 @@ end, {buffer=true, desc='DDU: yank'}) -- }}}
 vim.keymap.set('n', 'gr', function () -- {{{
   vim.fn['ddu#ui#do_action']('itemAction', { name = 'grep' })
 end, {buffer=true, desc='DDU: grep'}) -- }}}
--- narrow
+-- narrow (same folder)
 vim.keymap.set('n', 'n', function () -- {{{
   vim.fn['ddu#ui#do_action']('itemAction', { name = 'narrow' })
 end, {buffer=true, desc='DDU: narrow'}) -- }}}
@@ -160,39 +160,35 @@ end, {buffer=true,desc='DDU: j'}) -- }}}
 vim.keymap.set('n', '<C-k>', function () -- {{{
   vim.fn['ddu#ui#do_action']('cursorPrevious')
 end, {buffer=true, desc='DDU: previous'}) -- }}}
-    
+
 -- Widen ff window
-    vim.keymap.set('n', '>', function ()
+    vim.keymap.set('n', '>', function () -- {{{
       vim.fn['ddu#ui#do_action']('updateOptions', { uiParams = { ff = { winWidth = 80 } } })
       vim.fn['ddu#ui#do_action']('redraw', { method = 'uiRedraw' })
-    end, opts
-    )
-
-    -- pathFilter (ff)
-    vim.keymap.set('n', 'M', function ()
-      local cur = current_options()
-      local uiParams = (cur.uiParams or {})
-      local ffParams = (uiParams.ff or {})
-      local pathFilter = vim.fn.input('pathFilter regexp: ', ffParams.pathFilter or '')
-      vim.fn['ddu#ui#multi_actions']({
-        { 'updateOptions', { uiParams = { ff = { pathFilter = pathFilter } } } },
-        { 'redraw', { method = 'refreshItems' } }
-      })
-    end, opts
-    )
-    -- rg globs
-    vim.keymap.set('n', 'U', function ()
-      local cur = current_options()
-      local sourceParams = (cur.sourceParams or {})
-      local rgParams = (sourceParams.rg or {})
-      local default = table.concat(rgParams.globs or {}, ' ')
-      local globs = vim.split(vim.fn.input('rg globs: ', default), '%s+', { trimempty = true })
-      vim.fn['ddu#ui#multi_actions']({
-        { 'updateOptions', { sourceParams = { rg = { globs = globs } } } },
-        { 'redraw', { method = 'refreshItems' } }
-      })
-    end, opts
-    )
+    end, {buffer=true, desc="DDU: uiRedraw(Resize)"}) -- }}}
+-- pathFilter (ff)
+vim.keymap.set('n', 'M', function () -- {{{
+  local cur = current_options()
+  local uiParams = (cur.uiParams or {})
+  local ffParams = (uiParams.ff or {})
+  local pathFilter = vim.fn.input('pathFilter regexp: ', ffParams.pathFilter or '')
+  vim.fn['ddu#ui#multi_actions']({
+    { 'updateOptions', { uiParams = { ff = { pathFilter = pathFilter } } } },
+    { 'redraw', { method = 'refreshItems' } }
+  })
+end, {buffer=true, desc="DDU: pathFilter"}) --}}}
+-- rg globs
+vim.keymap.set('n', 'U', function () -- {{{
+  local cur = current_options()
+  local sourceParams = (cur.sourceParams or {})
+  local rgParams = (sourceParams.rg or {})
+  local default = table.concat(rgParams.globs or {}, ' ')
+  local globs = vim.split(vim.fn.input('rg globs: ', default), '%s+', { trimempty = true })
+  vim.fn['ddu#ui#multi_actions']({
+    { 'updateOptions', { sourceParams = { rg = { globs = globs } } } },
+    { 'redraw', { method = 'refreshItems' } }
+  })
+end, {buffer=true, desc="DDU: ripgrep globs"}) -- }}}
 
 -- }}}
 

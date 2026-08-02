@@ -19,6 +19,12 @@ export class Config extends BaseConfig {
         shell: {
           aliases: {
             ls: "ls --color",
+            // ddt-ui-shell captures spawned PTY output into a text buffer, so
+            // a real `nvim` (incl. vim-guise's redirect child) renders its TUI
+            // into the shell buffer as garbage.  Alias to the `vim` builtin,
+            // which opens in the parent via `edit` with no child process.
+            // See `:h ddt-ui-shell-builtin-vim`
+            nvim: "vim",
           },
           ansiColorHighlights: {
             bgs: [
@@ -66,7 +72,7 @@ export class Config extends BaseConfig {
           ],
           userPrompt:
             "'| ' .. fnamemodify(getcwd(), ':~') .. v:lua.MyGitStatus()",
-          shellHistoryPath: "~/.cache/ddt-shell-history",
+          shellHistoryPath: "$XDG_CACHE_HOME/ddt-shell-history",
         },
       },
     });

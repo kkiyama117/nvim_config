@@ -1,8 +1,11 @@
 -- lua_add {{{
 -- Plugin functions cannot be called here (the plugin is not sourced yet).
 -- Only mappings and global options.
-vim.keymap.set('n', '<Leader>a', function()
+vim.keymap.set('n', '[AGENTIC]a', function()
   require('agentic').new_session()
+end, { desc = 'agentic: new session' })
+vim.keymap.set('n', '[AGENTIC]h', function()
+  vim.notify('TODO: check the correct function', vim.log.levels.INFO)
 end, { desc = 'agentic: new session' })
 -- }}}
 
@@ -12,7 +15,17 @@ require('agentic').setup({
   --provider = "claude-agent-acp",
   acp_providers = {
     ['pi-acp'] = {
-      command = '/home/kiyama/.local/share/mise/installs/npm-pi-acp/latest/bin/pi-acp',
+      command = vim.fn.expand(
+        vim.fs.joinpath(
+          '$XDG_DATA_HOME',
+          'mise',
+          'installs',
+          'npm-pi-acp',
+          'latest',
+          'bin',
+          'pi-acp'
+        )
+      ),
       initial_model = 'ollama-cloud/deepseek-v4-flash',
       default_thought_level = 'high',
     },
@@ -30,8 +43,8 @@ require('agentic').setup({
       close = 'qq',
       change_mode = {},
       switch_provider = {},
-      switch_model = {},
-      change_thought_level = {},
+      switch_model = '[AGENTIC]m',
+      change_thought_level = '[AGENTIC]l',
     },
 
     -- Keys for the prompt/input buffer
