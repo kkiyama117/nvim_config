@@ -35,6 +35,7 @@ import type {
 // Denops
 import type { Denops } from "@denops/std";
 import * as fn from "@denops/std/function";
+import * as vars from "@denops/std/variable";
 
 // std
 import { basename, join } from "@std/path";
@@ -59,6 +60,7 @@ export class Config extends BaseConfig {
     contextBuilder: ContextBuilder;
     basePath: string;
   }): Promise<ConfigReturn> {
+    const is_debug = await vars.g.get(args.denops, "vimrc#is_debug");
     const hasNvim = args.denops.meta.host === "nvim";
     const hasWindows = await fn.has(args.denops, "win32");
 
@@ -120,7 +122,7 @@ export class Config extends BaseConfig {
     ) as [TomlExt | undefined, ExtOptions, TomlParams];
 
     if (tomlExt) {
-      const tomlGlobs = ["deps/*.toml"];
+      const tomlGlobs = ["deps/**/*.toml"];
       const tomlPaths = await gatherGlobs(
         args.denops,
         tomlGlobs,
@@ -307,9 +309,9 @@ export class Config extends BaseConfig {
       plugins: lazyResult?.plugins ?? [],
       stateLines: lazyResult?.stateLines ?? [],
     };
-    console.debug("Dpp ConfigReturn ==============================");
-    console.debug(result);
-    console.debug("Dpp ConfigReturn END===========================");
+    if (is_debug == true) {
+      console.debug(result);
+    }
     return result;
   }
 }

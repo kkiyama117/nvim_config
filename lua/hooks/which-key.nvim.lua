@@ -1,4 +1,6 @@
 -- lua_add = {{{
+-- TODO: Add multiple hooks
+
 -- }}}
 
 -- lua_source = {{{

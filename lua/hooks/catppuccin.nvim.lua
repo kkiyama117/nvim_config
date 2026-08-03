@@ -42,15 +42,26 @@ require('catppuccin').setup({
   },
   --auto_integrations = true,
   integrations = {
+    aerial = true,
+    --dap = true,
+    --dap_ui = true,
+    --dropbar= {enabled=false,color_mode=false}
     gitsigns = true,
     mason = true,
+    --noise = true,
     notify = true,
     sandwich = true,
     which_key = true,
   },
   highlight_overrides = {
     all = function(colors)
-      return { NormalNC = { fg = colors.text, bg = 'NONE' } }
+      return {
+        Normal = { fg = colors.text, bg = 'NONE' },
+        --NonText = { fg = colors.text, bg = 'NONE' },
+        -- transparent others
+        NormalNC = { fg = colors.text, bg = 'NONE' },
+        --NormalSB = { fg = colors.text, bg = 'NONE' },
+      }
     end,
   },
 })

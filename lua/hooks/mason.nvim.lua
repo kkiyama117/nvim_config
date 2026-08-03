@@ -1,4 +1,6 @@
 -- lua_source {{{
+local kakehashi_config = require('vimrc.kakehashi_config')
+
 require('mason').setup()
 
 -- https://zenn.dev/glmlm/articles/neovim-mason-lspconfig-20250218
@@ -14,15 +16,7 @@ for _, pkg_spec in ipairs(pkg_specs_all) do
   end
 end
 
-local servers = {
-  'denols',
-  'emmylua_ls',
-  'gopls',
-  'pyright',
-  'rust_analyzer',
-  'tombi',
-  'vtsls',
-}
+local servers = kakehashi_config.bridged_servers
 
 local packages = {}
 for _, lspcfg_name in ipairs(servers) do
@@ -123,6 +117,7 @@ vim.lsp.config('vtsls', {
   workspace_required = true,
 })
 
-vim.lsp.enable(servers)
+-- Register configs for kakehashi bridge inheritance; do not attach directly.
+-- vim.lsp.enable() is called only for kakehashi in lua/hooks/kakehashi.nvim.lua.
 -- }}}
 

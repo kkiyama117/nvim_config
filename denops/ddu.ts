@@ -126,11 +126,11 @@ export class Config extends BaseConfig {
           displayTree: false,
           //floatingBorder: "none",
           floatingBorder: "single",
-          floatingBlend: 50,
+          floatingBlend: 30,
           filterSplitDirection: "floating",
           highlights: {
             filterText: "Statement",
-            floating: "Normal",
+            floating: "DduFfFloating",
             floatingBorder: "Special",
           },
           maxHighlightItems: 50,
@@ -152,7 +152,7 @@ export class Config extends BaseConfig {
           autoAction: {
             name: "preview",
           },
-          floatingBlend: 80,
+          floatingBlend: 30,
           previewCol: "&columns / 5 + 1",
           previewFloating: true,
           sort: "natural",

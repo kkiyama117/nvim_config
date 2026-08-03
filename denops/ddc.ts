@@ -212,7 +212,7 @@ export class Config extends BaseConfig {
       ],
     });
 
-    // Text files
+    // Text files (kakehashi LSP for host + embedded code blocks)
     for (
       const filetype of [
         "markdown",
@@ -222,7 +222,11 @@ export class Config extends BaseConfig {
       ]
     ) {
       args.contextBuilder.patchFiletype(filetype, {
-        sources: [...commonSources, "line", ...mocWord],
+        sources: hasNvim ? ["lsp", ...commonSources, "line", ...mocWord] : [
+          ...commonSources,
+          "line",
+          ...mocWord,
+        ],
       });
     }
 
@@ -265,13 +269,14 @@ export class Config extends BaseConfig {
     if (hasNvim) {
       for (
         const filetype of [
-          //"css",
           "go",
-          //"graphql",
-          //"html",
+          "gomod",
+          "javascript",
+          "javascriptreact",
           "lua",
           "python",
           "rust",
+          "toml",
           "tsx",
           "typescript",
           "typescriptreact",

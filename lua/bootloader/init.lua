@@ -91,7 +91,7 @@ local function startup()
       if is_debug then
         vim.notify(
           '[VIMRC#BOOTLOADER]: call dpp#min#load_state successfully',
-          vim.log.levels.WARN
+          vim.log.levels.INFO
         )
       end
       return true

@@ -84,7 +84,7 @@ vim.g.did_install_default_menus = true
 -- Disable builtin completion menu (to use `ddc.vim`)
 vim.opt.wildmenu = false
 vim.opt.wildmode = 'full'
---vim.opt.wildmode = 'list:longest,full'
+-- vim.opt.wildmode = 'list:longest,full'
 vim.opt.wildignorecase = true
 vim.opt.showfulltag = true
 -- }}}
@@ -191,7 +191,7 @@ vim.opt.langmenu = lang
 -- vim.fn.language(vim.env.LANG)
 vim.opt.langmenu = vim.env.LANG
 
---vim.opt.spell = true
+-- vim.opt.spell = true
 vim.opt.helplang = 'ja,en'
 vim.opt.spelllang:append('cjk')
 -- }}}2
@@ -290,15 +290,6 @@ vim.opt.updatetime = 1000
 -- ==========================================================================
 vim.opt.termguicolors = true
 vim.opt.inccommand = 'nosplit'
--- vim.opt.winblend = 20
--- vim.opt.pumblend = 20
-
-vim.cmd([[
-  highlight NonText guibg=none
-  highlight Normal guibg=none
-]])
--- highlight NormalNC guibg=none
---  highlight Normal ctermbg=none
---  highlight NonText ctermbg=none
---  highlight NormalSB guibg=none
+vim.opt.winblend = 30
+vim.opt.pumblend = 30
 

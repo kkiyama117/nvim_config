@@ -12,6 +12,7 @@ rtp = ""
 
 [[plugins]]
 repo = "Shougo/dpp-ext-toml"
+group = "dpp"
 hook_add = '''
 " Enable dpp toml syntax.
 if !has('nvim')
@@ -21,16 +22,21 @@ endif
 
 [[plugins]]
 repo = "Shougo/dpp-ext-local"
+group = "dpp"
 
 [[plugins]]
 repo = "Shougo/dpp-ext-installer"
+group = "dpp"
 
 [[plugins]]
 repo = "Shougo/dpp-ext-packspec"
+group = "dpp"
 
 [[plugins]]
 repo = "Shougo/dpp-protocol-git"
+group = "dpp"
 
 [[plugins]]
 repo = "Shougo/dpp-protocol-http"
+group = "dpp"
 

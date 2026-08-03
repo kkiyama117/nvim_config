@@ -1,0 +1,10 @@
+# ---------------------------------------------------------------------------
+# AI agents
+# ---------------------------------------------------------------------------
+# agentic.nvim - AI assistant (via ACP protocol)
+[[plugins]]
+repo = "carlos-algms/agentic.nvim"
+on_lua = "agentic"
+external_commands = ["pi"]
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/agentic.nvim.lua"
+

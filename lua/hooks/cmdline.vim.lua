@@ -10,6 +10,26 @@ end, { expr = true, silent = true })
 -- }}}
 
 -- lua_source {{{
-vim.fn['cmdline#set_option']({ highlight_window = 'None' })
+local function set_cmdline_highlights()
+  local ok, colors = pcall(function()
+    return require('catppuccin.palettes').get_palette()
+  end)
+  if ok then
+    vim.api.nvim_set_hl(0, 'CmdlineFloating', { bg = colors.base, fg = colors.text })
+  else
+    vim.api.nvim_set_hl(0, 'CmdlineFloating', { bg = '#000000', fg = '#cdd6f4' })
+  end
+end
+
+set_cmdline_highlights()
+vim.api.nvim_create_autocmd('ColorScheme', {
+  group = vim.g['vimrc#augroup'],
+  callback = set_cmdline_highlights,
+})
+
+vim.fn['cmdline#set_option']({
+  highlight_window = 'CmdlineFloating',
+  blend = vim.o.pumblend,
+})
 -- }}}
 

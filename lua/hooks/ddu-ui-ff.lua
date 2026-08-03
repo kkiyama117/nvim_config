@@ -1,6 +1,26 @@
 -- ddu-ff {{{
 lua << EOF
 -- ==========================================================================
+-- HIGHLIGHTS
+-- ==========================================================================
+local function set_ddu_ff_highlights()
+  local ok, colors = pcall(function()
+    return require('catppuccin.palettes').get_palette()
+  end)
+  if ok then
+    vim.api.nvim_set_hl(0, 'DduFfFloating', { bg = colors.base, fg = colors.text })
+  else
+    vim.api.nvim_set_hl(0, 'DduFfFloating', { bg = '#000000', fg = '#cdd6f4' })
+  end
+end
+
+set_ddu_ff_highlights()
+vim.api.nvim_create_autocmd('ColorScheme', {
+  group = vim.g['vimrc#augroup'],
+  callback = set_ddu_ff_highlights,
+})
+
+-- ==========================================================================
 -- KEYMAPS
 -- ==========================================================================
 

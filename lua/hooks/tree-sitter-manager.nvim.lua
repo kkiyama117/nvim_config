@@ -35,14 +35,47 @@ end)(vim.treesitter.start)
 -- Install parsers
 require('tree-sitter-manager').setup({
   ensure_installed = {
+    'go',
+    'javascript',
     'lua',
-    'rust',
+    'markdown',
+    'markdown_inline',
     'python',
+    'rust',
     'toml',
+    'tsx',
     'typescript',
     'vim',
     'vimdoc',
   },
+})
+
+-- Treesitter highlighting fallback (kakehashi semantic tokens may be empty).
+vim.api.nvim_create_autocmd({ 'FileType', 'BufRead' }, {
+  pattern = {
+    'go',
+    'gomod',
+    'gowork',
+    'gotmpl',
+    'javascript',
+    'javascriptreact',
+    'lua',
+    'markdown',
+    'markdown_inline',
+    'python',
+    'quarto',
+    'rmd',
+    'rust',
+    'toml',
+    'tsx',
+    'typescript',
+    'typescriptreact',
+  },
+  callback = function(args)
+    vim.defer_fn(function()
+      pcall(vim.treesitter.start, args.buf)
+    end, 100)
+  end,
 })
 --}}}
 

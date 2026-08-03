@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "install-external-bin": "deno run -A install_external_bin/main.ts"
+  },
+  "imports": {
+    "@std/fs": "jsr:@std/fs@~1.0.0",
+    "@std/path": "jsr:@std/path@~1.0.0"
+  }
+}

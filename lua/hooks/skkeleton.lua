@@ -1,8 +1,18 @@
 -- lua_add {{{
 -- Plugin functions cannot be called here (the plugin is not sourced yet).
 -- Only mappings and global options.
-vim.keymap.set({ 'i', 'c', 't' }, '<C-j>', '<Plug>(skkeleton-toggle)')
-vim.keymap.set('n', '<C-j>', 'i<Plug>(skkeleton-enable)')
+vim.keymap.set(
+  { 'i', 'c', 't' },
+  '<C-j>',
+  '<Cmd>call skkeleton#handle("toggle", {})<CR>',
+  { desc = 'skkeleton: toggle' }
+)
+vim.keymap.set(
+  'n',
+  '<C-j>',
+  'i<Cmd>call skkeleton#handle("enable", {})<CR>',
+  { desc = 'skkeleton: enable' }
+)
 -- }}}
 
 -- lua_source {{{

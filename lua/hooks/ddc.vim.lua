@@ -79,6 +79,13 @@ end, { desc = 'Cmdline with pre-processing (visual)' })
 vim.fn['ddc#custom#load_config'](
   vim.fn.expand(vim.fs.joinpath(vim.env.NVIM_CONFIG_HOME, 'denops', 'ddc.ts'))
 )
+
+-- kakehashi is the sole LSP client; ensure lsp source for markdown buffers.
+for _, ft in ipairs({ 'markdown', 'markdown_inline' }) do
+  vim.fn['ddc#custom#patch_filetype'](ft, {
+    sources = { 'lsp', 'around', 'file', 'register', 'line' },
+  })
+end
 -- KEYBINDS {{{
 -- Keys may sorted alphabetally.
 
