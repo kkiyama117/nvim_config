@@ -1,5 +1,8 @@
 -- lua_add {{{
-vim.g.gin_proxy_disable_editor = true
+-- Enable gin proxy editor so `git commit` can open the commit message in a
+-- Neovim buffer via the denops proxy server (instead of failing due to
+-- missing interactive terminal in the subprocess).
+-- vim.g.gin_proxy_disable_editor = true
 
 -- mappings (GIT) {{{
 
@@ -22,11 +25,11 @@ vim.keymap.set('n', '[GIT]b', function()
   require('shared.ddu_git_branch').start()
 end, { desc = 'Ddu: git branch' })
 
--- Commit (added): [GIT]c
+-- Commit (with editor via gin proxy): [GIT]c
+-- Opens commit message in a Neovim buffer (requires gin proxy editor).
 vim.keymap.set('n', '[GIT]c', function()
-  -- {{{
   vim.cmd('Gin commit -v')
-end, { desc = 'Gin: commit' }) -- }}}
+end, { desc = 'Gin: commit (with editor)' })
 
 -- Diff
 vim.keymap.set('n', '[GIT]d', function()

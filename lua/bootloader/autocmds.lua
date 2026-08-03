@@ -30,8 +30,9 @@ end
 --- Deno fires Dpp:makeStatePost only after both state.vim and startup.vim
 --- are written, so this is the reliable "make_state finished" signal.
 ---
---- Verifies the rebuilt state is loadable before restarting to prevent
---- infinite restart loops when the state is consistently broken.
+--- This only registers the autocmd; the actual branch logic (toml-save
+--- install vs. verify-and-restart) lives in
+--- `bootloader/dpp/auto_update.on_make_state_post`.
 ---
 ---@return boolean true if setup finished successfully.
 local function setup_autocmd_make_state_post()
@@ -39,32 +40,7 @@ local function setup_autocmd_make_state_post()
     pattern = 'Dpp:makeStatePost',
     group = vim.api.nvim_create_augroup('vimrc', { clear = false }),
     callback = function()
-      vim.notify(
-        'dpp make_state() may be done successfully',
-        vim.log.levels.WARN
-      )
-      -- Verify the rebuilt state is actually loadable before restarting
-      local cache_home = vim.g['vimrc#dpp#cache_home']
-      if cache_home == nil then
-        vim.notify(
-          '[VIMRC#BOOTLOADER#AutoCmd]: cache_home not set, skip restart',
-          vim.log.levels.ERROR
-        )
-        return
-      end
-      local ok, result = pcall(vim.fn['dpp#min#load_state'], cache_home)
-      if ok and result == 0 then
-        vim.notify(
-          '[VIMRC#BOOTLOADER#AutoCmd]: state verified, restarting...',
-          vim.log.levels.WARN
-        )
-        vim.cmd('restart +xall')
-      else
-        vim.notify(
-          '[VIMRC#BOOTLOADER#AutoCmd]: state still broken after make_state, skip restart',
-          vim.log.levels.ERROR
-        )
-      end
+      require('bootloader/dpp/auto_update').on_make_state_post()
     end,
   })
   return true
@@ -138,16 +114,19 @@ local function setup_autocmd_load_state_succeeded(args)
         local filepath = vim.api.nvim_buf_get_name(ev.buf)
         if is_under_nvim_config_home(filepath) then
           if filepath:match('%.toml$') then
-            -- TOML file: full update (install plugins, update, make_state)
+            -- TOML file: make_state first (registers new plugins), then
+            -- install after the state is reloaded.  We cannot use the
+            -- `dpp#check_files`-gated `dpp_update` path here because
+            -- check_files cannot see a newly-added toml.
             vim.notify(
-              '[VIMRC#BOOTLOADER#AutoCmd]: TOML config updated, full dpp update',
+              '[VIMRC#BOOTLOADER#AutoCmd]: TOML config updated; make_state -> install',
               vim.log.levels.WARN
             )
-            return require('bootloader/dpp/auto_update').dpp_update({
+            return require('bootloader/dpp/auto_update').dpp_update_toml({
               cache_home = dpp_cache_home,
               cache_github = dpp_cache_github,
               dpp_script = dpp_denops_script,
-            }, false)
+            })
           else
             -- Non-TOML file: only rebuild state (skip install/update)
             vim.notify(

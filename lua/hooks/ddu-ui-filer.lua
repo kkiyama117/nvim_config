@@ -1,7 +1,10 @@
 -- lua_add {{{
--- TODO: fix UI bug when called `N` key and new files created
 -- Global Key mapping to call Ddu-ui-filer.
 -- }}}
+--
+-- NOTE: ddu-ui-filer duplicates a directory's children after mutating
+-- item-actions (`newFile`/`delete`/...).  See `sync_dir_after_item_action`
+-- below for the workaround.
 
 -- lua_source {{{
 vim.api.nvim_create_autocmd({ 'TabEnter', 'WinEnter', 'CursorHold', 'FocusGained' }, {
@@ -40,6 +43,96 @@ local function toggle_ui_param(ui_name, param_name)
 end
 
 local opts = { buffer = true, silent = true }
+
+-- --------------------------------------------------------------------------
+-- Workaround for ddu-ui-filer showing a directory's children twice after a
+-- mutating item-action (`newFile`, `newDirectory`, `delete`, `trash`, `move`,
+-- `rename`, `paste`, `link`, `copy`).
+--
+-- These kind-actions return `ActionFlags.RefreshItems` + `searchPath`, so the
+-- ddu core re-expands the affected dir twice during the redraw: once via
+-- `restoreTree` (re-applying `#expandedItems`) and once via the `searchPath`
+-- walk.  ddu-ui-filer's `expandItem` override *appends* the children without
+-- clearing the existing ones, so the second expand inserts them again and
+-- the directory's contents appear duplicated -- until the folder is
+-- collapsed and re-expanded manually.
+--
+-- We automate that manual fix: after the action, find the expanded dir whose
+-- children may have been duplicated (same rule as ddu-kind-file's
+-- `getTargetDirectory()`, applied to the post-action cursor item), move the
+-- filer cursor onto it, toggle-collapse then toggle-expand (a single fresh
+-- gather), then put the cursor back on the originally-targeted item.
+-- `ddu#ui#do_action` is a synchronous denops request, so the steps are
+-- properly ordered.
+local function set_filer_cursor(lnum)
+	pcall(vim.api.nvim_win_set_cursor, 0, { lnum, 0 })
+	-- Force the filer's cursor-pos bufvar to match, even if the visible cursor
+	-- was already on `lnum` (in which case CursorMoved would not fire).
+	vim.b.ddu_ui_filer_cursor_pos = vim.fn.getcurpos()
+end
+
+local function find_item_line(path)
+	for i, it in ipairs(vim.b.ddu_ui_items or {}) do
+		local a = it.action or {}
+		if a.path == path then
+			return i
+		end
+	end
+	return nil
+end
+
+local function sync_dir_after_item_action()
+	local item = vim.fn['ddu#ui#get_item']() or {}
+	local action = item.action or {}
+	local path = action.path or item.word or ''
+	if path == '' then
+		return
+	end
+
+	-- The expanded directory whose children may be duplicated: same logic as
+	-- ddu-kind-file's `getTargetDirectory()` applied to the post-action item.
+	--   newFile/newDirectory(=file/just-created dir) -> dirname(path)
+	--   delete (=cursor lands on the dir, expanded)        -> path
+	local dir
+	if item.isTree and item.__expanded then
+		dir = path
+	else
+		dir = vim.fn.fnamemodify(path, ':h')
+	end
+	if dir == '' or dir == '.' then
+		return
+	end
+
+	-- Only a dir that is currently expanded in the filer can have duplicated
+	-- children; if it is not visible/expanded there is nothing to fix.
+	local parent_idx
+	for i, it in ipairs(vim.b.ddu_ui_items or {}) do
+		local a = it.action or {}
+		if it.isTree and it.__expanded and a.path == dir then
+			parent_idx = i
+			break
+		end
+	end
+	if not parent_idx then
+		return
+	end
+
+	-- Collapse then re-expand: the toggle reads the item under the filer cursor.
+	set_filer_cursor(parent_idx)
+	vim.fn['ddu#ui#do_action']('expandItem',
+		{ mode = 'toggle', isGrouped = true, isInTree = false })
+	set_filer_cursor(parent_idx)
+	vim.fn['ddu#ui#do_action']('expandItem',
+		{ mode = 'toggle', isGrouped = true, isInTree = false })
+
+	-- Put the cursor back on the originally-targeted item if it is still visible
+	-- (e.g. the newly created file).  For `delete`/`trash` it is gone, so the
+	-- cursor stays on the re-synced directory.
+	local restored = find_item_line(path)
+	if restored then
+		set_filer_cursor(restored)
+	end
+end
 
 -- Actions
 vim.keymap.set('n', 'a', function ()
@@ -115,6 +208,13 @@ end, opts)
 vim.keymap.set('n', 'u', function ()
 	vim.fn['ddu#ui#do_action']('itemAction', { name = 'undo' })
 end, opts)
+
+-- Re-sync the expanded directory under the cursor after a mutating
+-- item-action (`newFile`/`delete`/...).  ddu-ui-filer's built-in `redraw`
+-- does NOT fix the duplicated-children bug (it re-runs `restoreTree`, which
+-- appends the children again).  `R` collapses + re-expands the affected dir
+-- (a single fresh gather), which is the only thing that cleans it.
+vim.keymap.set('n', 'R', sync_dir_after_item_action, opts)
 
 -- Narrow
 vim.keymap.set('n', '~', function ()

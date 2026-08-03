@@ -9,22 +9,6 @@ on_source = ["ddu.vim"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/cmdline.vim.lua"
 
 # ---------------------------------------------------------------------------
-# gitsigns.nvim - Git integration for buffers
-# ---------------------------------------------------------------------------
-[[plugins]]
-repo = "lewis6991/gitsigns.nvim"
-on_event = ["BufReadPost", "BufNewFile"]
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/gitsigns.nvim.lua"
-
-# ---------------------------------------------------------------------------
-# heirline.nvim - statusline
-# ---------------------------------------------------------------------------
-[[plugins]]
-repo = "rebelot/heirline.nvim"
-on_event = ["UIEnter"]
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/heirline.nvim.lua"
-
-# ---------------------------------------------------------------------------
 # Previm: Preview the markdown file
 # ---------------------------------------------------------------------------
 [[plugins]]
@@ -79,14 +63,14 @@ on_ft = ["qf"]
 # ---------------------------------------------------------------------------
 # Help linter
 # ---------------------------------------------------------------------------
-# [[plugins]]
-# repo = "machakann/vim-vimhelplint"
-# on_ft = "help"
-#
-# [plugins.ftplugin]
-# help = '''
-#  nnoremap <buffer> ,r  <Cmd>VimhelpLint!<CR>
-# '''
+[[plugins]]
+repo = "machakann/vim-vimhelplint"
+on_ft = "help"
+
+[plugins.ftplugin]
+help = '''
+ nnoremap <buffer> ,r  <Cmd>VimhelpLint!<CR>
+'''
 
 # TODO: add `folke/which-key.nvim` add add as a ddu source
 

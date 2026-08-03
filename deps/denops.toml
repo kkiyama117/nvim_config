@@ -47,6 +47,6 @@ on_if = "exists('$NVIM')"
 [[plugins]]
 repo = "lambdalisue/vim-gin"
 depends = "denops.vim"
-on_cmd = "Gin*"
+on_cmd = ["Gin", "GinPatch", "GinDiff", "GinLog", "GinStatus", "GinBrowse"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-gin.lua"
 

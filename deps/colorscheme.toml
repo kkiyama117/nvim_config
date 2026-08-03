@@ -1,0 +1,13 @@
+# Test some colorschemes; If my color theme is concreted,
+# remove other colorschemes
+
+[[plugins]]
+repo = "folke/tokyonight.nvim"
+lazy = false
+
+# [[plugins]]
+# repo = "EdenEast/nightfox.nvim"
+# lazy = false
+
+# https://github.com/catppuccin/nvim
+

@@ -104,6 +104,14 @@ end
 -- }}}
 
 -- nvim UI2 {{{
+-- NOTE: Disabled.  The new `ui2` message handler in nvim 0.13-dev raises
+-- `Invalid 'end_col': out of range` in `vim/_core/ui2/messages.lua:237`
+-- when messages are shown (an extmark copied src->tgt gets an end_col
+-- beyond the target line length).  Keeping `vim.g._ui2_enabled` falsy
+-- makes `enable_ui2()` short-circuit and leaves the classic message UI.
+-- To re-enable: remove the `false and` guard below (and this note).
+vim.g._ui2_enabled = false
+
 local function enable_ui2()
   if #vim.api.nvim_list_uis() == 0 or vim.g._ui2_enabled then
     return true
@@ -118,7 +126,7 @@ local function enable_ui2()
 end
 
 -- Enable `UI2` if it can be used.
-if #vim.api.nvim_list_uis() > 0 and not enable_ui2() then
+if false and #vim.api.nvim_list_uis() > 0 and not enable_ui2() then
   local group = vim.api.nvim_create_augroup('enable_ui2', { clear = true })
   vim.api.nvim_create_autocmd({ 'VimEnter', 'CursorHold' }, {
     group = group,
