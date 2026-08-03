@@ -1,0 +1,20 @@
+-- lua_add = {{{
+-- }}}
+
+-- lua_source = {{{
+-- OPTS
+local wk = require('which-key')
+wk.setup({
+  triggers = {
+    { '<leader>', mode = { 'n', 'v' } },
+  },
+})
+-- Keymaps
+vim.keymap.set('n', '<c-w><Space>', function()
+  wk.show({ keys = '<c-w>', loop = true })
+end, { desc = 'Call which-key.nvim' })
+vim.keymap.set('n', '<Leader>?', function()
+  wk.show({ global = false })
+end, { desc = 'Call which-key.nvim' })
+-- }}}
+

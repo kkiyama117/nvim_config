@@ -72,10 +72,3 @@ help = '''
  nnoremap <buffer> ,r  <Cmd>VimhelpLint!<CR>
 '''
 
-# TODO: add `folke/which-key.nvim` add add as a ddu source
-
-# TODO: Set config of these plugins (below)
-[[plugins]]
-repo = "stevearc/aerial.nvim"
-on_event = ["BufReadPost", "BufNewFile"]
-

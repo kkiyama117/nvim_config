@@ -1,3 +1,38 @@
+# TODO: Add or test them;
+# TODO: Set config of `aerial.nvim`
+# folke/noice.nvim (with Dark-powered software UI)
+# folke/todo-comments.nvim
+# TODO: add `folke/which-key.nvim` add add as a ddu source
+
+# ---------------------------------------------------------------------------
+# Styles (statuslines) etc.
+# ---------------------------------------------------------------------------
+#
+
+# heirline.nvim - statusline
+[[plugins]]
+repo = "rebelot/heirline.nvim"
+on_event = ["UIEnter"]
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/heirline.nvim.lua"
+
+# ---------------------------------------------------------------------------
+# Integrations with some softwares
+# ---------------------------------------------------------------------------
+# gitsigns.nvim - Git integration for buffers
+[[plugins]]
+repo = "lewis6991/gitsigns.nvim"
+on_event = ["BufReadPost", "BufNewFile"]
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/gitsigns.nvim.lua"
+
+[[plugins]]
+repo = "stevearc/aerial.nvim"
+on_event = ["BufReadPost", "BufNewFile"]
+
+[[plugins]]
+repo = "folke/which-key.nvim"
+on_event = "UIEnter"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/which-key.nvim.lua"
+
 # ---------------------------------------------------------------------------
 # Tree-sitter
 # ---------------------------------------------------------------------------
@@ -49,20 +84,4 @@ repo = "carlos-algms/agentic.nvim"
 on_lua = "agentic"
 external_commands = ["pi"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/agentic.nvim.lua"
-
-# ---------------------------------------------------------------------------
-# gitsigns.nvim - Git integration for buffers
-# ---------------------------------------------------------------------------
-[[plugins]]
-repo = "lewis6991/gitsigns.nvim"
-on_event = ["BufReadPost", "BufNewFile"]
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/gitsigns.nvim.lua"
-
-# ---------------------------------------------------------------------------
-# heirline.nvim - statusline
-# ---------------------------------------------------------------------------
-[[plugins]]
-repo = "rebelot/heirline.nvim"
-on_event = ["UIEnter"]
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/heirline.nvim.lua"
 
