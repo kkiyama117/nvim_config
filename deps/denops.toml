@@ -11,7 +11,6 @@ denops_wait = false
 # Japanese input engine
 [[plugins]]
 repo = "vim-skk/skkeleton"
-on_map = { ict = "<Plug>(skkeleton-" }
 denops_wait = false
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/skkeleton.lua"
 

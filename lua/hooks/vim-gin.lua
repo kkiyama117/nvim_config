@@ -4,7 +4,7 @@
 -- missing interactive terminal in the subprocess).
 -- vim.g.gin_proxy_disable_editor = true
 
--- mappings (GIT) {{{
+-- mappings (GIT)
 
 -- Gin: patch
 vim.keymap.set('n', '[GIT]ad', function()
@@ -33,64 +33,51 @@ end, { desc = 'Gin: commit (with editor)' })
 
 -- Diff
 vim.keymap.set('n', '[GIT]d', function()
-  -- {{{
   vim.cmd.GinDiff('++opener=tabnew')
-end) -- }}}
+end, { desc = 'Gin: diff' })
 -- Diff (Staged)
 vim.keymap.set('n', '[GIT]D', function()
-  -- {{{
   vim.cmd.GinDiff('++opener=tabnew', '--cached')
-end) -- }}}
+end, { desc = 'Gin: diff (staged)' })
 
 -- Log (with graph): [GIT]l(or L)
 vim.keymap.set('n', '[GIT]l', function()
-  -- {{{
   vim.cmd.GinLog('--all', '--graph', '--max-count=100', '--oneline', '--decorate')
-end, { desc = 'Gin: log (all graph)' }) -- }}}
+end, { desc = 'Gin: log (all graph)' })
 
 -- git pull
 vim.keymap.set('n', '[GIT]p', function()
-  -- {{{
   vim.cmd('!git pull origin @')
-end, { desc = 'Git: pull' }) -- }}}
+end, { desc = 'Git: pull' })
 -- git push
 vim.keymap.set('n', '[GIT]P', function()
-  -- {{{
   vim.cmd('!git push origin @')
-end, { desc = 'Git: push origin' }) -- }}}
+end, { desc = 'Git: push origin' })
 
 -- Gin status
 vim.keymap.set('n', '[GIT]s', function()
-  -- {{{
   vim.cmd.GinStatus()
-end, { desc = 'Gin: status' }) -- }}}
+end, { desc = 'Gin: status' })
 -- Git status
 vim.keymap.set('n', '[GIT]S', function()
-  -- {{{
   vim.cmd('!git status -v')
-end, { desc = 'Git: status' }) -- }}}
+end, { desc = 'Git: status' })
 
 -- Open browser; If visualmode, select current line's URL
 vim.keymap.set({ 'n', 'x' }, '[GIT]o', function()
-  -- {{{
   vim.notify_once('TODO: add browser or `xdg-open` to open URL', vim.log.levels.WARN)
   vim.cmd.GinBrowse()
-end, { silent = true, desc = 'GIN: yank github url' }) -- }}}
+end, { silent = true, desc = 'GIN: yank github url' })
 
 -- Update: [GIT]u
 vim.keymap.set('n', '[GIT]u', function()
-  -- {{{
   vim.cmd('silent !git add --update')
-end, { silent = true, desc = 'git add --update' }) -- }}}
+end, { silent = true, desc = 'git add --update' })
 
 -- Yank; If visualmode, select current line's URL
 vim.keymap.set({ 'n', 'x' }, '[GIT]y', function()
-  -- {{{
   vim.cmd.GinBrowse('++yank=+', '-n')
-end, { silent = true, desc = 'GIN: yank github url' }) -- }}}
-
--- }}}
-
+end, { silent = true, desc = 'GIN: yank github url' })
 -- }}}
 
 -- lua_source {{{
@@ -110,4 +97,3 @@ vim.keymap.set('n', 'P', function()
 end, { buffer = true, nowait = true, desc = 'Gin: push (confirm)' })
 EOF
 -- }}}
-
