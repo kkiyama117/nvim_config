@@ -6,6 +6,7 @@ or call |kkiyama117-nvim.txt|
 ## Install
 
 ### Required
+
 TODO: write it down and make `doc` of `Install`
 
 ### How to setup
@@ -24,6 +25,7 @@ git clone https://github.com/kkiyama117/nvim_config.git ~/.config/nvim
 # and whole plugins and configs (Layer 3).
 # Each layer run `fallback` if something failed. Installing missing plugins,
 # try to run `dpp#make_state`, and run `:restart` to apply configs.
+
 nvim
 ```
 
