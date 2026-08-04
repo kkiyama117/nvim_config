@@ -28,6 +28,8 @@ require('agentic').setup({
       ),
       initial_model = 'ollama-cloud/deepseek-v4-flash:0731',
       default_thought_level = 'high',
+      -- consider using xhigh
+      --default_thought_level = 'xhigh',
     },
   },
   windows = {

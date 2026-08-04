@@ -10,7 +10,7 @@
 [[plugins]]
 repo = "rcarriga/nvim-notify"
 lazy = false
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-notify.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-notify.dpp"
 
 # Notify (external)
 # TODO: It may conflict with `Dark-powered UI`;
@@ -27,14 +27,14 @@ hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-notify.lua"
 [[plugins]]
 repo = "j-hui/fidget.nvim"
 lazy = false
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/fidget.nvim.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/fidget.nvim.dpp"
 
 # aerial.nvim - code outline / symbols
 # TODO: Add config
 [[plugins]]
 repo = "stevearc/aerial.nvim"
 on_event = ["BufReadPost", "BufNewFile"]
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/aerial.nvim.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/aerial.nvim.dpp"
 
 # heirline.nvim - statusline
 [[plugins]]

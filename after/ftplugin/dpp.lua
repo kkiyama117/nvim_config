@@ -1,7 +1,7 @@
 -- Filetype plugin for dpp.vim hooks files (*.dpp): Lua-like editing.
 -- See .agents/issues/dpp-filetype.md
 
--- Lua-ish indentation (mirror the `lua` entry in lua/hooks/ft.lua)
+-- Lua-ish indentation (mirror the `lua` entry in lua/hooks/ft.dpp)
 vim.bo.shiftwidth = 2
 vim.bo.softtabstop = 2
 vim.bo.tabstop = 2

@@ -238,7 +238,7 @@ vim.api.nvim_create_autocmd('ModeChanged', {
 -- }}}
 
 -- FILETYPE {{{1
--- See lua/hooks/ft.lua for each filetype settings
+-- See lua/hooks/ft.dpp for each filetype settings
 -- syntax max column
 vim.opt.synmaxcol = 300
 -- Diff{{{

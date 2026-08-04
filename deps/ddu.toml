@@ -5,7 +5,7 @@
 repo = "shougo/ddu.vim"
 depends = "denops.vim"
 on_source = "vim-gin"
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.dpp"
 
 # Add `Ddu` command
 [[plugins]]
@@ -20,13 +20,13 @@ on_cmd = "Ddu"
 [[plugins]]
 repo = "Shougo/ddu-ui-ff"
 group = "ddu"
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu-ui-ff.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu-ui-ff.dpp"
 
 # Filer
 [[plugins]]
 repo = "Shougo/ddu-ui-filer"
 group = "ddu"
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu-ui-filer.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu-ui-filer.dpp"
 
 # ---------------------------------------------------------------------------
 # SOURCE

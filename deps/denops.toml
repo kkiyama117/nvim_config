@@ -1,7 +1,7 @@
 # Denops itself and Denops-related plugins
 [[plugins]]
 repo = "vim-denops/denops.vim"
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/denops.vim.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/denops.vim.dpp"
 
 # Search engine of Japanese (by Roma-ji)
 [[plugins]]
@@ -12,7 +12,7 @@ denops_wait = false
 [[plugins]]
 repo = "vim-skk/skkeleton"
 denops_wait = false
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/skkeleton.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/skkeleton.dpp"
 
 [[plugins]]
 repo = "NI57721/skkeleton-state-popup"
@@ -47,5 +47,5 @@ on_if = "exists('$NVIM')"
 repo = "lambdalisue/vim-gin"
 depends = "denops.vim"
 on_cmd = ["Gin", "GinPatch", "GinDiff", "GinLog", "GinStatus", "GinBrowse"]
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-gin.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-gin.dpp"
 

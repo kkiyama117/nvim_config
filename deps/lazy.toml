@@ -6,7 +6,7 @@
 [[plugins]]
 repo = "Shougo/cmdline.vim"
 on_source = ["ddu.vim"]
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/cmdline.vim.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/cmdline.vim.dpp"
 
 # ---------------------------------------------------------------------------
 # Previm: Preview the markdown file
@@ -31,7 +31,7 @@ repo = "lambdalisue/vim-findent"
 [[plugins]]
 repo = "kana/vim-niceblock"
 on_map = { x = "<Plug>" }
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-niceblock.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-niceblock.dpp"
 
 # ---------------------------------------------------------------------------
 # vim-sandwich: add/delete/replace surroundings
@@ -40,7 +40,7 @@ hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-niceblock.lua"
 repo = "machakann/vim-sandwich"
 on_map = { n = ["<Plug>"], o = "<Plug>", x = "<Plug>" }
 # on_map = { n = ["<Plug>", "s"], o = "<Plug>", x = "<Plug>" }
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-sandwich.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-sandwich.dpp"
 
 # ---------------------------------------------------------------------------
 # Quickfix plugins

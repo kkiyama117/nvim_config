@@ -1,14 +1,14 @@
 # nvim-lspconfig - LSP client configurations
 [[plugins]]
 repo = "neovim/nvim-lspconfig"
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-lspconfig.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-lspconfig.dpp"
 
 # mason.nvim - LSP server installer
 [[plugins]]
 repo = "williamboman/mason.nvim"
 depends = ["nvim-lspconfig", "ddc-source-lsp"]
 on_event = "FileType"
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/mason.nvim.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/mason.nvim.dpp"
 
 # kakehashi.nvim - Bridge LSP servers and clients
 #   And we can merge with Tree-sitter and combine multiple LSP
@@ -16,4 +16,4 @@ hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/mason.nvim.lua"
 repo = "atusy/kakehashi.nvim"
 on_source = "mason.nvim"
 external_commands = ["kakehashi"]
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/kakehashi.nvim.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/kakehashi.nvim.dpp"
