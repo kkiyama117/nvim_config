@@ -11,7 +11,7 @@ vim.bo.expandtab = true
 vim.bo.commentstring = '-- %s'
 
 -- ---------------------------------------------------------------------------
--- Folding: "python inside markdown" style.
+-- Folding: 
 --
 -- Two levels combined in one 'foldexpr':
 --   1. hook blocks (`-- name {{{` ... `-- }}}`) -> base level from markers
@@ -25,6 +25,18 @@ vim.bo.commentstring = '-- %s'
 -- Map filetype `dpp` to the lua parser so the built-in treesitter fold
 -- machinery works on this buffer.
 vim.treesitter.language.register('lua', 'dpp')
+--vim.treesitter.language.register('lua', 'dpp', 'viml')
+
+-- Treesitter highlighting: whole file parses as lua, so hook markers are
+-- plain comments and LuaDoc annotations inside comments get highlighted via
+-- the `luadoc` injection (queries shipped by tree-sitter-manager.nvim).
+-- This is the primary highlighting path — kakehashi semantic tokens are
+-- disabled for dpp buffers (lua/hooks/kakehashi.nvim.dpp), preferring
+-- treesitter to LSP semantic tokens:
+-- https://blog.atusy.net/2025/07/15/prefer-luadoc-to-luals-semantictokens
+if vim.treesitter.language.add('lua') then
+  vim.treesitter.start()
+end
 
 -- Marker base level per line (1 = inside a hook block, 0 = outside), cached
 -- per buffer. Mirrors dpp's hooksFileMarker semantics, incl. nested markers.
@@ -91,3 +103,4 @@ vim.api.nvim_create_autocmd(
 vim.opt_local.foldmethod = 'expr'
 vim.opt_local.foldexpr = 'v:lua.__dpp_fold(v:lnum)'
 vim.opt_local.foldlevelstart = 99
+

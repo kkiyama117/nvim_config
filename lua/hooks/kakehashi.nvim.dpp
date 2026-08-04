@@ -52,6 +52,20 @@ vim.api.nvim_create_autocmd('LspAttach', {
     if client and client.name == 'kakehashi' then
       bridge.inherit(client, config.bridged_servers, 'keep')
 
+      -- dpp: treesitter owns highlighting (lua parser + luadoc injections,
+      -- started in after/ftplugin/dpp.lua). kakehashi's tokens for dpp are
+      -- only host markers (injected lua tokens depend on emmylua's slow
+      -- analysis), so the token-based takeover below would leave the buffer
+      -- uncolored. Prefer treesitter to LSP semantic tokens:
+      -- https://blog.atusy.net/2025/07/15/prefer-luadoc-to-luals-semantictokens
+      if vim.bo[ev.buf].filetype == 'dpp' then
+        vim.lsp.semantic_tokens.enable(false, {
+          bufnr = ev.buf,
+          client_id = client.id,
+        })
+        return
+      end
+
       -- Let kakehashi own highlighting once semantic tokens arrive
       -- (scripts/minimal_init.lua, kakehashi README Quick Start).
       vim.api.nvim_create_autocmd('LspTokenUpdate', {

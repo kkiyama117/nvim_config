@@ -61,6 +61,10 @@ vim.api.nvim_create_autocmd(
 -- Disable Treesitter by default; re-enabled when tree-sitter-manager.nvim is sourced.
 -- If dpp load_state fails, the plugin never loads and Treesitter stays off,
 -- avoiding "No parser for language" errors from built-in ftplugins.
+-- Preserve the ORIGINAL start first: the tree-sitter-manager hook wraps this
+-- (vim.g['vimrc#treesitter_start_orig']), not the no-op below — otherwise
+-- re-enabling would be a no-op.
+vim.g['vimrc#treesitter_start_orig'] = vim.treesitter.start
 vim.treesitter.start = function() end
 
 -- Modifiable terminal {{{
