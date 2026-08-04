@@ -9,6 +9,14 @@ on_source = ["ddu.vim"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/cmdline.vim.dpp"
 
 # ---------------------------------------------------------------------------
+# lexima.vim: Auto pair
+# ---------------------------------------------------------------------------
+[[plugins]]
+repo = "cohama/lexima.vim"
+on_event = ["BufReadPost","BufNewFile"]
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/lexima.vim.dpp"
+
+# ---------------------------------------------------------------------------
 # Previm: Preview the markdown file
 # ---------------------------------------------------------------------------
 [[plugins]]
