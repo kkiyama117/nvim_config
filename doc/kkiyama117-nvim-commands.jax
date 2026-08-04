@@ -1,0 +1,56 @@
+
+*kkiyama117-nvim-commands.txt*	
+
+Author: kkiyama117
+License: NYSL
+
+==============================================================================
+About
+
+TODO: write this file; and Think about the contents
+
+------------------------------------------------------------------------------
+TOGGLE                                   *kkiyama117-nvim-commands-background*
+
+==============================================================================
+Background color toggle                           *kkiyama117-nvim-background*
+
+TODO: this is AI-generated, and I think this contents is not `Commands` of
+nvim
+
+`vimrc.utils` provides functions to toggle the background color between
+`NONE` (transparent) and the colorscheme default background color.
+
+The background of the following highlight groups is toggled: >
+	Normal		NormalNC	SignColumn	SignColumnSB
+	LineNr		LineNrAbove	LineNrBelow	CursorLineNr
+	EndOfBuffer	FoldColumn	Folded		FloatBorder
+	NormalFloat	MsgArea
+<
+
+When the transparency is enabled, the original background colors of the
+groups are saved, and they are restored when the transparency is disabled.
+
+If the colorscheme is transparent by default, the default background color
+of the colorscheme is resolved and used instead:
+- catppuccin: `palette.base`
+- tokyonight: `colors.bg`
+- nightfox:   `palette.bg1` (default background; `bg0` is for statusline
+  and floats)
+
+For other colorschemes, the colorscheme is re-sourced to restore its
+defaults.
+
+Functions: >
+	require('vimrc.utils').toggle_background()
+	require('vimrc.utils').background_transparent()
+	require('vimrc.utils').background_opaque()
+	require('vimrc.utils').is_background_transparent()
+<
+
+Mapping: >
+	[TOGGLE]b	Toggle the background transparency
+<
+
+vim:tw=78:ft=help:
+
