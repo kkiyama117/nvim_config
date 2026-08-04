@@ -10,12 +10,16 @@ depends = ["ddc-source-lsp"]
 on_event = "FileType"
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-lspconfig.dpp"
 
-# kakehashi.nvim - Bridge LSP servers and clients
+# kakehashi.nvim (fork) - Bridge LSP servers and clients
+#   Fork: https://github.com/kkiyama117/kakehashi.nvim
+#   Dev: local clone at $NVIM_CONFIG_HOME/plugins/kakehashi.nvim (dpp skips
+#   install/update for local plugins; manage git there yourself).
+#   Switch to `repo = "kkiyama117/kakehashi.nvim"` once stable.
 #   And we can merge with Tree-sitter and combine multiple LSP
 #   LSP servers are installed by mise, not mason.nvim (see ~/.config/mise/config.toml).
 [[plugins]]
-repo = "atusy/kakehashi.nvim"
+local = true
+path = "$NVIM_CONFIG_HOME/plugins/kakehashi.nvim"
 on_source = "nvim-lspconfig"
 on_event = "FileType"
 external_commands = ["kakehashi"]
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/kakehashi.nvim.dpp"

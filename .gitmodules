@@ -1,0 +1,3 @@
+[submodule "plugins/kakehashi.nvim"]
+	path = plugins/kakehashi.nvim
+	url = https://github.com/kkiyama117/kakehashi.nvim
