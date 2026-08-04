@@ -24,6 +24,15 @@
 ; spurious `expected '=' for assignment` diagnostic per wrapped block. This
 ; is the price of a contiguous region; the previous design traded away all
 ; edit-carrying LSP features to avoid it.
+;
+; NOTE (why the extra parens): tree-sitter parses each `(#set! ...)` as a
+; STANDALONE pattern unless the whole thing is wrapped in one more pair of
+; parentheses. Unwrapped, the `injection.language` property lands on an
+; empty pattern, `extract_injection_language` finds nothing, and kakehashi
+; resolves zero regions (no hover/completion/diagnostics at all — the
+; "host bridging not opted in" fallthrough).
 
-(hook_block) @injection.content
-(#set! injection.language "lua")
+(
+  (hook_block) @injection.content
+  (#set! injection.language "lua")
+)
