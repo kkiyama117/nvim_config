@@ -220,6 +220,11 @@ vim.keymap.set('n', '[TOGGLE]a', function()
   -- {{{
   vimrc.toggle_option('autoread')
 end, { silent = true, desc = 'Toggle autoread' }) -- }}}
+-- background
+vim.keymap.set('n', '[TOGGLE]b', function()
+  -- {{{
+  vimrc.toggle_background()
+end, { silent = true, desc = 'Toggle background transparency' }) -- }}}
 -- conceal
 vim.keymap.set('n', '[TOGGLE]c', function()
   -- {{{
@@ -394,4 +399,3 @@ vim.keymap.set('n', 'qw', ':<C-u>w<CR>qq', { desc = 'smart exit with saving' })
 -- lua/hooks/ddu-ui-filer.lua
 -- }}}
 -- }}}
-
