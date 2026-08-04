@@ -2,7 +2,8 @@
 ---
 --- kakehashi is the single Neovim LSP client; downstream servers (pyright,
 --- gopls, …) run as bridged child processes. Keep `bridged_servers` in sync
---- with Mason package installs in lua/hooks/mason.nvim.dpp.
+--- with the LSP server installs in ~/.config/mise/config.toml (mason.nvim
+--- has been dropped; see lua/hooks/nvim-lspconfig.dpp for server configs).
 local M = {}
 
 ---@type string[]
@@ -138,7 +139,7 @@ function M.languages()
 
   languages.markdown = {
     bridge = {
-      -- emmylua_ls (not lua-language-server); see lua/hooks/mason.nvim.dpp.
+      -- emmylua_ls (not lua-language-server); see lua/hooks/nvim-lspconfig.dpp.
       lua = {
         aggregation = {
           ['_'] = { priorities = { 'emmylua_ls' } },
