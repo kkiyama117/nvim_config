@@ -4,6 +4,8 @@
 ; dpp.vim, and other blocks (`-- rust {{{` etc.) are Vimscript ftplugin
 ; keys whose content is wrapped in `lua << EOF` / `EOF` heredocs — still
 ; Lua.
+; TODO: Treat `other blocks` as Vimscript, and set the config of `lua in
+; Viml`
 ;
 ; Capture the WHOLE `hook_block` node (start marker + content + end marker)
 ; as ONE contiguous injection region per block:
@@ -35,4 +37,10 @@
 (
   (hook_block) @injection.content
   (#set! injection.language "lua")
+  ; hook_block has named children (marker/content lines) that span the whole
+  ; block; without include-children kakehashi computes the GAPS between them
+  ; as the "included" ranges — zero-width here — so the virtual document
+  ; would be EMPTY and emmylua would answer no completion/hover/diagnostics.
+  (#set! injection.include-children)
 )
+

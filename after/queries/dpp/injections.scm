@@ -4,6 +4,8 @@
 ; dpp.vim, and other blocks (`-- rust {{{` etc.) are Vimscript ftplugin
 ; keys whose content is wrapped in `lua << EOF` / `EOF` heredocs — still
 ; Lua.
+; TODO: Treat `other blocks` as Vimscript, and set the config of `lua in
+; Viml`
 ;
 ; Capture the WHOLE `hook_block` node (start marker + content + end marker)
 ; as ONE contiguous injection region per block:
@@ -24,6 +26,21 @@
 ; spurious `expected '=' for assignment` diagnostic per wrapped block. This
 ; is the price of a contiguous region; the previous design traded away all
 ; edit-carrying LSP features to avoid it.
+;
+; NOTE (why the extra parens): tree-sitter parses each `(#set! ...)` as a
+; STANDALONE pattern unless the whole thing is wrapped in one more pair of
+; parentheses. Unwrapped, the `injection.language` property lands on an
+; empty pattern, `extract_injection_language` finds nothing, and kakehashi
+; resolves zero regions (no hover/completion/diagnostics at all — the
+; "host bridging not opted in" fallthrough).
 
-(hook_block) @injection.content
-(#set! injection.language "lua")
+(
+  (hook_block) @injection.content
+  (#set! injection.language "lua")
+  ; hook_block has named children (marker/content lines) that span the whole
+  ; block; without include-children kakehashi computes the GAPS between them
+  ; as the "included" ranges — zero-width here — so the virtual document
+  ; would be EMPTY and emmylua would answer no completion/hover/diagnostics.
+  (#set! injection.include-children)
+)
+
