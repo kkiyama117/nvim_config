@@ -1,5 +1,7 @@
 -- lua_add {{{
 
+local agentic = require("agentic")
+
 -- Plugin functions cannot be called here (the plugin is not sourced yet).
 -- Only mappings and global options.
 
@@ -7,7 +9,7 @@
 ---Uses the existing session only (no lazy session spawn) and requires a
 ---provider that supports the `thought_level` config option.
 ---@params direction number if 1 = next, -1 = previous (wraps around).
-local function change_thought_level(direction) -- {{{
+local function change_thought_level(direction)
   local session = require('agentic.session_registry')
     .sessions[vim.api.nvim_get_current_tabpage()]
 
@@ -44,35 +46,35 @@ local function change_thought_level(direction) -- {{{
   session.config_options:handle_thought_level_change(option.value)
   vim.notify(string.format('[AGENTIC] Setting thought level to: %s', option.name), vim.log.levels.INFO)
 end
--- }}}
 
 vim.keymap.set({'n','v'}, '[AGENTIC]a', function()
-  require('agentic').toggle()
+  agentic.toggle()
 end, { desc = '[AGENTIC]: Toggle agentic.nvim window', silent = false })
 
 vim.keymap.set({'n','v'}, '[AGENTIC]r', function()
-  require('agentic').restore_session()
+  agentic.restore_session()
 end, { desc = '[AGENTIC]: Restore session' })
 
 vim.keymap.set({'n'}, '[AGENTIC]d', function()
-  require('agentic').add_current_line_diagnostics()
+  agentic.add_current_line_diagnostics()
 end, { desc = '[AGENTIC]: Add current line diag to Input' })
 
 vim.keymap.set({'n'}, '[AGENTIC]D', function()
-  require('agentic').add_buffer_diagnostics()
+  agentic.add_buffer_diagnostics()
 end, { desc = '[AGENTIC]: Add all in buffer to Input' })
 
 vim.keymap.set('n', '[AGENTIC]l', function()
   change_thought_level(1)
-end, { desc = '[AGENTIC]: Cycle thought level (next)' })
+end, { desc = '[AGENTIC]: Cycle thought level (Up)' })
 
 vim.keymap.set('n', '[AGENTIC]L', function()
   change_thought_level(-1)
-end, { desc = '[AGENTIC]: Cycle thought level (prev)' })
+end, { desc = '[AGENTIC]: Cycle thought level (down)' })
 
-vim.keymap.set('n', '[AGENTIC]h', function()
-  vim.notify('TODO: check the correct function', vim.log.levels.INFO)
-end, { desc = 'agentic: new session' })
+vim.keymap.set('n', '[AGENTIC]s', function()
+  agentic.switch_provider()
+end, { desc = '[AGENTIC]: Choose provider from picker' })
+
 -- }}}
 
 -- lua_source {{{
