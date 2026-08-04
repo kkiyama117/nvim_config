@@ -8,7 +8,7 @@ local agentic = require("agentic")
 ---Cycle the agentic thought effort level directly (no selector UI).
 ---Uses the existing session only (no lazy session spawn) and requires a
 ---provider that supports the `thought_level` config option.
----@params direction number if 1 = next, -1 = previous (wraps around).
+---@param direction number if 1 = next, -1 = previous (wraps around).
 local function change_thought_level(direction)
   local session = require('agentic.session_registry')
     .sessions[vim.api.nvim_get_current_tabpage()]
