@@ -95,7 +95,8 @@ end
 function M.languages()
   local languages = {
     ['_'] = {
-      autoInstall = true,
+      -- It is deprecated
+      --autoInstall = true,
       layers = {
         aggregation = {
           -- Pull-only diagnostics: seal the publishDiagnostics wire so
@@ -127,7 +128,7 @@ function M.languages()
   -- documents by URI extension.
   languages.dpp = {
     parser = vim.fn.expand('$NVIM_CONFIG_HOME') .. '/kakehashi/parser/dpp.so',
-    autoInstall = false,
+    --autoInstall = false,
     bridge = {
       lua = {
         aggregation = {
@@ -175,3 +176,4 @@ function M.languages()
 end
 
 return M
+

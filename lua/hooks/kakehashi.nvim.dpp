@@ -19,7 +19,7 @@ local config_home = vim.env.NVIM_CONFIG_HOME or vim.fn.stdpath('config')
 local kakehashi_asset_path = vim.fs.joinpath(config_home, 'kakehashi')
 
 local init_options = {
-  autoInstall = true,
+  --autoInstall = true,
   searchPaths = vim.tbl_filter(function(path)
     return path ~= nil and path ~= ''
   end, {
@@ -80,3 +80,4 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 -- }}}
+
