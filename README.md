@@ -15,6 +15,7 @@ TODO: write it down and make `doc` of `Install`
 ```bash
 git clone https://github.com/kkiyama117/nvim_config.git ~/.config/nvim
 ```
+
 - 2: Run
 
 ```bash
