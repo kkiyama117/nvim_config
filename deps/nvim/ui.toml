@@ -40,5 +40,7 @@ hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/aerial.nvim.lua"
 [[plugins]]
 repo = "rebelot/heirline.nvim"
 on_event = ["UIEnter"]
+# All colorscheme should be read before heirline.
+depends = ["catppuccin"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/heirline.nvim.dpp"
 

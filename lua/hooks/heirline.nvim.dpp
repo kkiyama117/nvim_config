@@ -1,0 +1,44 @@
+-- lua_add {{{
+  -- set the config of Nvim own, like `statusline`
+
+-- }}}
+
+-- lua_source {{{
+-- To setup, see `https://github.com/rebelot/heirline.nvim/blob/master/cookbook.md`
+-- --------------------------------------------------------------------------
+-- Status Line 
+-- --------------------------------------------------------------------------
+-- Heirline components has nested structure like XML.
+local StatusLine = {
+  { -- VimMode
+    hl = { fg="blue", bg="lightblue" },
+    { -- ModeValue
+      provider = function()
+        return vim.fn.mode()
+      end,
+    },
+    { -- Separator
+      hl = { fg = "lightblue", bg = "gray" },
+      provider = "\u{E0BC}",
+    },
+  },
+  { -- FileName
+    hl = { fg="black", bg="gray" },
+    provider = function()
+      return vim.fn.bufname()
+    end,
+  },
+}
+
+local WinBar= nil
+local TabLine = nil
+local StatusColumn = nil
+
+require('heirline').setup({
+  statusline = StatusLine,
+  winbar = WinBar,
+  tabline = TabLine,
+  statuscolumn = StatusColumn,
+  opts = {},
+})
+-- }}}
