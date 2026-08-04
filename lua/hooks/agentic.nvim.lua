@@ -26,7 +26,7 @@ require('agentic').setup({
           'pi-acp'
         )
       ),
-      initial_model = 'ollama-cloud/deepseek-v4-flash',
+      initial_model = 'ollama-cloud/deepseek-v4-flash:0731',
       default_thought_level = 'high',
     },
   },
