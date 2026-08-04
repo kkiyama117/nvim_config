@@ -108,7 +108,7 @@ local function setup_autocmd_load_state_succeeded(args)
     -- When BufWritePost, check buf is config files,
     -- and update plugins and dpp cache if so.
     vim.api.nvim_create_autocmd('BufWritePost', { -- {{{
-      pattern = '*.lua,*.vim,*.toml,*.ts,vimrc,.vimrc',
+      pattern = '*.dpp,*.lua,*.vim,*.toml,*.ts,vimrc,.vimrc',
       group = my_autocmds,
       callback = function(ev)
         local filepath = vim.api.nvim_buf_get_name(ev.buf)

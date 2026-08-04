@@ -282,6 +282,7 @@ export class Config extends BaseConfig {
     const checkFiles = await gatherGlobs(args.denops, [
       "init.lua",
       "lua/**/*.lua",
+      "lua/hooks/**/*.dpp",
       "deps/**/*.toml",
       "denops/**/*.ts",
       "**/*.vim",

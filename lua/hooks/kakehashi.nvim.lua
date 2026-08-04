@@ -13,12 +13,18 @@ end
 local home = vim.env.HOME or '~'
 local data_path = vim.fs.joinpath(home, '.local', 'share', 'kakehashi')
 
+-- Repo-owned kakehashi assets (queries, future parsers):
+-- $NVIM_CONFIG_HOME/kakehashi/queries/<lang>/...
+local config_home = vim.env.NVIM_CONFIG_HOME or vim.fn.stdpath('config')
+local kakehashi_asset_path = vim.fs.joinpath(config_home, 'kakehashi')
+
 local init_options = {
   autoInstall = true,
   searchPaths = vim.tbl_filter(function(path)
     return path ~= nil and path ~= ''
   end, {
     data_path,
+    kakehashi_asset_path,
     kakehashi_plugin_path(),
   }),
   languages = config.languages(),

@@ -47,7 +47,15 @@ M.server_filetypes = {
     'typescript',
     'typescriptreact',
   },
-  emmylua_ls = { 'lua' },
+  emmylua_ls = {
+    'lua',
+    -- dpp: dpp.vim hooks files (*.dpp) attach kakehashi via this entry
+    -- (filetypes() collection). The emmylua bridge itself runs on the
+    -- injected lua virtual documents (Route 2, languages.dpp.bridge.lua),
+    -- not on the host document (emmylua keys by URI extension, so host
+    -- .dpp docs are ignored anyway). See .agents/issues/dpp-filetype.md.
+    'dpp',
+  },
   gopls = { 'go', 'gomod', 'gowork', 'gotmpl' },
   pyright = { 'python' },
   rust_analyzer = { 'rust' },
@@ -85,7 +93,20 @@ end
 ---@return table
 function M.languages()
   local languages = {
-    ['_'] = { autoInstall = true },
+    ['_'] = {
+      autoInstall = true,
+      layers = {
+        aggregation = {
+          -- Pull-only diagnostics: seal the publishDiagnostics wire so
+          -- nvim gets a single set via textDocument/diagnostic (the
+          -- initial pull races the didChangeConfiguration in
+          -- vimrc/kakehashi_bridge.lua, which re-pulls after the config
+          -- lands). kakehashi folds push-driven servers' cached
+          -- diagnostics into pull answers, so nothing is lost.
+          ['textDocument/publishDiagnostics'] = { priorities = {} },
+        },
+      },
+    },
   }
 
   for _, lang in ipairs(M.host_bridge_languages) do
@@ -95,6 +116,25 @@ function M.languages()
       },
     }
   end
+
+  -- dpp (dpp.vim hooks file, *.dpp): custom tree-sitter-dpp grammar
+  -- (Route 2, .agents/issues/dpp-filetype.md D1b) parses hook blocks;
+  -- queries/dpp/injections.scm injects each block's content lines as lua
+  -- (wrapper lines `lua << EOF` / `EOF` excluded), and the injected
+  -- virtual documents (kakehashi-virtual-uri-*.lua) are bridged to
+  -- emmylua_ls — the only path that reaches emmylua, which keys
+  -- documents by URI extension.
+  languages.dpp = {
+    parser = vim.fn.expand('$NVIM_CONFIG_HOME') .. '/kakehashi/parser/dpp.so',
+    autoInstall = false,
+    bridge = {
+      lua = {
+        aggregation = {
+          ['_'] = { priorities = { 'emmylua_ls' } },
+        },
+      },
+    },
+  }
 
   languages.markdown = {
     bridge = {
