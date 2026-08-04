@@ -1,14 +1,13 @@
 -- lua_add {{{
 -- CommandLine settings for ddc
--- Functions for keymap{{{
-local function commandline_post() -- {{{
+-- Functions for keymap
+local function commandline_post()
   if vim.b.prev_buffer_config ~= nil then
     vim.fn['ddc#custom#set_buffer'](vim.b.prev_buffer_config)
     vim.b.prev_buffer_config = nil
   end
 end
--- }}}
-local function commandline_pre(mode) -- {{{
+local function commandline_pre(mode)
   if vim.b.prev_buffer_config ~= nil then
     return
   end
@@ -46,15 +45,12 @@ local function commandline_pre(mode) -- {{{
 
   vim.fn['ddc#enable_cmdline_completion']()
 end
--- }}}
--- }}}
 
 -- KEYBINDS
 -- --------------------------------------------------------------------------
 -- n: {';;','?'}
 -- x: {';;'}
 -- --------------------------------------------------------------------------
--- {{{
 --vim.keymap.set('n', ':', function()
 --  commandline_pre(':')
 --  vim.api.nvim_feedkeys(':', 'n', false)
@@ -73,7 +69,6 @@ vim.keymap.set('x', ';;', function()
   vim.api.nvim_feedkeys(':', 'n', false)
 end, { desc = 'Cmdline with pre-processing (visual)' })
 -- }}}
--- }}}
 
 -- lua_source {{{
 vim.fn['ddc#custom#load_config'](
@@ -86,10 +81,10 @@ for _, ft in ipairs({ 'markdown', 'markdown_inline' }) do
     sources = { 'lsp', 'around', 'file', 'register', 'line' },
   })
 end
--- KEYBINDS {{{
+-- KEYBINDS
 -- Keys may sorted alphabetally.
 
--- FOR INSERT MODE COMPLETION {{{
+-- FOR INSERT MODE COMPLETION
 -- Config to use `pum.vim`; If you use `native-ui`, use `pumvisible`
 vim.keymap.set('i', '<TAB>', function()
   if vim.fn['ddc#ui#inline#visible']() == 1 then
@@ -147,9 +142,8 @@ end)
 vim.keymap.set('i', '<C-y>', function()
   vim.fn['pum#map#confirm_suffix']()
 end)
--- }}}
 
--- FOR COMMAND-LINE MODE COMPLETION {{{
+-- FOR COMMAND-LINE MODE COMPLETION
 vim.keymap.set('c', '<Tab>', function()
   if vim.fn['ddc#ui#inline#visible']() == 1 then
     vim.api.nvim_feedkeys(vim.fn['ddc#map#insert_item'](0), 'n', false)
@@ -192,9 +186,7 @@ vim.keymap.set('c', '<C-z>', function()
   vim.fn['pum#map#select_relative'](-1)
 end)
 
--- }}}
-
--- FOR TERMINAL MODE COMPLETION {{{
+-- FOR TERMINAL MODE COMPLETION
 -- Mouse Support
 vim.keymap.set({ 'i', 'c', 't' }, '<LeftMouse>', function()
   vim.fn['pum#map#confirm_mouse']()
@@ -202,8 +194,6 @@ end, { desc = 'Left Mouse with pum.vim' })
 vim.keymap.set({ 'i', 'c', 't' }, '<RightMouse>', function()
   vim.fn['pum#map#select_mouse']()
 end, { desc = 'Right Mouse with pum.vim' })
--- }}}
--- }}}
 
 -- Enable ddc (registers the denops plugin + autocmds).
 -- Without this, patch_global() only stores config and no completion fires.

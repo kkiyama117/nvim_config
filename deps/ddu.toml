@@ -36,6 +36,10 @@ repo = "Shougo/ddu-source-action"
 group = "ddu"
 
 [[plugins]]
+repo = "shun/ddu-source-buffer"
+group = "ddu"
+
+[[plugins]]
 repo = "Shougo/ddu-source-command_args"
 group = "ddu"
 

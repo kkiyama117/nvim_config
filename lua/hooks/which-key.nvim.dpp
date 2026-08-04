@@ -1,9 +1,9 @@
--- lua_add = {{{
+-- lua_add {{{
 -- TODO: Add multiple hooks
 
 -- }}}
 
--- lua_source = {{{
+-- lua_source {{{
 -- OPTS
 local wk = require('which-key')
 wk.setup({
