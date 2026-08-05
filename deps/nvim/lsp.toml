@@ -43,3 +43,4 @@ on_event = "FileType"
 depends = ["kakehashi-lspconfig"]
 external_commands = ["kakehashi"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/kakehashi.nvim.dpp"
+
