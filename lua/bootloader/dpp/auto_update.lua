@@ -227,6 +227,27 @@ local install_pending = false
 --- no reason).
 local install_done_id = nil
 
+--- Source the (re)built state into the *running* session.
+---
+--- `dpp#min#load_state` is not a passive check: it sources the generated
+--- `startup.vim`, whose dpp-ext-lazy block re-registers a one-shot
+--- `SafeState` autocmd defining the dummy `on_map` mappings with `<unique>`.
+--- In a live session those mappings already exist (boot-time dummies, or the
+--- real ones once the plugin loaded), so the next idle moment raises E227
+--- for every on_map mapping.  The boot-time autocmd was `++once` and has
+--- already fired, so clearing the group's SafeState handler after sourcing
+--- drops only the freshly-added duplicate.
+---@param cache_home string
+---@return boolean ok true when the state was loaded successfully
+local function load_state_live(cache_home)
+  local ok, result = pcall(vim.fn['dpp#min#load_state'], cache_home)
+  pcall(vim.api.nvim_clear_autocmds, {
+    group = 'dpp-ext-lazy',
+    event = 'SafeState',
+  })
+  return ok and result == 0
+end
+
 --- Single `Dpp:makeStatePost` handler.
 ---
 --- In the toml-save flow (`install_pending`): reload the freshly-written
@@ -251,7 +272,7 @@ function M.on_make_state_post()
       return
     end
     -- 2: reload so g:dpp.state.plugins contains the new plugins.
-    if vim.fn['dpp#min#load_state'](cache_home) ~= 0 then
+    if not load_state_live(cache_home) then
       vim.notify(
         '[VIMRC#BOOTLOADER#dpp]: state reload failed after make_state',
         vim.log.levels.ERROR
@@ -284,8 +305,7 @@ function M.on_make_state_post()
     )
     return
   end
-  local ok, result = pcall(vim.fn['dpp#min#load_state'], cache_home)
-  if ok and result == 0 then
+  if load_state_live(cache_home) then
     vim.notify(
       '[VIMRC#BOOTLOADER#AutoCmd]: state verified, asking to restart...',
       vim.log.levels.WARN
