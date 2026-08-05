@@ -53,7 +53,28 @@ local function find_plugin_path(pattern)
   end
 end
 
---- Concatenate the kakehashi-lspconfig fragments for the bridged servers.
+--- Resolve a fragment `cmd` line's first binary via vim.fn.exepath.
+--- Matches the machine-generated single-line form `cmd = ["deno", "lsp"]`;
+--- leaves the line untouched when the binary is not found (kakehashi then
+--- inherits PATH, same as a bare name).
+---@param line string
+---@return string
+local function resolve_cmd_line(line)
+  local head, binary, rest = line:match('^(%s*cmd%s*=%s*%[%s*)"([^"]*)"(.*)$')
+  if not head then
+    return line
+  end
+  local resolved = vim.fn.exepath(binary)
+  if resolved == '' or resolved == binary then
+    return line
+  end
+  return head .. '"' .. resolved .. '"' .. rest
+end
+
+--- Concatenate the kakehashi-lspconfig fragments for the bridged servers,
+--- resolving each fragment's `cmd` first binary via exepath (mise shims)
+--- so nvim launched without mise on PATH can still spawn the children
+--- (the fork resolved these at bridge time; fragments ship bare names).
 ---@return string -- path to the built lsp.toml
 local function build_lsp_toml()
   vim.fn.mkdir(kh_cache, 'p')
@@ -74,7 +95,10 @@ local function build_lsp_toml()
   for _, name in ipairs(config.bridged_servers) do
     local fragment = vim.fs.joinpath(lsp_dir, name .. '.toml')
     if vim.fn.filereadable(fragment) == 1 then
-      vim.list_extend(lines, vim.fn.readfile(fragment))
+      vim.list_extend(
+        lines,
+        vim.tbl_map(resolve_cmd_line, vim.fn.readfile(fragment))
+      )
       table.insert(lines, '') -- blank line between fragments
     else
       vim.notify(

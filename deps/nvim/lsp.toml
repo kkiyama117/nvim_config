@@ -38,5 +38,8 @@ on_event = "FileType"
 repo = "atusy/kakehashi.nvim"
 on_source = "nvim-lspconfig"
 on_event = "FileType"
+# Make the rtp ordering explicit: the hook builds lsp.toml from
+# kakehashi-lspconfig's lsp/*.toml fragments, so it must be sourced first.
+depends = ["kakehashi-lspconfig"]
 external_commands = ["kakehashi"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/kakehashi.nvim.dpp"
