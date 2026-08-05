@@ -3,9 +3,9 @@
 --- kakehashi is the single Neovim LSP client; downstream servers (pyright,
 --- gopls, …) run as bridged child processes. Keep `bridged_servers` in sync
 --- with the LSP server installs in ~/.config/mise/config.toml and the
---- `enabled` entries in kakehashi/kakehashi.toml (the kakehashi-lspconfig
---- fragments ship with `enabled = false`). Per-server settings live in
---- kakehashi/kakehashi.toml; client filetypes and the languages init_options
+--- `enabled` entries in ~/.config/kakehashi/kakehashi.toml (the
+--- kakehashi-lspconfig fragments ship with `enabled = false`). Per-server
+--- settings live in ~/.config/kakehashi/kakehashi.toml; client filetypes
 --- table live here.
 local M = {}
 
@@ -133,8 +133,10 @@ function M.languages()
   -- virtual documents (kakehashi-virtual-uri-*.lua) are bridged to
   -- emmylua_ls — the only path that reaches emmylua, which keys
   -- documents by URI extension.
+  local xdg_config = vim.env.XDG_CONFIG_HOME
+    or vim.fs.joinpath(vim.env.HOME or '~', '.config')
   languages.dpp = {
-    parser = vim.fn.expand('$NVIM_CONFIG_HOME') .. '/kakehashi/parser/dpp.so',
+    parser = vim.fs.joinpath(xdg_config, 'kakehashi', 'parser', 'dpp.so'),
     bridge = {
       lua = {
         aggregation = {

@@ -18,7 +18,8 @@
 --   * lua/kakehashi/config.lua (vimrc-owned) — bridged_servers, filetypes,
 --     and the `languages` init_options table;
 --   * kakehashi-lspconfig TOML fragments + ~/.config/kakehashi/kakehashi.toml
---     (symlinked to kakehashi/kakehashi.toml in this repo) + a generated
+--     (chezmoi-managed; ~/.config/kakehashi also holds the dpp parser,
+--     queries, and grammar source) + a generated
 --     library.toml, passed to the kakehashi binary via --config-file (the
 --     dotfiles model). No inherit_nvim_lsp_config, no didChangeConfiguration:
 --     the languageServers are complete at spawn.
@@ -161,9 +162,9 @@ end
 -- ==========================================================================
 
 local home = vim.env.HOME or '~'
-local config_home = vim.env.NVIM_CONFIG_HOME or vim.fn.stdpath('config')
 
--- Standard user config location (symlink into this repo).
+-- Standard user config location (chezmoi-managed; also holds the dpp
+-- parser/queries/grammar moved out of this repo).
 local kakehashi_toml = vim.fs.joinpath(
   vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(home, '.config'),
   'kakehashi',
@@ -171,9 +172,8 @@ local kakehashi_toml = vim.fs.joinpath(
 )
 if vim.fn.filereadable(kakehashi_toml) ~= 1 then
   vim.notify(
-    ('[kakehashi] missing %s (expected a symlink to %s)'):format(
-      kakehashi_toml,
-      vim.fs.joinpath(config_home, 'kakehashi', 'kakehashi.toml')
+    ('[kakehashi] missing %s (chezmoi-managed; run `chezmoi apply`)'):format(
+      kakehashi_toml
     ),
     vim.log.levels.WARN
   )
@@ -195,8 +195,8 @@ local init_options = {
   end, {
     -- ~/.local/share/kakehashi (server data dir)
     vim.fs.joinpath(home, '.local', 'share', 'kakehashi'),
-    -- Repo-owned assets: parser/dpp.so, queries/dpp/*.scm
-    vim.fs.joinpath(config_home, 'kakehashi'),
+    -- ~/.config/kakehashi: dpp parser + queries (chezmoi-managed)
+    vim.fs.dirname(kakehashi_toml),
     -- The plugin's own rtp entry (bundled queries)
     find_plugin_path('kakehashi%.nvim$'),
   }),

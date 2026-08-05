@@ -33,7 +33,8 @@ on_event = "FileType"
 #   $NVIM_CONFIG_HOME/plugins/kakehashi.nvim, registered via the
 #   dpp-ext-local scan in denops/dpp.ts). The fork's bridge is replaced
 #   by after/lsp/kakehashi.lua + lua/kakehashi/config.lua +
-#   kakehashi/kakehashi.toml (symlinked to ~/.config/kakehashi/kakehashi.toml)
+#   ~/.config/kakehashi/kakehashi.toml (chezmoi-managed; that dir also
+#   holds the dpp parser/queries/grammar)
 #   — the --config-file model, like atusy's dotfiles.
 #   kakehashi is the sole Neovim LSP client; bridged servers (denols,
 #   emmylua_ls, gopls, pyright, rust_analyzer, tombi, vtsls) run as its
