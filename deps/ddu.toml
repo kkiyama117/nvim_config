@@ -1,10 +1,12 @@
 # ddu.vim and related files
-# TODO: think about the load timing;
+# Load on `User DenopsReady` (kuuote's pattern) so ddu is ready once
+# denops is up; ddu#* calls also auto-load ddu.vim via dpp-ext-lazy's
+# FuncUndefined handler.
 # See https://github.com/kuuote/dotvim/blob/version5/conf/plug/ddu.toml#L99
 [[plugins]]
 repo = "shougo/ddu.vim"
-depends = "denops.vim"
-on_source = "vim-gin"
+depends = ["denops.vim"]
+on_event = "DenopsReady"
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.dpp"
 
 # Add `Ddu` command
@@ -82,6 +84,10 @@ group = "ddu"
 repo = "kuuote/ddu-source-git_diff"
 group = "ddu"
 
+[[plugins]]
+repo = "kyoh86/ddu-source-git_log"
+group = "ddu"
+
 # Git stash
 [[plugins]]
 repo = "peacock0803sz/ddu-source-git_stash"
@@ -120,6 +126,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
   command = 'let b:ddu_source_lsp_clientName = "nvim-lsp"',
 })
 '''
+
+[[plugins]]
+repo = "mikanIchinose/ddu-source-markdown"
+group = "ddu"
 
 # Outputs of command
 [[plugins]]

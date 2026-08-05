@@ -75,6 +75,7 @@ EOF
 
 -- lua {{{
 lua << EOF
+  vim.opt_local.foldmethod = 'indent'
   vim.bo.shiftwidth = 2
   vim.bo.softtabstop = 2
   vim.bo.expandtab = true
@@ -82,14 +83,15 @@ lua << EOF
 EOF
 -- }}}
 
+
 -- python {{{
 lua << EOF
-  vim.bo.foldmethod = "indent"
+  vim.opt_local.foldmethod = 'indent'
   vim.bo.softtabstop = 4
   vim.bo.shiftwidth = 4
   vim.bo.tabstop = 4
   vim.bo.textwidth = 80
-  vim.bo.smarttab = true
+  vim.opt.smarttab = true
   vim.bo.expandtab = true
   vim.bo.smartindent = false
 EOF
@@ -97,18 +99,20 @@ EOF
 
 -- qf {{{
 lua << EOF
-  vim.bo.wrap = true
+  vim.opt_local.wrap = true
 EOF
 -- }}}
 
 -- qfreplace {{{
 lua << EOF
-  vim.bo.foldenable = false
+  vim.opt_local.foldenable = false
 EOF
 -- }}}
 
 -- typescript {{{
 lua << EOF
+  -- TODO: https://vim-jp.org/vim-users-jp/2009/10/08/Hack-84.html
+  vim.opt_local.foldmethod = 'syntax'
   vim.bo.shiftwidth = 2
   -- disable indent
   vim.bo.indentexpr = ""

@@ -2,6 +2,8 @@
 [[plugins]]
 repo = "vim-denops/denops.vim"
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/denops.vim.dpp"
+# At least, We must load until VimEnter
+# on_event = ["VimEnter"]
 
 # Search engine of Japanese (by Roma-ji)
 [[plugins]]
@@ -46,6 +48,6 @@ on_if = "exists('$NVIM')"
 [[plugins]]
 repo = "lambdalisue/vim-gin"
 depends = "denops.vim"
-on_cmd = ["Gin", "GinPatch", "GinDiff", "GinLog", "GinStatus", "GinBrowse"]
+on_event = ["DenopsReady"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-gin.dpp"
 

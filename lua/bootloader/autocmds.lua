@@ -5,6 +5,20 @@ local is_debug = vim.g['vimrc#is_debug'] == 'true'
 
 local my_autocmds = vim.api.nvim_create_augroup('vimrc', { clear = false })
 
+--- Whether this session has a UI attached (interactive nvim).
+---
+--- UI-less sessions — the kakehashi host (`nvim --embed`), detached
+--- installers, subagent nvims — must not register the config-change
+--- watchers or schedule make_state: they would duplicate the interactive
+--- session's rebuild, and `dpp#make_state` clears state.vim FIRST, so a
+--- concurrent rebuild can leave the state missing (which previously
+--- re-triggered the install/restart loop).
+---@return boolean
+local function has_ui()
+  local uis = vim.api.nvim_list_uis()
+  return uis ~= nil and not vim.tbl_isempty(uis)
+end
+
 -- ==========================================================================
 -- Utilities
 -- ==========================================================================
@@ -47,6 +61,15 @@ local function setup_autocmd_make_state_post()
 end
 
 local function setup_autocmd_load_state_failed(args)
+  -- Headless / embedded sessions must not rebuild the state: the rebuild
+  -- clears state.vim first and races the interactive session's rebuild.
+  if not has_ui() then
+    vim.notify(
+      '[VIMRC#BOOTLOADER#AutoCmd]: no UI; skipping make_state recovery (headless session)',
+      vim.log.levels.WARN
+    )
+    return false
+  end
   local dpp_cache_home = args.cache_home
   local dpp_cache_github = args.cache_github
   local dpp_denops_script = args.dpp_script
@@ -94,6 +117,16 @@ end
 ---@param args {cache_home: string,cache_github:string, dpp_script: string}
 ---@return boolean true if setup finished successfully.
 local function setup_autocmd_load_state_succeeded(args)
+  -- Headless / embedded sessions must not watch config writes: every save
+  -- would trigger a duplicate make_state that clears state.vim out from
+  -- under the interactive session's rebuild.
+  if not has_ui() then
+    vim.notify(
+      '[VIMRC#BOOTLOADER#AutoCmd]: no UI; skipping update watchers (headless session)',
+      vim.log.levels.WARN
+    )
+    return false
+  end
   local dpp_cache_home = args.cache_home
   local dpp_cache_github = args.cache_github
   local dpp_denops_script = args.dpp_script

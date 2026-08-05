@@ -21,6 +21,7 @@ New config and documents of `neovim`.
 
 | ID | Rule | Rationale |
 |----|------|-----------|
+| 00 | EVERYTHING only for AI agents are under `doc/agents` | TODO |
 | 01 | Write `doc` as vimdoc | TODO |
 
 When a new hard constraint is discovered, append it to this table.

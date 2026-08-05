@@ -8,6 +8,12 @@ local plugin = require('notify')
 plugin.setup()
 vim.notify = plugin
 
+-- In debug mode, keep the notify log tee alive: `lua/vimrc/debug.lua`
+-- wrapped the default notify earlier, but this assignment replaced it.
+if vim.g['vimrc#is_debug'] then
+  vim.notify = require('vimrc.utils').wrap_notify_with_log()
+end
+
 -- TODO: Add multiple hooks with `ddu` and get `require("notify").history()` as a source of ddu
 -- }}}
 

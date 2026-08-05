@@ -6,105 +6,105 @@ local split = vim.fn.has('nvim') == 1 and 'floating' or 'horizontal'
 local augroup = vim.api.nvim_create_augroup('vimrc#augroup', { clear = false })
 
 -- `Dark Powered` alternative keys; `/`, `*`, `n`
-vim.keymap.set('n', '/', function()
+vim.keymap.set('n', '/', function ()
   vim.fn['ddu#start']({
     name = 'search',
     resume = false,
     uiParams = {
       ff = {
-        ignoreEmpty = true,
-      },
+        ignoreEmpty = true
+      }
     },
     sources = {
       {
         name = 'line',
         params = {
-          ignoreEmptyInput = true,
-        },
-      },
+          ignoreEmptyInput = true
+        }
+      }
     },
     --input = vim.fn.escape(vim.fn.input('Pattern: '), ' '),
-    input = vim.fn.escape(vim.fn['cmdline#input'](), ' '),
+    input = vim.fn.escape(vim.fn['cmdline#input'](), ' ')
   })
-end, { desc = 'Search `/` alternative' })
+end, { desc = 'Search `/` alternative' }
+)
 
-vim.keymap.set('n', '*', function()
+vim.keymap.set('n', '*', function ()
   vim.fn['ddu#start']({
     name = 'search',
     resume = false,
     input = vim.fn.expand('<cword>'),
     sources = {
       {
-        name = 'line',
-      },
-    },
+        name = 'line'
+      }
+    }
   })
 end)
 
-vim.keymap.set('n', 'n', function()
+vim.keymap.set('n', 'n', function ()
   vim.fn['ddu#start']({
     name = 'search',
-    resume = true,
+    resume = true
   })
 end)
 
 -- Dark powered plugins are mapped to `<Leader>d` = `[DP]`
 -- Almost all of this mappings are for searching file names
 -- Search files from `old`,`git`, and so on
-vim.keymap.set('n', '[DP]a', function()
+vim.keymap.set('n', '[DP]a', function ()
   local git_source = vim.fn.finddir('.git', ';') ~= '' and 'file_git' or ''
   vim.fn['ddu#start']({
     name = 'files-' .. vim.fn.win_getid(),
     resume = true,
     unique = true,
     expandInput = true,
-    sources = vim.fn.filter(
-      { { name = 'file_old' }, { name = git_source }, { name = 'file' } },
-      'v:val.name != ""'
-    ),
+    sources = vim.fn.filter({ { name = 'file_old' }, { name = git_source }, { name = 'file' } }, 'v:val.name != ""'),
     sourceOptions = {
       file = {
-        volatile = true,
-      },
+        volatile = true
+      }
     },
     sourceParams = {
-      file_new = {},
+      file_new = {}
     },
     uiParams = {
       ff = {
         displaySourceName = 'short',
-        split = split,
-      },
-    },
+        split = split
+      }
+    }
   })
-end, { desc = 'Ddu: file picker (old + git + file)' })
+end, { desc = 'Ddu: file picker (old + git + file)' }
+)
 
 -- NVIM_CONFIG_HOME file list
-vim.keymap.set('n', '[DP]c', function()
-  local path = vim.g.nvim_config_home
+vim.keymap.set('n', '[DP]c', function ()
+  local path = vim.env.NVIM_CONFIG_HOME
   vim.fn['ddu#start']({
     name = 'files',
     resume = true,
     sources = {
       {
-        name = 'file',
-      },
+        name = 'file'
+      }
     },
     sourceOptions = {
       file = {
-        path = path,
-      },
+        path = path
+      }
     },
     uiParams = {
       ff = {
-        split = split,
-      },
-    },
+        split = split
+      }
+    }
   })
-end, { desc = 'Ddu: $NVIM_CONFIG_HOME files' })
+end, { desc = 'Ddu: $NVIM_CONFIG_HOME files' }
+)
 
 -- Ddu-ui-filer open at side
-vim.keymap.set('n', '[DP]f', function()
+vim.keymap.set('n', '[DP]f', function ()
   vim.fn['ddu#start']({
     name = 'filer-' .. vim.fn.win_getid(),
     ui = 'filer',
@@ -112,34 +112,35 @@ vim.keymap.set('n', '[DP]f', function()
     sync = true,
     sources = {
       {
-        name = 'file',
-      },
+        name = 'file'
+      }
     },
     sourceOptions = {
       file = {
         path = vim.t.ddu_ui_filer_path or vim.fn.getcwd(),
         limitPath = vim.fn.getcwd(),
-        columns = { 'filename' },
-      },
+        columns = { 'filename' }
+      }
     },
     uiParams = {
       filer = {
         autoResize = true,
-        split = 'vertical',
-      },
-    },
+        split = 'vertical'
+      }
+    }
   })
-end, { desc = 'ddu-ui-filer: open' })
+end, { desc = 'ddu-ui-filer: open' }
+)
 
 -- Files inside `git root`
-vim.keymap.set('n', '[DP]g', function()
+vim.keymap.set('n', '[DP]g', function ()
   vim.fn['ddu#start']({
     name = 'files-git-' .. vim.fn.win_getid(),
     sources = {
       {
-        name = 'file_git',
-      },
-    },
+        name = 'file_git'
+      }
+    }
     -- `file_git` gets files that are managed by git.
     -- If you check all files inside the root of git,
     -- use it instead of the default of `file_git`.
@@ -163,243 +164,256 @@ vim.keymap.set('n', '[DP]g', function()
 end)
 
 -- Open files/Uri from pointed word
-vim.keymap.set('n', '[DP]p', function()
+vim.keymap.set('n', '[DP]p', function ()
   -- moved from `sf`
   vim.fn['ddu#start']({
     name = 'files-' .. vim.fn.win_getid(),
     sources = {
       {
-        name = 'file_point',
-      },
+        name = 'file_point'
+      }
     },
     uiParams = {
       ff = {
         split = split,
-        displaySourceName = 'short',
-      },
-    },
+        displaySourceName = 'short'
+      }
+    }
   })
-end, { desc = 'Ddu: extract file paths from cursor line' })
+end, { desc = 'Ddu: extract file paths from cursor line' }
+)
 
--- List up dpp plugins
-vim.keymap.set('n', '[DP]l', function()
+-- List up dpp plugins; This is from `dpp.vim`
+vim.keymap.set('n', '[DP]l', function ()
   vim.fn['ddu#start']({
     sources = {
       {
-        name = 'dpp',
-      },
-    },
+        name = 'dpp'
+      }
+    }
   })
-end,{ desc = 'Ddu: source of dpp' })
+end, { desc = 'Ddu: source of dpp' }
+)
 
 -- Fuzzy finder mappings that start from `;`
 
 -- Normal mapping
 
 -- buffers
-vim.keymap.set('n', ';b', function()
+vim.keymap.set('n', ';b', function ()
   vim.fn['ddu#start']({
-    name = 'buffer',
+    name = 'buffer'
     -- TODO: Add actions of them
   })
-end, { desc = 'Ddu: buffers' })
+end, { desc = 'Ddu: buffers' }
+)
 
 -- outline (markdown)
-vim.keymap.set('n', ';d', function()
+vim.keymap.set('n', ';d', function ()
   vim.fn['ddu#start']({
     name = 'outline',
     sources = {
       {
-        name = 'markdown',
-      },
+        name = 'markdown'
+      }
     },
     uiParams = {
       ff = {
         ignoreEmpty = true,
-        displayTree = true,
-      },
-    },
+        displayTree = true
+      }
+    }
   })
-end, { desc = 'Ddu: markdown outline' })
+end, { desc = 'Ddu: markdown outline' }
+)
 
 -- simple ripgrep with empty window
-vim.keymap.set('n', ';e', function()
+vim.keymap.set('n', ';e', function ()
   vim.fn['ddu#start']({
     name = 'search',
     resume = false,
     sources = {
       {
-        name = 'rg',
-      },
+        name = 'rg'
+      }
     },
     sourceParams = {
       rg = {
-        volatile = true,
-      },
-    },
+        volatile = true
+      }
+    }
   })
-end, { desc = 'Ddu: empty' })
+end, { desc = 'Ddu: empty' }
+)
 
 -- Ripgrep
-vim.keymap.set('n', ';fc', function()
+vim.keymap.set('n', ';fc', function ()
   vim.fn['ddu#start']({
     name = 'search',
     resume = false,
     sources = {
       {
-        name = 'rg',
-      },
+        name = 'rg'
+      }
     },
     uiParams = {
       ff = {
-        ignoreEmpty = true,
-      },
+        ignoreEmpty = true
+      }
     },
     sourceParams = {
       rg = {
-        input = vim.fn['cmdline#input']('Pattern: ', vim.fn.expand('<cword>')),
-      },
+        input = vim.fn['cmdline#input']('Pattern: ', vim.fn.expand('<cword>'))
+      }
     },
     sourceOptions = {
       rg = {
-        path = vim.fn['cmdline#input'](
-          'Directory: ',
-          vim.fn.getcwd() .. '/',
-          'dir'
-        ),
-      },
-    },
+        path = vim.fn['cmdline#input']('Directory: ', vim.fn.getcwd() .. '/', 'dir')
+      }
+    }
   })
-end, { desc = 'Ddu: ripgrep inside cwd' })
+end, { desc = 'Ddu: ripgrep inside cwd' }
+)
 
 -- Ripgrep in manual path
-vim.keymap.set('n', ';fm', function()
+vim.keymap.set('n', ';fm', function ()
   vim.fn['ddu#start']({
     name = 'search',
     resume = false,
     sources = {
       {
-        name = 'rg',
-      },
+        name = 'rg'
+      }
     },
     sourceParams = {
       rg = {
-        input = vim.fn.escape(
-          vim.fn['cmdline#input']('Pattern: ', vim.fn.expand('<cword>')),
-          ' '
-        ),
-      },
+        input = vim.fn.escape(vim.fn['cmdline#input']('Pattern: ', vim.fn.expand('<cword>')), ' ')
+      }
     },
     uiParams = {
       ff = {
-        ignoreEmpty = true,
-      },
-    },
+        ignoreEmpty = true
+      }
+    }
   })
-end, { desc = 'Ddu: ripgrep' })
+end, { desc = 'Ddu: ripgrep' }
+)
 
 -- GIT branch
-vim.keymap.set('n', ';gb', function()
-  require('shared.ddu_git_branch').start()
-end, { desc = 'Ddu: git branch' })
+vim.keymap.set('n', ';gb', function ()
+  require('hooks.shared.ddu_git').ddu_git_branch()
+end, { desc = 'Ddu: git branch' }
+)
 
-vim.keymap.set('n', ';gs', function()
-  require('shared.ddu_git_status').start()
-end, { desc = 'Ddu: git status' })
+-- GIT log
+vim.keymap.set('n', ';gl', function ()
+  require('hooks.shared.ddu_git').ddu_git_log()
+end, { desc = 'Ddu: git log' }
+)
+
+-- GIT status
+vim.keymap.set('n', ';gs', function ()
+  require('hooks.shared.ddu_git').ddu_git_status()
+end, { desc = 'Ddu: git status' }
+)
+
+-- GIT stash
+vim.keymap.set('n', ';gS', function ()
+  require('hooks.shared.ddu_git').ddu_git_stash()
+end, { desc = 'Ddu: git stash list' }
+)
 
 -- help
-vim.keymap.set('n', ';h', function()
+vim.keymap.set('n', ';h', function ()
   vim.fn['ddu#start']({
     --name = 'search',
     sources = {
       {
-        name = 'help',
-      },
-    },
+        name = 'help'
+      }
+    }
   })
-end, { desc = 'Ddu: help' })
+end, { desc = 'Ddu: help' }
+)
 
 -- line
-vim.keymap.set('n', ';l', function()
+vim.keymap.set('n', ';l', function ()
   vim.fn['ddu#start']({
     --name = 'search',
     sources = {
       {
-        name = 'line',
-      },
-    },
+        name = 'line'
+      }
+    }
   })
-end, { desc = 'Ddu: line' })
+end, { desc = 'Ddu: line' }
+)
 
 -- Command output
-vim.keymap.set('n', ';o', function()
+vim.keymap.set('n', ';o', function ()
   vim.fn['ddu#start']({
     name = 'output',
     sources = {
       {
-        name = 'output',
-      },
+        name = 'output'
+      }
     },
     sourceParams = {
       output = {
-        command = vim.fn['cmdline#input']('Command: ', '', 'command'),
-      },
-    },
+        command = vim.fn['cmdline#input']('Command: ', '', 'command')
+      }
+    }
   })
-end, { desc = 'Ddu: output command' })
+end, { desc = 'Ddu: output command' }
+)
 
 -- register
-vim.keymap.set('n', ';r', function()
+vim.keymap.set('n', ';r', function ()
   vim.fn['ddu#start']({
     name = 'register',
     sourceOptions = {
       register = {
-        defaultAction = vim.fn.col('.') == 1 and 'insert' or 'append',
-      },
+        defaultAction = vim.fn.col('.') == 1 and 'insert' or 'append'
+      }
     },
     uiParams = {
       ff = {
-        autoResize = true,
-      },
-    },
+        autoResize = true
+      }
+    }
   })
-end, { desc = 'Ddu: register' })
+end, { desc = 'Ddu: register' }
+)
 
 -- Visual mapping
 -- yank line and use it as a input of ripgrep
-vim.keymap.set('x', ';gr', function()
+vim.keymap.set('x', ';gr', function ()
   vim.cmd('normal! y')
   vim.fn['ddu#start']({
     name = 'search',
     resume = false,
     sources = {
       {
-        name = 'rg',
-      },
+        name = 'rg'
+      }
     },
     sourceParams = {
       rg = {
-        input = vim.fn.escape(
-          vim.fn['cmdline#input']('Pattern: ', vim.fn.getreg('"')),
-          ' '
-        ),
-      },
+        input = vim.fn.escape(vim.fn['cmdline#input']('Pattern: ', vim.fn.getreg('"')), ' ')
+      }
     },
     uiParams = {
       ff = {
-        ignoreEmpty = true,
-      },
-    },
+        ignoreEmpty = true
+      }
+    }
   })
-end, { desc = 'Ddu: ripgrep (visual)' })
+end, { desc = 'Ddu: ripgrep (visual)' }
+)
 
 -- URL action (visual)
-vim.keymap.set('x', ';G', function()
-  local region = vim.fn.getregion(
-    vim.fn.getpos("'<"),
-    vim.fn.getpos('.'),
-    { type = vim.fn.mode() }
-  )
+vim.keymap.set('x', ';G', function ()
+  local region = vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos('.'), { type = vim.fn.mode() })
   if vim.fn.empty(region) == 1 then
     return
   end
@@ -409,85 +423,79 @@ vim.keymap.set('x', ';G', function()
       word = url,
       kind = 'url',
       action = {
-        url = url,
-      },
-    },
+        url = url
+      }
+    }
   }
   vim.fn['ddu#start']({
     sources = {
       {
-        name = 'action',
-      },
+        name = 'action'
+      }
     },
     sourceParams = {
       action = {
-        items = items,
-      },
-    },
+        items = items
+      }
+    }
   })
-end, { desc = 'Ddu: URL action (visual)' })
+end, { desc = 'Ddu: URL action (visual)' }
+)
 
 -- register (visual, expr)
-vim.keymap.set('x', ';r', function()
+vim.keymap.set('x', ';r', function ()
   local prefix = vim.fn.mode() == 'V' and '"_R<Esc>' or '"_d'
   vim.fn['ddu#start']({
     name = 'register',
     sources = {
       {
-        name = 'register',
-      },
+        name = 'register'
+      }
     },
     sourceOptions = {
       ff = {
-        defaultAction = 'insert',
-      },
+        defaultAction = 'insert'
+      }
     },
     uiParams = {
       ff = {
-        autoResize = true,
-      },
-    },
+        autoResize = true
+      }
+    }
   })
-end, { expr = true, desc = 'Ddu: register (visual)' })
+end, { expr = true, desc = 'Ddu: register (visual)' }
+)
 
 -- AutoCmd for Filter window (keymap `<C-f>` and `<C-b>`)
 vim.api.nvim_create_autocmd('User', {
   pattern = 'Ddu:uiOpenFilterWindow',
   group = augroup,
-  callback = function()
+  callback = function ()
     vim.opt.cursorline = true
     vim.fn['ddu#ui#save_cmaps']({ '<C-f>', '<C-b>' })
     vim.api.nvim_buf_set_keymap(
-      0,
-      'c',
-      '<C-f>',
-      '<Cmd>call ddu#ui#do_action("cursorNext", {"loop": v:true})<CR>',
+      0, 'c', '<C-f>', '<Cmd>call ddu#ui#do_action("cursorNext", {"loop": v:true})<CR>',
       { noremap = true, silent = true }
     )
     vim.api.nvim_buf_set_keymap(
-      0,
-      'c',
-      '<C-b>',
-      '<Cmd>call ddu#ui#do_action("cursorPrevious", {"loop": v:true})<CR>',
+      0, 'c', '<C-b>', '<Cmd>call ddu#ui#do_action("cursorPrevious", {"loop": v:true})<CR>',
       { noremap = true, silent = true }
     )
-  end,
+  end
 })
 
 vim.api.nvim_create_autocmd('User', {
   pattern = 'Ddu:uiCloseFilterWindow',
   group = augroup,
-  callback = function()
+  callback = function ()
     vim.opt.cursorline = false
     vim.fn['ddu#ui#restore_cmaps']()
-  end,
+  end
 })
 
 -- }}}
 
 -- lua_source {{{
-vim.fn['ddu#custom#load_config'](
-  vim.fn.expand(vim.fs.joinpath(vim.env.NVIM_CONFIG_HOME, 'denops', 'ddu.ts'))
-)
+vim.fn['ddu#custom#load_config'](vim.fn.expand(vim.fs.joinpath(vim.env.NVIM_CONFIG_HOME, 'denops', 'ddu.ts')))
 -- }}}
 

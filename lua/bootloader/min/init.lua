@@ -76,6 +76,17 @@ M.rescue_min = function(missing_plugins)
     '[VIMRC#BOOTLOADER]: minimum deps installed, restarting...',
     vim.log.levels.INFO
   )
+  -- Never restart from a UI-less session: `:restart` re-uses `v:argv` and
+  -- leaves a dangling process when no UI handles the restart event, which
+  -- turns the F2 rescue into an infinite restart loop.
+  local uis = vim.api.nvim_list_uis()
+  if uis == nil or vim.tbl_isempty(uis) then
+    vim.notify(
+      '[VIMRC#BOOTLOADER]: no UI; skipping restart (restart required to load plugins)',
+      vim.log.levels.WARN
+    )
+    return true
+  end
   vim.cmd('restart!')
   return true
 end

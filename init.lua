@@ -7,11 +7,12 @@ local config_name = sfile and vim.fn.fnamemodify(sfile, ':p:h:t') or 'nvim'
 local home_dir = vim.env.HOME or vim.fn.expand('~')
 
 -- Define `vim.env.NVIM_DEBUG to enable debug mode.
+-- Log-to-file setup lives in `lua/vimrc/debug.lua`.
 local is_debug = vim.env.NVIM_DEBUG == 'true'
 if is_debug then
-  -- vim.o.verbose = 3 -- increase verbosity in debug mode
   vim.g['vimrc#is_debug'] = true
-  vim.notify('[VIMRC]: DEBUG MODE ENABLED', vim.log.levels.DEBUG)
+  -- Must be set before denops initialization.
+  vim.g['denops#debug'] = 1
 else
   vim.g['vimrc#is_debug'] = false
 end

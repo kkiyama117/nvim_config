@@ -167,12 +167,31 @@ vim.keymap.set('n', 'ff', function ()
   vim.fn['ddu#ui#do_action']('redraw', { method = 'refreshItems' })
 end, {buffer=true, desc='Switch sources to "ff"'})
 
--- cursol Move
+-- Cursor move (also from other windows).
+-- ddu-ui-ff/-filer set `t:ddu_ui_name` when opening, so target the
+-- active UI in this tab instead of a hardcoded name (old `'files'` only
+-- matched `[DP]c` sessions and silently no-opped everywhere else).
+local function ddu_ui_name_or_nil()
+  local name = vim.t.ddu_ui_name or vim.b.ddu_ui_name
+  if name == nil or name == '' then
+    return nil
+  end
+  return name
+end
+
 vim.keymap.set('n', '<C-n>', function ()
-  vim.fn['ddu#ui#multi_actions']({ 'cursorNext', 'itemAction' }, 'files')
+  local name = ddu_ui_name_or_nil()
+  if name == nil or not vim.fn['ddu#ui#visible'](name) then
+    return
+  end
+  vim.fn['ddu#ui#multi_actions']({ 'cursorNext', 'itemAction' }, name)
 end, { silent = true, desc='DDU: next' })
 vim.keymap.set('n', '<C-p>', function ()
-  vim.fn['ddu#ui#multi_actions']({ 'cursorPrevious', 'itemAction' }, 'files')
+  local name = ddu_ui_name_or_nil()
+  if name == nil or not vim.fn['ddu#ui#visible'](name) then
+    return
+  end
+  vim.fn['ddu#ui#multi_actions']({ 'cursorPrevious', 'itemAction' }, name)
 end, { silent = true, desc='DDU: previous' })
 vim.keymap.set('n', '<C-j>', function ()
   vim.fn['ddu#ui#do_action']('cursorNext')

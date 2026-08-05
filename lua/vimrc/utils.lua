@@ -221,4 +221,47 @@ function M.append_diff()
 end
 -- }}}
 
+-- Debug-mode notify tee {{{-- Wrap the current `vim.notify` so messages are also appended to
+-- `notify.log` under `log_dir` (default: `$NVIM_CACHE_HOME/logs`).
+-- Returns the wrapper; assign it to `vim.notify`.
+-- In debug mode this is called twice:
+--   1. `lua/vimrc/debug.lua` (early; wraps the default notify)
+--   2. `lua/hooks/nvim-notify.dpp` (after `vim.notify = plugin`)
+local function notify_level_name(level)
+  for name, lv in pairs(vim.log.levels) do
+    if lv == level then
+      return name
+    end
+  end
+  return tostring(level)
+end
+
+function M.wrap_notify_with_log(log_dir)
+  local orig_notify = vim.notify
+  return function(msg, level, opts)
+    if vim.in_fast_event() then
+      vim.schedule(function()
+        vim.notify(msg, level, opts)
+      end)
+      return
+    end
+    local line = string.format(
+      '[%s][%s] %s',
+      os.date('%H:%M:%S'),
+      notify_level_name(level),
+      tostring(msg)
+    )
+    vim.fn.writefile(
+      { line },
+      vim.fs.joinpath(
+        log_dir or vim.fs.joinpath(vim.env.NVIM_CACHE_HOME, 'logs'),
+        'notify.log'
+      ),
+      'a'
+    )
+    return orig_notify(msg, level, opts)
+  end
+end
+-- }}}
+
 return M

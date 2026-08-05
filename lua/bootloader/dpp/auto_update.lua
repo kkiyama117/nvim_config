@@ -56,8 +56,25 @@ end
 ---
 --- Uses `vim.fn.confirm` (not `vim.ui.select`) so it works without any UI
 --- plugin installed.
+---
+--- Headless / UI-less sessions (detached installers, embedded servers,
+--- subagent nvims) must NEVER restart: there `vim.fn.confirm` returns the
+--- default (`&Yes`) without asking, and `:restart` re-uses `v:argv` (any
+--- `-c lua ...` args included) and leaves a dangling process when no UI
+--- handles the "restart" event — together this caused an infinite
+--- install/restart loop that also leaked stuck `nvim` processes.
 ---@param reason string reason shown in the prompt
 local function ask_restart(reason)
+  local uis = vim.api.nvim_list_uis()
+  if uis == nil or vim.tbl_isempty(uis) then
+    vim.notify(
+      ('[VIMRC#BOOTLOADER#dpp]: restart required (%s), but no UI; skipping'):format(
+        reason
+      ),
+      vim.log.levels.WARN
+    )
+    return
+  end
   local choice = vim.fn.confirm(
     ('Restart Neovim to apply changes?\n%s'):format(reason),
     '&Yes\n&No',
@@ -203,6 +220,13 @@ end
 --   * default: verify the rebuilt state is loadable, then ask to restart.
 local install_pending = false
 
+--- Pending one-shot `Dpp:ext:installer:updateDone` handler registered by
+--- `dpp_update_toml` (asks to restart after the install).  Module-level so
+--- `on_make_state_post` can drop it when the install is skipped (otherwise
+--- it would fire on a later, unrelated `updateDone` and ask to restart for
+--- no reason).
+local install_done_id = nil
+
 --- Single `Dpp:makeStatePost` handler.
 ---
 --- In the toml-save flow (`install_pending`): reload the freshly-written
@@ -240,7 +264,12 @@ function M.on_make_state_post()
     if #vim.fn['dpp#sync_ext_action']('installer', 'getNotInstalled', vim.empty_dict()) > 0 then
       vim.fn['dpp#async_ext_action']('installer', 'install', vim.empty_dict())
     else
-      -- Nothing to install; apply the rebuilt state by restarting now.
+      -- Nothing to install; the pending `updateDone` handler will never
+      -- fire, so drop it and ask to restart right here.
+      if install_done_id then
+        pcall(vim.api.nvim_del_autocmd, install_done_id)
+        install_done_id = nil
+      end
       ask_restart('dpp state rebuilt (nothing to install)')
     end
     return
@@ -279,11 +308,12 @@ local function dpp_update_toml(args)
   install_pending = true
 
   -- 4: after install finishes, ask to restart to load the new state + plugins.
-  local install_done_id = vim.api.nvim_create_autocmd('User', {
+  install_done_id = vim.api.nvim_create_autocmd('User', {
     pattern = 'Dpp:ext:installer:updateDone',
     group = vim.g['vimrc#augroup'],
     once = true,
     callback = function()
+      install_done_id = nil
       ask_restart('plugins installed')
     end,
   })
@@ -295,7 +325,10 @@ local function dpp_update_toml(args)
     -- make_state never started; clear the flag and drop the pending
     -- `updateDone` handler so it does not fire on a later install.
     install_pending = false
-    pcall(vim.api.nvim_del_autocmd, install_done_id)
+    if install_done_id then
+      pcall(vim.api.nvim_del_autocmd, install_done_id)
+      install_done_id = nil
+    end
   end
 end
 
