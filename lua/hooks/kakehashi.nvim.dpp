@@ -1,83 +1,16 @@
 -- lua_source {{{
-local bridge = require('vimrc.kakehashi_bridge')
-local config = require('vimrc.kakehashi_config')
+-- kakehashi.nvim (upstream) — dpp entry point.
+--
+-- The Neovim client config lives in after/lsp/kakehashi.lua (loaded lazily
+-- by `vim.lsp.config['kakehashi']`, following atusy's dotfiles layout).
+-- This hook only enables the config: `vim.lsp.enable` eagerly resolves it,
+-- which triggers the after/lsp load — and must not be called from inside
+-- that file (it would recurse).
+--
+-- kakehashi is the sole Neovim LSP client; bridged servers (denols,
+-- emmylua_ls, gopls, pyright, rust_analyzer, tombi, vtsls) run as its
+-- children. Server binaries are installed by mise, NOT mason.nvim.
 
-local function kakehashi_plugin_path()
-  for _, path in ipairs(vim.api.nvim_list_runtime_paths()) do
-    if path:find('kakehashi%.nvim') then
-      return path
-    end
-  end
-end
-
-local home = vim.env.HOME or '~'
-local data_path = vim.fs.joinpath(home, '.local', 'share', 'kakehashi')
-
--- Repo-owned kakehashi assets (queries, future parsers):
--- $NVIM_CONFIG_HOME/kakehashi/queries/<lang>/...
-local config_home = vim.env.NVIM_CONFIG_HOME or vim.fn.stdpath('config')
-local kakehashi_asset_path = vim.fs.joinpath(config_home, 'kakehashi')
-
-local init_options = {
-  --autoInstall = true,
-  searchPaths = vim.tbl_filter(function(path)
-    return path ~= nil and path ~= ''
-  end, {
-    data_path,
-    kakehashi_asset_path,
-    kakehashi_plugin_path(),
-  }),
-  languages = config.languages(),
-}
-
-vim.lsp.config('kakehashi', {
-  cmd = { 'kakehashi' },
-  filetypes = config.filetypes(),
-  init_options = init_options,
-  on_init = function(client)
-    -- Prefer semanticTokens/full/delta over range requests.
-    local provider = client.server_capabilities.semanticTokensProvider
-    if provider then
-      provider.range = false
-    end
-  end,
-})
-
--- kakehashi is the sole Neovim LSP client; bridged servers run as children.
 vim.lsp.enable('kakehashi')
-
-vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function(ev)
-    local client = vim.lsp.get_client_by_id(ev.data.client_id)
-    if client and client.name == 'kakehashi' then
-      bridge.inherit(client, config.bridged_servers, 'keep')
-
-      -- dpp: treesitter owns highlighting (lua parser + luadoc injections,
-      -- started in after/ftplugin/dpp.lua). kakehashi's tokens for dpp are
-      -- only host markers (injected lua tokens depend on emmylua's slow
-      -- analysis), so the token-based takeover below would leave the buffer
-      -- uncolored. Prefer treesitter to LSP semantic tokens:
-      -- https://blog.atusy.net/2025/07/15/prefer-luadoc-to-luals-semantictokens
-      if vim.bo[ev.buf].filetype == 'dpp' then
-        vim.lsp.semantic_tokens.enable(false, {
-          bufnr = ev.buf,
-          client_id = client.id,
-        })
-        return
-      end
-
-      -- Let kakehashi own highlighting once semantic tokens arrive
-      -- (scripts/minimal_init.lua, kakehashi README Quick Start).
-      vim.api.nvim_create_autocmd('LspTokenUpdate', {
-        buffer = ev.buf,
-        once = true,
-        callback = function()
-          vim.opt_local.syntax = 'OFF'
-          vim.treesitter.stop(ev.buf)
-        end,
-      })
-    end
-  end,
-})
 -- }}}
 

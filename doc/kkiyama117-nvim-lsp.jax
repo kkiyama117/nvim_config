@@ -1,0 +1,254 @@
+*kkiyama117-nvim-lsp.txt*
+
+Author: kkiyama117
+License: NYSL
+
+==============================================================================
+About
+
+LSP setup of this vimrc: kakehashi is the SOLE Neovim LSP client; every
+other language server (denols, emmylua_ls, gopls, pyright, rust_analyzer,
+tombi, vtsls) runs as a bridged CHILD process of kakehashi.
+
+The layout follows atusy's dotfiles (atusy/kakehashi.nvim +
+atusy/kakehashi-lspconfig + after/lsp/kakehashi.lua) and is described in
+detail below.
+
+Contents: >
+	OVERVIEW
+	FILES
+	CLIENT CONFIG
+	SERVER CONFIG
+	BRIDGED SERVERS
+	DPP FILETYPE
+	HIGHLIGHTING HANDOFF
+	DIAGNOSTICS
+	MAINTENANCE
+<
+
+==============================================================================
+OVERVIEW                                    *kkiyama117-nvim-lsp-overview*
+
+- kakehashi (https://github.com/atusy/kakehashi) is a Rust LSP server that
+  speaks LSP to nvim and forwards to downstream language servers, bridging
+  them into a single client.
+- The nvim-side plugin is upstream atusy/kakehashi.nvim (installed by dpp,
+  see |kkiyama117-nvim-lsp-files|).
+- kakehashi-lspconfig (atusy/kakehashi-lspconfig) is NOT a Neovim plugin:
+  it ships `lsp/*.toml` fragments (converted from nvim-lspconfig) that
+  describe each downstream server for kakehashi.
+- LSP server binaries are installed by mise (~/.config/mise/config.toml),
+  NOT mason.nvim.
+- There is no inherit_nvim_lsp_config and no didChangeConfiguration: the
+  downstream servers are configured BEFORE kakehashi spawns, via
+  `--config-file` layers (see |kkiyama117-nvim-lsp-server-config|).
+
+==============================================================================
+FILES                                           *kkiyama117-nvim-lsp-files*
+
+after/lsp/kakehashi.lua
+	Neovim client config. Loaded lazily by nvim when
+	`vim.lsp.config['kakehashi']` is first accessed (nvim resolves
+	`lsp/*.lua` from the runtimepath; `after/` is searched last and wins
+	over nvim-lspconfig's builtin lsp/kakehashi.lua). Builds the
+	--config-file stack and returns the `vim.lsp.Config` table.
+
+lua/hooks/kakehashi.nvim.dpp
+	dpp hooks_file (|kkiyama117-nvim|). Only calls
+	`vim.lsp.enable('kakehashi')` — enable eagerly resolves the config,
+	which triggers the after/lsp load, so it must NOT be called inside
+	after/lsp/kakehashi.lua (that would recurse).
+
+lua/vimrc/kakehashi_config.lua
+	vimrc-owned data: `bridged_servers`, per-server `filetypes()`, and
+	`languages()` (the init_options.languages bridge table).
+
+kakehashi/kakehashi.toml
+	Server-side config (enables + per-server settings). Symlinked from
+	the kakehashi server's standard user location
+	~/.config/kakehashi/kakehashi.toml, so shell CLIs such as
+	`kakehashi format` / `kakehashi diagnose` use the same config.
+	See |kkiyama117-nvim-lsp-server-config|.
+
+deps/nvim/lsp.toml
+	dpp plugin entries: nvim-lspconfig (with its own hooks_file),
+	kakehashi-lspconfig, and kakehashi.nvim (lazy on FileType;
+	`depends = ["kakehashi-lspconfig"]` guarantees the fragments are on
+	rtp when the client config resolves; `external_commands =
+	["kakehashi"]`).
+
+lua/hooks/nvim-lspconfig.dpp
+	Per-server `vim.lsp.config` definitions (denols, emmylua_ls, vtsls,
+	`*` capabilities, diagnostics/format config). Never enabled directly;
+	their settings are mirrored into kakehashi/kakehashi.toml.
+
+Generated at runtime under $NVIM_CACHE_HOME/kakehashi/ >
+	lsp.toml	concatenated fragments (see below)
+	library.toml	emmylua workspace.library for the running nvim
+<
+
+==============================================================================
+CLIENT CONFIG                                *kkiyama117-nvim-lsp-client*
+
+after/lsp/kakehashi.lua returns a `vim.lsp.Config` with:
+
+cmd
+	kakehashi plus the --config-file stack
+	(|kkiyama117-nvim-lsp-server-config|).
+
+filetypes
+	`config.filetypes()` from lua/kakehashi/config.lua: markdown family
+	(markdown, markdown_inline, quarto, rmd) plus each bridged server's
+	filetypes (incl. `dpp` via emmylua_ls).
+
+init_options.searchPaths
+	- ~/.local/share/kakehashi (server data dir)
+	- $NVIM_CONFIG_HOME/kakehashi (repo-owned parser + queries)
+	- the kakehashi.nvim plugin rtp entry (bundled queries)
+
+init_options.languages
+	`config.languages()`: host-bridge (`bridge._self`) for go,
+	javascript, lua, python, rust, toml, typescript; markdown/quarto/rmd
+	aggregation priorities; pull-only diagnostics sealing
+	(|kkiyama117-nvim-lsp-diagnostics|); the `dpp` route
+	(|kkiyama117-nvim-lsp-dpp-filetype|).
+
+on_init
+	Sets `semanticTokensProvider.range = false` to prefer full/delta
+	token requests.
+
+on_attach
+	Highlighting handoff with the dpp exception
+	(|kkiyama117-nvim-lsp-handoff|).
+
+==============================================================================
+SERVER CONFIG                                *kkiyama117-nvim-lsp-server-config*
+
+kakehashi is spawned with three --config-file layers, merged in order
+(later overrides earlier; per-server settings/initializationOptions are
+deep-merged — see src/config/merge.rs of the kakehashi server):
+
+1. lsp.toml (generated) >
+	kakehashi-lspconfig fragments, filtered to `bridged_servers`.
+	Each fragment's `cmd` first binary is resolved via
+	`vim.fn.exepath()` so mise-installed binaries are found even when
+	nvim was launched without mise on PATH.
+<
+2. kakehashi.toml (repo) >
+	Fragments ship with `enabled = false`; this file sets
+	`enabled = true` for exactly the bridged servers, and carries the
+	per-server settings (denols lint/root markers, emmylua
+	semanticTokens/runtime/diagnostics, ...).
+<
+3. library.toml (generated) >
+	Dynamic emmylua `workspace.library` (vim.env.VIMRUNTIME + nvim
+	runtime lua dirs). Kept a FLAT array of paths — an invalid
+	EmmyrcWorkspacePathItem makes emmylua fall back to defaults
+	(re-introducing `undefined global variable: vim`).
+<
+
+==============================================================================
+BRIDGED SERVERS                            *kkiyama117-nvim-lsp-servers*
+
+Server          Filetypes                              Notes >
+	denols          javascript, javascriptreact,          markers deno.json,
+	                typescript, typescriptreact           deno.jsonc, deps.ts
+	emmylua_ls      lua, dpp                              LuaJIT, globals
+	                                                      vim; workspace.library
+	                                                      generated at runtime
+	gopls           go, gomod, gowork, gotmpl
+	pyright         python
+	rust_analyzer   rust
+	tombi           toml
+	vtsls           javascript, javascriptreact,
+	                typescript, typescriptreact
+<
+
+Keep `bridged_servers` in lua/kakehashi/config.lua in sync with the
+`enabled` entries in kakehashi/kakehashi.toml and the mise installs in
+~/.config/mise/config.toml.
+
+==============================================================================
+DPP FILETYPE                                *kkiyama117-nvim-lsp-dpp-filetype*
+
+`*.dpp` files (dpp.vim hooks files) are handled specially:
+
+- kakehashi attaches via `filetypes()` (dpp is listed under
+  emmylua_ls's filetypes).
+- The custom tree-sitter parser at
+  $NVIM_CONFIG_HOME/kakehashi/parser/dpp.so parses hook blocks; the
+  queries (kakehashi/queries/dpp/injections.scm) inject each block's
+  content as lua, and the injected virtual documents are bridged to
+  emmylua_ls — the only path that reaches emmylua (it keys documents by
+  URI extension).
+- Tree-sitter keeps highlighting: semantic tokens are disabled for dpp
+  buffers ONLY, in on_attach. after/ftplugin/dpp.lua starts tree-sitter
+  (lua parser + luadoc injections) and sets up folding.
+- Rationale: kakehashi's tokens for dpp are only host markers; injected
+  lua tokens depend on emmylua's slow analysis, so the token-based
+  takeover would leave the buffer uncolored.
+
+==============================================================================
+HIGHLIGHTING HANDOFF                        *kkiyama117-nvim-lsp-handoff*
+
+For every non-dpp buffer, kakehashi owns highlighting once semantic
+tokens arrive: on the first LspTokenUpdate, syntax is turned OFF and
+tree-sitter is stopped for that buffer. >
+
+	on_attach = function(client, bufnr)
+	  if vim.bo[bufnr].filetype == 'dpp' then
+	    vim.lsp.semantic_tokens.enable(false, { bufnr = bufnr,
+	      client_id = client.id })
+	    return
+	  end
+	  vim.api.nvim_create_autocmd('LspTokenUpdate', {
+	    buffer = bufnr,
+	    once = true,
+	    callback = function()
+	      vim.opt_local.syntax = 'OFF'
+	      vim.treesitter.stop(bufnr)
+	    end,
+	  })
+	end
+<
+
+==============================================================================
+DIAGNOSTICS                                *kkiyama117-nvim-lsp-diagnostics*
+
+- Diagnostics are pull-only: `textDocument/publishDiagnostics` is sealed
+  (priorities = {}) in `languages._.layers.aggregation`, so nvim gets a
+  single set via `textDocument/diagnostic` (kakehashi folds the push
+  servers' cached diagnostics into pull answers).
+- Because the downstream servers are configured at spawn
+  (--config-file), there is no didChangeConfiguration race — the
+  re-pull workaround of the old fork (polling effectiveConfiguration)
+  is unnecessary.
+
+==============================================================================
+MAINTENANCE                                  *kkiyama117-nvim-lsp-maintenance*
+
+Adding a server: >
+	1. Install the binary via mise.
+	2. Add the name to `bridged_servers` in
+	   lua/kakehashi/config.lua (and `server_filetypes`).
+	3. Add `[languageServers.<name>] enabled = true` (and settings) to
+	   kakehashi/kakehashi.toml.
+	4. A fragment `lsp/<name>.toml` must exist in kakehashi-lspconfig;
+	   if not, write the server table yourself into
+	   kakehashi/kakehashi.toml (cmd, languages, workspaceMarkers).
+<
+
+Updating plugins: >
+	:DppUpdate
+<
+
+Notes:
+
+- Editing any file under $NVIM_CONFIG_HOME (lua/toml/dpp) triggers dpp's
+  BufWritePost watcher: state rebuild (and install for toml changes).
+- On a fresh clone, recreate the symlink:
+  ~/.config/kakehashi/kakehashi.toml -> kakehashi/kakehashi.toml
+  (the client warns when it is missing).
+
+vim:tw=78:ft=help:
+
