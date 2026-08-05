@@ -34,7 +34,7 @@
 -- emmylua_ls, gopls, pyright, rust_analyzer, tombi, vtsls) run as its
 -- children. Server binaries are installed by mise, NOT mason.nvim.
 
-local config = require('kakehashi.config')
+local config = require('vimrc/kakehashi_config')
 
 -- ==========================================================================
 -- Build the kakehashi --config-file stack
@@ -241,3 +241,4 @@ return {
     })
   end,
 }
+
