@@ -54,9 +54,6 @@ end
 
 --- Ask the user to confirm a Neovim restart, then restart if confirmed.
 ---
---- Uses `vim.fn.confirm` (not `vim.ui.select`) so it works without any UI
---- plugin installed.
----
 --- Headless / UI-less sessions (detached installers, embedded servers,
 --- subagent nvims) must NEVER restart: there `vim.fn.confirm` returns the
 --- default (`&Yes`) without asking, and `:restart` re-uses `v:argv` (any
@@ -65,29 +62,25 @@ end
 --- install/restart loop that also leaked stuck `nvim` processes.
 ---@param reason string reason shown in the prompt
 local function ask_restart(reason)
-  local uis = vim.api.nvim_list_uis()
-  if uis == nil or vim.tbl_isempty(uis) then
+  if #vim.api.nvim_list_uis() == 0 then
     vim.notify(
-      ('[VIMRC#BOOTLOADER#dpp]: restart required (%s), but no UI; skipping'):format(
-        reason
-      ),
-      vim.log.levels.WARN
+      '[VIMRC#BOOTLOADER#dpp]: headless session, restart skipped',
+      vim.log.levels.INFO
     )
     return
   end
-  local choice = vim.fn.confirm(
-    ('Restart Neovim to apply changes?\n%s'):format(reason),
-    '&Yes\n&No',
-    1
-  )
-  if choice == 1 then
-    vim.cmd('restart +xall')
-  else
-    vim.notify(
-      '[VIMRC#BOOTLOADER#dpp]: restart skipped by user',
-      vim.log.levels.INFO
-    )
-  end
+  vim.ui.select({ 'YES', 'NO' }, {
+    prompt = ('[VIMRC#BOOTLOADER#dpp]: restart required (%s)'):format(reason),
+  }, function(choice)
+    if choice == 'YES' then
+      vim.cmd('restart +xall')
+    else
+      vim.notify(
+        '[VIMRC#BOOTLOADER#dpp]: restart skipped by user',
+        vim.log.levels.INFO
+      )
+    end
+  end)
 end
 
 ---When config_files are updated, do everythings written below
@@ -104,7 +97,9 @@ end
 local function hooks_config_files_updated(args, names)
   local params = installer_params(names)
   -- 1: check all plugins are installed
-  if #vim.fn['dpp#sync_ext_action']('installer', 'getNotInstalled', params) > 0 then
+  if
+    #vim.fn['dpp#sync_ext_action']('installer', 'getNotInstalled', params) > 0
+  then
     -- 1-A: if exists, then install and make AutoCmd to hook `2`
     vim.fn['dpp#async_ext_action']('installer', 'install', params)
     vim.api.nvim_create_autocmd('User', {
@@ -141,8 +136,8 @@ end
 ---@param force boolean if true, force full update of ALL plugins
 local function dpp_update(args, force)
   local updated_files = vim.fn['dpp#check_files'](args.cache_home)
-  local has_updated =
-    type(updated_files) == 'table' and not vim.tbl_isempty(updated_files)
+  local has_updated = type(updated_files) == 'table'
+    and not vim.tbl_isempty(updated_files)
   if has_updated or force then
     vim.notify('[VIMRC#BOOTLOADER#dpp]: Update started', vim.log.levels.WARN)
     -- Mark in-flight so VimLeavePre can wait for completion.
@@ -282,7 +277,13 @@ function M.on_make_state_post()
     -- 3: install every not-installed plugin (incl. the new ones).
     -- `vim.empty_dict()` (not `{}`) so it serializes as a Dict record;
     -- an empty Lua `{}` becomes a List `[]` and dpp rejects it.
-    if #vim.fn['dpp#sync_ext_action']('installer', 'getNotInstalled', vim.empty_dict()) > 0 then
+    if
+      #vim.fn['dpp#sync_ext_action'](
+        'installer',
+        'getNotInstalled',
+        vim.empty_dict()
+      ) > 0
+    then
       vim.fn['dpp#async_ext_action']('installer', 'install', vim.empty_dict())
     else
       -- Nothing to install; the pending `updateDone` handler will never
@@ -359,3 +360,4 @@ M.dpp_update_force = function(args)
 end
 M.dpp_update_toml = dpp_update_toml
 return M
+

@@ -305,10 +305,6 @@ export class Config extends BaseConfig {
           sorters: ["sorter_alpha"],
           converters: ["converter_hl_dir", "converter_devicon"],
         },
-        git_status: {
-          matchers: ["matcher_substring"],
-          converters: ["converter_hl_dir", "converter_git_status"],
-        },
         file_external: {
           matchers: [
             "matcher_substring",
@@ -331,6 +327,10 @@ export class Config extends BaseConfig {
           ],
           sorters: ["sorter_mtime"],
           converters: ["converter_hl_dir", "converter_devicon"],
+        },
+        git_status: {
+          matchers: ["matcher_substring"],
+          converters: ["converter_hl_dir", "converter_git_status"],
         },
         input_history: {
           defaultAction: "input",
