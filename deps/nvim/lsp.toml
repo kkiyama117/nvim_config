@@ -1,3 +1,8 @@
+# SchemaStore.nvim - Json Schema
+[[plugins]]
+repo = "b0o/SchemaStore.nvim"
+on_event = "FileType"
+
 # nvim-lspconfig - LSP client configurations
 #   Holds the per-server vim.lsp.config definitions that the kakehashi
 #   bridge inherits (see lua/hooks/nvim-lspconfig.dpp).
@@ -6,7 +11,7 @@
 #   be sourced by dpp — a non-lazy plugin cannot depend on a lazy one.
 [[plugins]]
 repo = "neovim/nvim-lspconfig"
-depends = ["ddc-source-lsp"]
+depends = ["ddc-source-lsp", "SchemaStore.nvim"]
 on_event = "FileType"
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-lspconfig.dpp"
 
@@ -38,6 +43,7 @@ on_event = "FileType"
 repo = "atusy/kakehashi.nvim"
 on_source = "nvim-lspconfig"
 on_event = "FileType"
+
 # Make the rtp ordering explicit: after/lsp/kakehashi.lua builds lsp.toml
 # from kakehashi-lspconfig's lsp/*.toml fragments, so it must be sourced
 # first.
