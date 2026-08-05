@@ -59,7 +59,7 @@ lua/hooks/kakehashi.nvim.dpp
 	which triggers the after/lsp load, so it must NOT be called inside
 	after/lsp/kakehashi.lua (that would recurse).
 
-lua/kakehashi/config.lua
+lua/vimrc/kakehashi_config.lua
 	vimrc-owned data: `bridged_servers`, per-server `filetypes()`, and
 	`languages()` (the init_options.languages bridge table).
 
@@ -251,3 +251,4 @@ Notes:
   (the client warns when it is missing).
 
 vim:tw=78:ft=help:
+
