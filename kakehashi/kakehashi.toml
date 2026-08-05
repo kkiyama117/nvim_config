@@ -1,16 +1,26 @@
-# kakehashi languageServers overrides.
-# Merged AFTER the kakehashi-lspconfig fragments (see
-# lua/hooks/kakehashi.nvim.dpp); later layers win, per-server configs are
-# deep-merged (settings via deep JSON merge — kakehashi src/config/merge.rs).
+# kakehashi user config (standard location).
 #
-# The fragments ship with `enabled = false`; this layer turns on exactly the
+# This is the kakehashi server's default user config:
+#   $XDG_CONFIG_HOME/kakehashi/kakehashi.toml  (~/.config/kakehashi/kakehashi.toml)
+# It is a symlink to this repo-owned file, so the vimrc repo stays the
+# source of truth (and `kakehashi format` / `kakehashi diagnose` from the
+# shell pick up the same config).
+#
+# It is ALSO passed explicitly as a --config-file layer (after the
+# kakehashi-lspconfig fragments, before the generated library.toml) so it
+# merges in order — see after/lsp/kakehashi.lua. Later layers win,
+# per-server configs are deep-merged (settings via deep JSON merge —
+# kakehashi src/config/merge.rs).
+#
+# The fragments ship with `enabled = false`; this file turns on exactly the
 # bridged servers this vimrc uses (keep in sync with
 # lua/kakehashi/config.lua `bridged_servers` and the mise installs in
 # ~/.config/mise/config.toml), and carries the per-server settings that the
 # fork previously inherited from lua/hooks/nvim-lspconfig.dpp.
 #
 # Dynamic values (emmylua workspace.library from the running nvim runtime)
-# are generated into $NVIM_CACHE_HOME/kakehashi/library.toml by the hook.
+# are generated into $NVIM_CACHE_HOME/kakehashi/library.toml by
+# after/lsp/kakehashi.lua.
 
 # denols — disable nest.land imports (nvim-lspconfig#2793); restore the
 # root markers the fork inherited (the fragment's root_dir was dynamic).

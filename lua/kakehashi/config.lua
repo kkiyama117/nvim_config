@@ -3,9 +3,9 @@
 --- kakehashi is the single Neovim LSP client; downstream servers (pyright,
 --- gopls, …) run as bridged child processes. Keep `bridged_servers` in sync
 --- with the LSP server installs in ~/.config/mise/config.toml and the
---- `enabled` entries in kakehashi/overrides.toml (the kakehashi-lspconfig
+--- `enabled` entries in kakehashi/kakehashi.toml (the kakehashi-lspconfig
 --- fragments ship with `enabled = false`). Per-server settings live in
---- kakehashi/overrides.toml; client filetypes and the languages init_options
+--- kakehashi/kakehashi.toml; client filetypes and the languages init_options
 --- table live here.
 local M = {}
 
@@ -96,8 +96,8 @@ end
 
 --- Build kakehashi `init_options.languages` bridge table.
 --- Sent via LSP initialize; merges with the --config-file layers
---- (lsp.toml + overrides.toml + library.toml, built by
---- lua/hooks/kakehashi.nvim.dpp). No didChangeConfiguration, so no
+--- (lsp.toml + kakehashi.toml + library.toml, built by
+--- after/lsp/kakehashi.lua). No didChangeConfiguration, so no
 --- settings.kakehashi wire shape and no diagnostics re-pull race.
 ---@return table
 function M.languages()

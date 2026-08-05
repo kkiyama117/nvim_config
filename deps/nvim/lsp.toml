@@ -13,11 +13,10 @@ hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-lspconfig.dpp"
 # kakehashi-lspconfig - Server-side languageServers for kakehashi
 #   https://github.com/atusy/kakehashi-lspconfig
 #   Not a Neovim plugin (no lua/plugin entrypoint): ships lsp/*.toml
-#   fragments (converted from nvim-lspconfig) that
-#   lua/hooks/kakehashi.nvim.dpp concatenates into
-#   $NVIM_CACHE_HOME/kakehashi/lsp.toml and passes to the kakehashi
-#   binary via --config-file. Listed BEFORE kakehashi.nvim so its
-#   fragments are on rtp when the kakehashi hook builds lsp.toml.
+#   fragments (converted from nvim-lspconfig) that after/lsp/kakehashi.lua
+#   concatenates into $NVIM_CACHE_HOME/kakehashi/lsp.toml and passes to the
+#   kakehashi binary via --config-file. Listed BEFORE kakehashi.nvim so its
+#   fragments are on rtp when the kakehashi config resolves.
 [[plugins]]
 repo = "atusy/kakehashi-lspconfig"
 on_source = "nvim-lspconfig"
@@ -28,8 +27,9 @@ on_event = "FileType"
 #   Replaces the kkiyama117/kakehashi.nvim fork (was a git submodule at
 #   $NVIM_CONFIG_HOME/plugins/kakehashi.nvim, registered via the
 #   dpp-ext-local scan in denops/dpp.ts). The fork's bridge is replaced
-#   by lua/hooks/kakehashi.nvim.dpp + lua/kakehashi/config.lua +
-#   kakehashi/overrides.toml (--config-file model, like atusy's dotfiles).
+#   by after/lsp/kakehashi.lua + lua/kakehashi/config.lua +
+#   kakehashi/kakehashi.toml (symlinked to ~/.config/kakehashi/kakehashi.toml)
+#   — the --config-file model, like atusy's dotfiles.
 #   kakehashi is the sole Neovim LSP client; bridged servers (denols,
 #   emmylua_ls, gopls, pyright, rust_analyzer, tombi, vtsls) run as its
 #   children. LSP server binaries are installed by mise, not mason.nvim
@@ -38,8 +38,9 @@ on_event = "FileType"
 repo = "atusy/kakehashi.nvim"
 on_source = "nvim-lspconfig"
 on_event = "FileType"
-# Make the rtp ordering explicit: the hook builds lsp.toml from
-# kakehashi-lspconfig's lsp/*.toml fragments, so it must be sourced first.
+# Make the rtp ordering explicit: after/lsp/kakehashi.lua builds lsp.toml
+# from kakehashi-lspconfig's lsp/*.toml fragments, so it must be sourced
+# first.
 depends = ["kakehashi-lspconfig"]
 external_commands = ["kakehashi"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/kakehashi.nvim.dpp"
