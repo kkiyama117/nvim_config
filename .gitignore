@@ -1,6 +1,9 @@
 # Vim swap
 *.swp
 *.swo
+# Vim help tags
+doc/tags
+doc/tags-ja
 # Vim netrw
 .netrwhist
 tmp/
