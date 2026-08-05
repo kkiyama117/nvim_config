@@ -52,6 +52,27 @@ local function installer_params(names)
   return vim.empty_dict()
 end
 
+--- Ask the user to confirm a Neovim restart, then restart if confirmed.
+---
+--- Uses `vim.fn.confirm` (not `vim.ui.select`) so it works without any UI
+--- plugin installed.
+---@param reason string reason shown in the prompt
+local function ask_restart(reason)
+  local choice = vim.fn.confirm(
+    ('Restart Neovim to apply changes?\n%s'):format(reason),
+    '&Yes\n&No',
+    1
+  )
+  if choice == 1 then
+    vim.cmd('restart +xall')
+  else
+    vim.notify(
+      '[VIMRC#BOOTLOADER#dpp]: restart skipped by user',
+      vim.log.levels.INFO
+    )
+  end
+end
+
 ---When config_files are updated, do everythings written below
 ---
 ---  1: install plugins if not installed
@@ -172,14 +193,14 @@ end
 --   1. make_state    (re-globs deps/*.toml, registers the new plugins)
 --   2. reload state (so dpp#util#_get_plugins returns the new plugins)
 --   3. install      (getNotInstalled now sees the new plugins)
---   4. restart      (load the new state + cloned plugins)
+--   4. ask to restart  (load the new state + cloned plugins)
 -- There is a single `Dpp:makeStatePost` handler (`on_make_state_post`
 -- below), registered once at boot by `autocmds.setup_autocmd_make_state_post`.
 -- It branches on `install_pending`:
 --   * toml-save flow: reload state so the new plugins appear in
 --     `g:dpp.state.plugins`, then `install` them; a one-shot
---     `Dpp:ext:installer:updateDone` autocmd restarts afterwards.
---   * default: verify the rebuilt state is loadable, then restart.
+--     `Dpp:ext:installer:updateDone` autocmd asks to restart afterwards.
+--   * default: verify the rebuilt state is loadable, then ask to restart.
 local install_pending = false
 
 --- Single `Dpp:makeStatePost` handler.
@@ -188,7 +209,7 @@ local install_pending = false
 --- state so `dpp#util#_get_plugins` returns the new plugins, then install
 --- every not-installed plugin.  Restart happens on
 --- `Dpp:ext:installer:updateDone` (registered by `dpp_update_toml`).
---- Otherwise: verify the rebuilt state is loadable and restart (prevents
+--- Otherwise: verify the rebuilt state is loadable and ask to restart (prevents
 --- infinite restart loops when the state is consistently broken).
 function M.on_make_state_post()
   local cache_home = vim.g['vimrc#dpp#cache_home']
@@ -220,7 +241,7 @@ function M.on_make_state_post()
       vim.fn['dpp#async_ext_action']('installer', 'install', vim.empty_dict())
     else
       -- Nothing to install; apply the rebuilt state by restarting now.
-      vim.cmd('restart +xall')
+      ask_restart('dpp state rebuilt (nothing to install)')
     end
     return
   end
@@ -237,10 +258,10 @@ function M.on_make_state_post()
   local ok, result = pcall(vim.fn['dpp#min#load_state'], cache_home)
   if ok and result == 0 then
     vim.notify(
-      '[VIMRC#BOOTLOADER#AutoCmd]: state verified, restarting...',
+      '[VIMRC#BOOTLOADER#AutoCmd]: state verified, asking to restart...',
       vim.log.levels.WARN
     )
-    vim.cmd('restart +xall')
+    ask_restart('dpp state verified')
   else
     vim.notify(
       '[VIMRC#BOOTLOADER#AutoCmd]: state still broken after make_state, skip restart',
@@ -257,13 +278,13 @@ local function dpp_update_toml(args)
   )
   install_pending = true
 
-  -- 4: after install finishes, restart to load the new state + plugins.
+  -- 4: after install finishes, ask to restart to load the new state + plugins.
   local install_done_id = vim.api.nvim_create_autocmd('User', {
     pattern = 'Dpp:ext:installer:updateDone',
     group = vim.g['vimrc#augroup'],
     once = true,
     callback = function()
-      vim.cmd('restart +xall')
+      ask_restart('plugins installed')
     end,
   })
 

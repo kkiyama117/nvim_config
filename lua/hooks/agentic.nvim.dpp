@@ -1,0 +1,152 @@
+-- lua_add {{{
+
+local agentic = require("agentic")
+
+-- Plugin functions cannot be called here (the plugin is not sourced yet).
+-- Only mappings and global options.
+
+---Cycle the agentic thought effort level directly (no selector UI).
+---Uses the existing session only (no lazy session spawn) and requires a
+---provider that supports the `thought_level` config option.
+---@param direction number if 1 = next, -1 = previous (wraps around).
+local function change_thought_level(direction)
+  local session = require('agentic.session_registry')
+    .sessions[vim.api.nvim_get_current_tabpage()]
+
+  if not session then
+    vim.notify('[AGENTIC] No session yet. Open the widget first.', vim.log.levels.WARN)
+    return
+  end
+
+  local thought = session.config_options
+    and session.config_options.thought_level
+
+  if not thought or not thought.options or #thought.options == 0 then
+    vim.notify('[AGENTIC] Provider does not support thought effort level', vim.log.levels.WARN)
+    return
+  end
+
+  if not session.session_id then
+    vim.notify('[AGENTIC] Session is initializing, try again in a moment', vim.log.levels.WARN)
+    return
+  end
+
+  local current = thought.currentValue
+  local idx = 0
+  for i, option in ipairs(thought.options) do
+    if option.value == current then
+      idx = i
+      break
+    end
+  end
+
+  local next_idx = idx == 0 and 1 or ((idx - 1 + direction) % #thought.options) + 1
+  local option = thought.options[next_idx]
+
+  session.config_options:handle_thought_level_change(option.value)
+  vim.notify(string.format('[AGENTIC] Setting thought level to: %s', option.name), vim.log.levels.INFO)
+end
+
+vim.keymap.set({'n','v'}, '[AGENTIC]a', function()
+  agentic.toggle()
+end, { desc = '[AGENTIC]: Toggle agentic.nvim window', silent = false })
+
+vim.keymap.set({'n','v'}, '[AGENTIC]r', function()
+  agentic.restore_session()
+end, { desc = '[AGENTIC]: Restore session' })
+
+vim.keymap.set({'n'}, '[AGENTIC]d', function()
+  agentic.add_current_line_diagnostics()
+end, { desc = '[AGENTIC]: Add current line diag to Input' })
+
+vim.keymap.set({'n'}, '[AGENTIC]D', function()
+  agentic.add_buffer_diagnostics()
+end, { desc = '[AGENTIC]: Add all in buffer to Input' })
+
+vim.keymap.set('n', '[AGENTIC]l', function()
+  change_thought_level(1)
+end, { desc = '[AGENTIC]: Cycle thought level (Up)' })
+
+vim.keymap.set('n', '[AGENTIC]L', function()
+  change_thought_level(-1)
+end, { desc = '[AGENTIC]: Cycle thought level (down)' })
+
+vim.keymap.set('n', '[AGENTIC]s', function()
+  agentic.switch_provider()
+end, { desc = '[AGENTIC]: Choose provider from picker' })
+
+-- }}}
+
+-- lua_source {{{
+require('agentic').setup({
+  provider = 'pi-acp',
+  --provider = "claude-agent-acp",
+  acp_providers = {
+    ['pi-acp'] = {
+      command = vim.fn.expand(
+        vim.fs.joinpath(
+          '$XDG_DATA_HOME',
+          'mise',
+          'installs',
+          'npm-pi-acp',
+          'latest',
+          'bin',
+          'pi-acp'
+        )
+      ),
+      initial_model = 'ollama-cloud/deepseek-v4-flash:0731',
+      default_thought_level = 'high',
+      -- consider using xhigh
+      --default_thought_level = 'xhigh',
+    },
+  },
+  windows = {
+    position = 'right',
+    width = '40%',
+  },
+
+  -- `keymaps` is deep-merged per key. Pass `{}` (empty list) to disable a
+  -- binding (nil is skipped by deep-extend; false would crash multi_keymap_set).
+  -- TODO: replace it by lua's `vim.keymaps.set` and `which-key`.
+  keymaps = {
+    -- Keys for ALL buffers in the widget
+    widget = {
+      close = 'qq',
+      change_mode = {},
+      switch_provider = {},
+      switch_model = '[AGENTIC]m',
+      change_thought_level = '[AGENTIC]l',
+    },
+
+    -- Keys for the prompt/input buffer
+    prompt = {
+      submit = {
+        '<CR>',
+      },
+      paste_image = {},
+      accept_completion = {},
+    },
+
+    -- Chat buffer navigation (avoid clobbering Vim's `]]`/`[[`/`]t`/`[t`)
+    chat = {
+      next_heading = {},
+      prev_heading = {},
+      next_tool_call = {},
+      prev_tool_call = {},
+    },
+
+    -- Diff preview navigation (avoid gitsigns' `]c`/`[c`)
+    diff_preview = {
+      next_hunk = {},
+      prev_hunk = {},
+    },
+
+    -- Permission prompt cycling
+    permission = {
+      cycle_next = {},
+      cycle_prev = {},
+    },
+  },
+})
+-- }}}
+

@@ -71,8 +71,7 @@ M.rescue_min = function(missing_plugins)
   if not ok then
     return false
   end
-  -- 3: restart to load the newly installed plugins
-  -- TODO: add asking users to restart or not
+  -- 3: restart to load the newly installed plugins; This runs without asking users
   vim.notify(
     '[VIMRC#BOOTLOADER]: minimum deps installed, restarting...',
     vim.log.levels.INFO

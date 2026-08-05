@@ -2,7 +2,7 @@
 -- Check `:h operator-sandwich.jax`
 vim.g['operator_sandwich_no_default_key_mappings'] = 1
 
--- High level API ( operator-sandwich-delete -> textobj-sandwich-query-i ) {{{
+-- High level API ( operator-sandwich-delete -> textobj-sandwich-query-i )
 -- Use like `saiw"`
 vim.keymap.set(
   { 'n', 'o', 'x' },
@@ -34,13 +34,11 @@ vim.keymap.set(
   '<Plug>(sandwich-replace-auto)',
   { desc = 'replace `sandwich`' }
 )
--- }}}
 
 -- TODO: consider using operator directly
--- `sandwich` operator {{{
--- }}}
+-- `sandwich` operator
 
--- text objects (auto = search outward, query = prompt for char) {{{
+-- text objects (auto = search outward, query = prompt for char)
 -- Use like `iw`, `ip`, `is`, `at`
 vim.keymap.set(
   { 'o', 'x' },
@@ -66,7 +64,6 @@ vim.keymap.set(
   '<Plug>(textobj-sandwich-query-a)',
   { desc = 'around sandwich (query char)' }
 )
--- }}}
 
 -- }}}
 

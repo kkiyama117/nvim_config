@@ -1,8 +1,12 @@
---- Shared kakehashi / Mason LSP bridge configuration.
+--- kakehashi bridge configuration (vimrc-owned).
 ---
 --- kakehashi is the single Neovim LSP client; downstream servers (pyright,
 --- gopls, …) run as bridged child processes. Keep `bridged_servers` in sync
---- with Mason package installs in lua/hooks/mason.nvim.lua.
+--- with the LSP server installs in ~/.config/mise/config.toml and the
+--- `enabled` entries in ~/.config/kakehashi/kakehashi.toml (the
+--- kakehashi-lspconfig fragments ship with `enabled = false`). Per-server
+--- settings live in ~/.config/kakehashi/kakehashi.toml; client filetypes
+--- table live here.
 local M = {}
 
 ---@type string[]
@@ -39,6 +43,7 @@ M.markdown_filetypes = {
 }
 
 --- Per-server Vim filetypes (mirror nvim-lspconfig defaults; keep in sync).
+--- Also used as the kakehashi client `filetypes` list so kakehashi attaches.
 ---@type table<string, string[]>
 M.server_filetypes = {
   denols = {
@@ -90,19 +95,23 @@ function M.filetypes()
 end
 
 --- Build kakehashi `init_options.languages` bridge table.
+--- Sent via LSP initialize; merges with the --config-file layers
+--- (lsp.toml + kakehashi.toml + library.toml, built by
+--- after/lsp/kakehashi.lua). No didChangeConfiguration, so no
+--- settings.kakehashi wire shape and no diagnostics re-pull race.
 ---@return table
 function M.languages()
   local languages = {
     ['_'] = {
-      autoInstall = true,
       layers = {
         aggregation = {
           -- Pull-only diagnostics: seal the publishDiagnostics wire so
-          -- nvim gets a single set via textDocument/diagnostic (the
-          -- initial pull races the didChangeConfiguration in
-          -- vimrc/kakehashi_bridge.lua, which re-pulls after the config
-          -- lands). kakehashi folds push-driven servers' cached
-          -- diagnostics into pull answers, so nothing is lost.
+          -- nvim gets a single set via textDocument/diagnostic. kakehashi
+          -- folds push-driven servers' cached diagnostics into pull
+          -- answers, so nothing is lost. The languageServers are already
+          -- configured at spawn (--config-file), so the fork's re-pull
+          -- workaround (bridge.lua polling effectiveConfiguration) is
+          -- unnecessary.
           ['textDocument/publishDiagnostics'] = { priorities = {} },
         },
       },
@@ -124,9 +133,10 @@ function M.languages()
   -- virtual documents (kakehashi-virtual-uri-*.lua) are bridged to
   -- emmylua_ls — the only path that reaches emmylua, which keys
   -- documents by URI extension.
+  local xdg_config = vim.env.XDG_CONFIG_HOME
+    or vim.fs.joinpath(vim.env.HOME or '~', '.config')
   languages.dpp = {
-    parser = vim.fn.expand('$NVIM_CONFIG_HOME') .. '/kakehashi/parser/dpp.so',
-    autoInstall = false,
+    parser = vim.fs.joinpath(xdg_config, 'kakehashi', 'parser', 'dpp.so'),
     bridge = {
       lua = {
         aggregation = {
@@ -138,7 +148,8 @@ function M.languages()
 
   languages.markdown = {
     bridge = {
-      -- emmylua_ls (not lua-language-server); see lua/hooks/mason.nvim.lua.
+      -- emmylua_ls (not lua-language-server); see the vimrc's
+      -- lua/hooks/nvim-lspconfig.dpp.
       lua = {
         aggregation = {
           ['_'] = { priorities = { 'emmylua_ls' } },
@@ -146,7 +157,10 @@ function M.languages()
       },
       python = {
         aggregation = {
-          ['textDocument/completion'] = { priorities = { 'pyright' }, maxFanOut = 1 },
+          ['textDocument/completion'] = {
+            priorities = { 'pyright' },
+            maxFanOut = 1,
+          },
         },
       },
       rust = {
@@ -156,12 +170,18 @@ function M.languages()
       },
       typescript = {
         aggregation = {
-          ['textDocument/completion'] = { priorities = { 'vtsls', 'denols' }, maxFanOut = 1 },
+          ['textDocument/completion'] = {
+            priorities = { 'vtsls', 'denols' },
+            maxFanOut = 1,
+          },
         },
       },
       javascript = {
         aggregation = {
-          ['textDocument/completion'] = { priorities = { 'vtsls', 'denols' }, maxFanOut = 1 },
+          ['textDocument/completion'] = {
+            priorities = { 'vtsls', 'denols' },
+            maxFanOut = 1,
+          },
         },
       },
     },

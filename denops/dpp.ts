@@ -182,21 +182,32 @@ export class Config extends BaseConfig {
     if (localExt) {
       const action = localExt.actions.local;
 
-      const localPlugins = await action.callback({
-        denops: args.denops,
-        context,
-        options,
-        protocols,
-        extOptions: localOptions,
-        extParams: localParams,
-        actionParams: {
-          directory: dppCacheLocal,
-          options: {
-            merged: false,
+      // Dev plugins live under $NVIM_CONFIG_HOME/plugins (own git repos,
+      // e.g. the kakehashi.nvim fork); the cache-local dir is kept for
+      // scratch plugins. `directory` is expanded by the ext via
+      // dpp#util#_expand, so $VARs work here (unlike toml `path`).
+      const localPlugins: Plugin[] = [];
+      for (const directory of [
+        dppCacheLocal,
+        join(nvimConfigHome, "plugins"),
+      ]) {
+        const found = await action.callback({
+          denops: args.denops,
+          context,
+          options,
+          protocols,
+          extOptions: localOptions,
+          extParams: localParams,
+          actionParams: {
+            directory,
+            options: {
+              merged: false,
+            },
+            includes: ["*"],
           },
-          includes: ["*"],
-        },
-      }) as Plugin[];
+        }) as Plugin[];
+        localPlugins.push(...found);
+      }
 
       const gitProtocol = protocols["git"] ?? null;
 

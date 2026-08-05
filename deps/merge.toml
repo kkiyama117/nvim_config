@@ -1,5 +1,5 @@
 # Make each file type rule; like indent etc.
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ft.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ft.dpp"
 
 [[plugins]]
 repo = "vim-jp/vimdoc-ja"

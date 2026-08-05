@@ -47,7 +47,6 @@ require('catppuccin').setup({
     --dap_ui = true,
     --dropbar= {enabled=false,color_mode=false}
     gitsigns = true,
-    mason = true,
     --noise = true,
     notify = true,
     sandwich = true,

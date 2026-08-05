@@ -1,19 +1,54 @@
+# SchemaStore.nvim - Json Schema
+[[plugins]]
+repo = "b0o/SchemaStore.nvim"
+on_event = "FileType"
+
 # nvim-lspconfig - LSP client configurations
+#   Holds the per-server vim.lsp.config definitions that the kakehashi
+#   bridge inherits (see lua/hooks/nvim-lspconfig.dpp).
+#   Loaded on FileType (like the old mason.nvim entry): nvim-lspconfig
+#   must stay lazy so its lazy `depends` (ddc-source-lsp, group "ddc") can
+#   be sourced by dpp — a non-lazy plugin cannot depend on a lazy one.
 [[plugins]]
 repo = "neovim/nvim-lspconfig"
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-lspconfig.lua"
-
-# mason.nvim - LSP server installer
-[[plugins]]
-repo = "williamboman/mason.nvim"
-depends = ["nvim-lspconfig", "ddc-source-lsp"]
+depends = ["ddc-source-lsp", "SchemaStore.nvim"]
 on_event = "FileType"
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/mason.nvim.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-lspconfig.dpp"
 
-# kakehashi.nvim - Bridge LSP servers and clients
-#   And we can merge with Tree-sitter and combine multiple LSP
+# kakehashi-lspconfig - Server-side languageServers for kakehashi
+#   https://github.com/atusy/kakehashi-lspconfig
+#   Not a Neovim plugin (no lua/plugin entrypoint): ships lsp/*.toml
+#   fragments (converted from nvim-lspconfig) that after/lsp/kakehashi.lua
+#   concatenates into $NVIM_CACHE_HOME/kakehashi/lsp.toml and passes to the
+#   kakehashi binary via --config-file. Listed BEFORE kakehashi.nvim so its
+#   fragments are on rtp when the kakehashi config resolves.
+[[plugins]]
+repo = "atusy/kakehashi-lspconfig"
+on_source = "nvim-lspconfig"
+on_event = "FileType"
+
+# kakehashi.nvim (upstream) - Bridge LSP servers and clients
+#   https://github.com/atusy/kakehashi.nvim
+#   Replaces the kkiyama117/kakehashi.nvim fork (was a git submodule at
+#   $NVIM_CONFIG_HOME/plugins/kakehashi.nvim, registered via the
+#   dpp-ext-local scan in denops/dpp.ts). The fork's bridge is replaced
+#   by after/lsp/kakehashi.lua + lua/kakehashi/config.lua +
+#   ~/.config/kakehashi/kakehashi.toml (chezmoi-managed; that dir also
+#   holds the dpp parser/queries/grammar)
+#   — the --config-file model, like atusy's dotfiles.
+#   kakehashi is the sole Neovim LSP client; bridged servers (denols,
+#   emmylua_ls, gopls, pyright, rust_analyzer, tombi, vtsls) run as its
+#   children. LSP server binaries are installed by mise, not mason.nvim
+#   (see ~/.config/mise/config.toml).
 [[plugins]]
 repo = "atusy/kakehashi.nvim"
-on_source = "mason.nvim"
+on_source = "nvim-lspconfig"
+on_event = "FileType"
+
+# Make the rtp ordering explicit: after/lsp/kakehashi.lua builds lsp.toml
+# from kakehashi-lspconfig's lsp/*.toml fragments, so it must be sourced
+# first.
+depends = ["kakehashi-lspconfig"]
 external_commands = ["kakehashi"]
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/kakehashi.nvim.lua"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/kakehashi.nvim.dpp"
+

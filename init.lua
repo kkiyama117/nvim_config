@@ -6,7 +6,7 @@ local config_name = sfile and vim.fn.fnamemodify(sfile, ':p:h:t') or 'nvim'
 
 local home_dir = vim.env.HOME or vim.fn.expand('~')
 
--- Define `vim.env.NVIM_DEBUG to enable debug mode. {{{
+-- Define `vim.env.NVIM_DEBUG to enable debug mode.
 local is_debug = vim.env.NVIM_DEBUG == 'true'
 if is_debug then
   -- vim.o.verbose = 3 -- increase verbosity in debug mode
@@ -15,12 +15,11 @@ if is_debug then
 else
   vim.g['vimrc#is_debug'] = false
 end
--- }}}
 
 -- Default `MyAutoCmd`
 vim.g['vimrc#augroup'] = vim.api.nvim_create_augroup('vimrc', { clear = true })
 
--- ENVIRONMENT VARIABLES with neovim {{{
+-- ENVIRONMENT VARIABLES with neovim
 -- use `<sfile>:p:h`, then fallback stdpath.
 -- Fucking EmmyLua can't understand it `vim.fn.stdpath("string")` must be `string`, so round it `ToString`
 local nvim_config_home =
@@ -42,9 +41,8 @@ if is_debug then
     vim.log.levels.DEBUG
   )
 end
--- }}}
 
--- minimum RUNTIMEPATH {{{
+-- minimum RUNTIMEPATH
 -- Filter out non-existent directories to avoid E5009: Invalid 'runtimepath'
 vim.opt.runtimepath = {
   nvim_config_home,
@@ -52,7 +50,7 @@ vim.opt.runtimepath = {
   vim.env.VIMRUNTIME,
   vim.fs.joinpath(nvim_config_home, 'after'),
   -- vim.fs.joinpath(nvim_config_home, "local/after"),
-} -- }}}
+}
 
 -- call dpp.vim to load configs
 if vim.v.vim_did_enter ~= true then
@@ -97,5 +95,4 @@ vim.api.nvim_create_autocmd('VimEnter', {
     vim.schedule(restore_runtime)
   end,
 })
--- }}}
 

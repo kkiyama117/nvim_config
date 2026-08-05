@@ -6,6 +6,9 @@
 -- Re-enable Treesitter with opt-out for specific filetypes/languages
 -- and huge files. Treesitter is disabled by default in options.lua;
 -- this runs when tree-sitter-manager.nvim is sourced (dpp succeeded).
+-- NOTE: options.lua runs BEFORE this hook, so wrap the ORIGINAL start it
+-- preserved (vimrc#treesitter_start_orig) — wrapping the no-op would keep
+-- treesitter disabled forever.
 -- https://github.com/neovim/neovim/pull/26347#issuecomment-1837508178
 vim.treesitter.start = (function(wrapped)
   return function(bufnr, lang)
@@ -30,7 +33,7 @@ vim.treesitter.start = (function(wrapped)
 
     wrapped(bufnr, lang)
   end
-end)(vim.treesitter.start)
+end)(vim.g['vimrc#treesitter_start_orig'] or vim.treesitter.start)
 
 -- Install parsers
 require('tree-sitter-manager').setup({
@@ -38,6 +41,7 @@ require('tree-sitter-manager').setup({
     'go',
     'javascript',
     'lua',
+    'luadoc', -- LuaDoc annotations inside lua comments (blog: prefer treesitter to LSP semantic tokens)
     'markdown',
     'markdown_inline',
     'python',
