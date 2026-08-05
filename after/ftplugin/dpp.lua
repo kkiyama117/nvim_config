@@ -31,7 +31,7 @@ vim.treesitter.language.register('lua', 'dpp')
 -- plain comments and LuaDoc annotations inside comments get highlighted via
 -- the `luadoc` injection (queries shipped by tree-sitter-manager.nvim).
 -- This is the primary highlighting path — kakehashi semantic tokens are
--- disabled for dpp buffers (plugins/kakehashi.nvim, plugin/kakehashi.lua), preferring
+-- disabled for dpp buffers (after/lsp/kakehashi.lua on_attach), preferring
 -- treesitter to LSP semantic tokens:
 -- https://blog.atusy.net/2025/07/15/prefer-luadoc-to-luals-semantictokens
 if vim.treesitter.language.add('lua') then

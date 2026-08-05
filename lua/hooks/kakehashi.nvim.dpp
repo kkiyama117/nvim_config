@@ -1,0 +1,16 @@
+-- lua_source {{{
+-- kakehashi.nvim (upstream) — dpp entry point.
+--
+-- The Neovim client config lives in after/lsp/kakehashi.lua (loaded lazily
+-- by `vim.lsp.config['kakehashi']`, following atusy's dotfiles layout).
+-- This hook only enables the config: `vim.lsp.enable` eagerly resolves it,
+-- which triggers the after/lsp load — and must not be called from inside
+-- that file (it would recurse).
+--
+-- kakehashi is the sole Neovim LSP client; bridged servers (denols,
+-- emmylua_ls, gopls, pyright, rust_analyzer, tombi, vtsls) run as its
+-- children. Server binaries are installed by mise, NOT mason.nvim.
+
+vim.lsp.enable('kakehashi')
+-- }}}
+

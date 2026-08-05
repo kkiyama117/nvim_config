@@ -19,3 +19,10 @@ lua_source = '''
     },
   })
 '''
+
+# [[plugins]]
+# repo = "nvim-treesitter/nvim-treesitter-context"
+# on_event = ["VimEnter", "BufRead", "CursorHold"]
+# on_ft = ["help"]
+# external_commands = ["tree-sitter"]
+
