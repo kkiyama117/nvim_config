@@ -1,0 +1,216 @@
+*kkiyama117-nvim-statusline.txt*
+
+Author: kkiyama117
+License: NYSL
+
+==============================================================================
+About
+
+Statusline (heirline.nvim) help. This file documents the sections of the
+heirline cookbook that are NOT yet implemented in this vimrc, together
+with a TODO list. The implemented sections live in
+lua/hooks/heirline.nvim.dpp and lua/hooks/heirline_components/*.lua and
+are NOT repeated here.
+
+Contents: >
+	TODOS
+	DEBUGGER
+	TESTS
+	SNIPPETS INDICATOR
+	LSPMESSAGES
+<
+
+==============================================================================
+TODOS                                   *kkiyama117-nvim-statusline-todos*
+
+Pending items. Plugin-dependent items are blocked until the plugin is
+added to deps/*.toml.
+
+PLUGIN-DEPENDENT (blocked) >
+	DAPMessages ......... needs nvim-dap   (|kkiyama117-nvim-statusline-debugger|)
+	UltTest ............. needs ultest     (|kkiyama117-nvim-statusline-tests|)
+	Snippets ............ needs ultisnips  (|kkiyama117-nvim-statusline-snippets|)
+	LSPMessages ......... needs lsp-status  (|kkiyama117-nvim-statusline-lspmessages|)
+	Navic ............... needs nvim-navic
+	Git on_click ........ needs lazygit or fugitive
+	DAP buttons ......... needs nvim-dap    (|kkiyama117-nvim-statusline-debugger|)
+<
+
+NO-PLUGIN (can be added anytime) >
+	(none — all no-plugin sections are implemented)
+<
+
+==============================================================================
+DEBUGGER                                *kkiyama117-nvim-statusline-debugger*
+
+Requires nvim-dap (https://github.com/mfussenegger/nvim-dap) — NOT
+installed. Component: DAPMessages.
+
+DAPMessages — session status: >
+	local DAPMessages = {
+	    condition = function()
+	        local session = require("dap").session()
+	        return session ~= nil
+	    end,
+	    provider = function()
+	        return " " .. require("dap").status()
+	    end,
+	    hl = "Debug"
+	    -- see Click-it! section for clickable actions
+	}
+<
+
+Clickable DAP buttons (step-over, step-into, next, previous, stop): >
+	-- Note that we add spaces separately, so that only the icon characters will be clickable
+	local DAPMessages = {
+	    condition = function()
+	        local session = require("dap").session()
+	        return session ~= nil
+	    end,
+	    provider = function()
+	        return " " .. require("dap").status() .. " "
+	    end,
+	    hl = "Debug",
+	    {
+	        provider = "",
+	        on_click = {
+	            callback = function()
+	                require("dap").step_into()
+	            end,
+	            name = "heirline_dap_step_into",
+	        },
+	    },
+	    { provider = " " },
+	    {
+	        provider = "",
+	        on_click = {
+	            callback = function()
+	                require("dap").step_out()
+	            end,
+	            name = "heirline_dap_step_out",
+	        },
+	    },
+	    { provider = " " },
+	    {
+	        provider = " ",
+	        on_click = {
+	            callback = function()
+	                require("dap").step_over()
+	            end,
+	            name = "heirline_dap_step_over",
+	        },
+	    },
+	    { provider = " " },
+	    {
+	        provider = "ﰇ",
+	        on_click = {
+	            callback = function()
+	                require("dap").run_last()
+	            end,
+	            name = "heirline_dap_run_last",
+	        },
+	    },
+	    { provider = " " },
+	    {
+	        provider = "",
+	        on_click = {
+	            callback = function()
+	                require("dap").terminate()
+	                require("dapui").close({})
+	            end,
+	            name = "heirline_dap_close",
+	        },
+	    },
+	    { provider = " " },
+	    -- icons:       ﰇ  
+	}
+<
+
+==============================================================================
+TESTS                                   *kkiyama117-nvim-statusline-tests*
+
+Requires ultest (https://github.com/rcarriga/vim-ultest) — NOT installed.
+Component: UltTest.
+
+UltTest — test status: >
+	local UltTest = {
+	    condition = function()
+	        return vim .api.nvim_call_function("ultest#is_test_file", {}) ~= 0
+	    end,
+	    static = {
+	        passed_icon = vim.fn.sign_getdefined("test_pass")[1].text,
+	        failed_icon = vim.fn.sign_getdefined("test_fail")[1].text,
+	        passed_hl = { fg = utils.get_highlight("UltestPass").fg },
+	        failed_hl = { fg = utils.get_highlight("UltestFail").fg },
+	    },
+	    init = function(self)
+	        self.status = vim.api.nvim_call_function("ultest#status", {})
+	    end,
+
+	    -- again, if you'd like icons and numbers to be colored differently,
+	    -- just split the component in two
+	    {
+	        provider = function(self)
+	            return self.passed_icon .. self.status.passed .. " "
+	        end,
+	        hl = function(self)
+	            return self.passed_hl
+	        end,
+	    },
+	    {
+	        provider = function(self)
+	            return self.failed_icon .. self.status.failed .. " "
+	        end,
+	        hl = function(self)
+	            return self.failed_hl
+	        end,
+	    },
+	    {
+	        provider = function(self)
+	            return "of " .. self.status.tests - 1
+	        end,
+	    },
+	}
+<
+
+==============================================================================
+SNIPPETS INDICATOR                      *kkiyama117-nvim-statusline-snippets*
+
+Requires ultisnips (https://github.com/SirVer/ultisnips) — NOT installed.
+Component: Snippets. The same logic could be applied to many other
+snippet plugins.
+
+Snippets — indicator when inside a snippet: >
+	local Snippets = {
+	    -- check that we are in insert or select mode
+	    condition = function()
+	        return vim.tbl_contains({'s', 'i'}, vim.fn.mode())
+	    end,
+	    provider = function()
+	        local forward = (vim.fn["UltiSnips#CanJumpForwards"]() == 1) and "" or ""
+	        local backward = (vim.fn["UltiSnips#CanJumpBackwards"]() == 1) and " " or ""
+	        return backward .. forward
+	    end,
+	    hl = { fg = "red", bold = true },
+	}
+<
+
+==============================================================================
+LSPMESSAGES                             *kkiyama117-nvim-statusline-lspmessages*
+
+Requires lsp-status (https://github.com/tomtomjhj/lsp-status.nvim) — NOT
+installed. Component: LSPMessages. LSPActive is already implemented
+(lua/hooks/heirline_components/lsp.lua).
+
+LSPMessages — progress messages: >
+	-- I personally use it only to display progress messages!
+	-- See lsp-status/README.md for configuration options.
+	-- Note: check "j-hui/fidget.nvim" for a nice statusline-free alternative.
+	local LSPMessages = {
+	    provider = require("lsp-status").status,
+	    hl = { fg = "gray" },
+	}
+<
+
+vim:tw=78:ts=8:noet:ft=help:norl:
+

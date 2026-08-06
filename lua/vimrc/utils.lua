@@ -64,40 +64,6 @@ local function set_background(group, bg)
   vim.api.nvim_set_hl(0, group, { fg = hl.fg, bg = bg })
 end
 
--- Get the default background color of the current colorscheme.
--- Returns `nil` when it cannot be resolved.
-local function get_default_background()
-  local colors_name = vim.g.colors_name or ''
-
-  if colors_name:match('^catppuccin') then
-    -- catppuccin: `palette.base` is the default background
-    local ok, palettes = pcall(require, 'catppuccin.palettes')
-    if ok then
-      return palettes.get_palette(vim.g.catppuccin_flavour).base
-    end
-  elseif colors_name:match('^tokyonight') then
-    -- tokyonight: `colors.bg` is the default background
-    -- Use the style of the active colorscheme (e.g. `night` of
-    -- `tokyonight-night`), not the configured default style.
-    local ok, colors = pcall(require, 'tokyonight.colors')
-    if ok then
-      local style = colors_name:match('^tokyonight%-(.+)$')
-      local opts = style and { style = style }
-        or require('tokyonight.config').options
-      return colors.setup(opts).bg
-    end
-  elseif colors_name:match('^nightfox') then
-    -- nightfox: `palette.bg1` is the default background (`bg0` is for
-    -- statusline and floats)
-    local ok, palettes = pcall(require, 'nightfox.palette')
-    if ok then
-      return palettes.load(vim.g.nightfox_style or 'nightfox').bg1
-    end
-  end
-
-  return nil
-end
-
 function M.is_background_transparent()
   local bg = get_background('Normal')
   return bg == nil or bg == 'NONE'
@@ -127,7 +93,7 @@ function M.background_opaque()
   end
 
   -- Use the default background color of the colorscheme
-  local bg = get_default_background()
+  local bg = vim.g['vimrc#color_bg']
   if bg == nil then
     -- Fallback: re-source the colorscheme to restore its defaults
     local colors_name = vim.g.colors_name
@@ -265,3 +231,4 @@ end
 -- }}}
 
 return M
+
