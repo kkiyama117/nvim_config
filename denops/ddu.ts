@@ -254,7 +254,9 @@ export class Config extends BaseConfig {
         word: { defaultAction: "append" },
       },
       kindParams: {
-        // TODO: find`trash` cli command
+        file: {
+          trashCommand: ["trash"],
+        },
       },
       // SOURCES
       sourceOptions: {

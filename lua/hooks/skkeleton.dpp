@@ -2,25 +2,16 @@
 -- Plugin functions cannot be called here (the plugin is not sourced yet).
 -- Only mappings and global options.
 vim.keymap.set(
-  { 'i', 'c', 't' },
-  '<C-j>',
-  '<Cmd>call skkeleton#handle("toggle", {})<CR>',
-  { desc = 'skkeleton: toggle' }
+  { 'i', 'c', 't' }, '<C-j>', '<Cmd>call skkeleton#handle("toggle", {})<CR>', { desc = 'skkeleton: toggle' }
 )
-vim.keymap.set(
-  'n',
-  '<C-j>',
-  'i<Cmd>call skkeleton#handle("enable", {})<CR>',
-  { desc = 'skkeleton: enable' }
-)
+vim.keymap.set('n', '<C-j>', 'i<Cmd>call skkeleton#handle("enable", {})<CR>', { desc = 'skkeleton: enable' })
 -- }}}
 
 -- lua_source {{{
 if vim.g['vimrc#is_debug'] == 'true' then
   vim.g['skkeleton#debug'] = true
 end
-local myAuGroup =
-  vim.api.nvim_create_augroup('vimrc#augroup', { clear = false })
+local myAuGroup = vim.api.nvim_create_augroup('vimrc#augroup', { clear = false })
 -- Script-local state: saved cursor highlight (table for Neovim, list for Vim)
 local hl_cursor = nil
 
@@ -28,8 +19,7 @@ local hl_cursor = nil
 -- highlight_cursor (shared helper)
 -- --------------------------------------------------------------------------
 local function highlight_cursor(highlight)
-  local is_cmdline = vim.fn.exists('*cmdline#_get') == 1
-    and not vim.tbl_isempty(vim.fn['cmdline#_get']().pos)
+  local is_cmdline = vim.fn.exists('*cmdline#_get') == 1 and not vim.tbl_isempty(vim.fn['cmdline#_get']().pos)
   local highlight_name = is_cmdline and 'CmdlineCursor' or 'Cursor'
 
   if vim.fn.has('nvim') == 1 then
@@ -78,22 +68,18 @@ end
 -- --------------------------------------------------------------------------
 -- skkeleton#config
 -- --------------------------------------------------------------------------
-local skk_jisho_path =
-  vim.fn.expand(vim.fs.joinpath(vim.env.XDG_STATE_HOME, 'SKK-JISYO.L'))
+local skk_jisho_path = vim.fn.expand(vim.fs.joinpath(vim.env.XDG_STATE_HOME, 'SKK-JISYO.L'))
 vim.fn['skkeleton#config']({
-  databasePath = vim.fn.expand(
-    vim.fs.joinpath('$XDG_CACHE_HOME', 'skkeleton.db')
-  ),
+  databasePath = vim.fn.expand(vim.fs.joinpath('$XDG_CACHE_HOME', 'skkeleton.db')),
   eggLikeNewline = true,
-  globalDictionaries = vim.fn.has('win32') == 1 and { skk_jisho_path }
-    or { '/usr/share/skk/SKK-JISYO.L' },
+  globalDictionaries = vim.fn.has('win32') == 1 and { skk_jisho_path } or { '/usr/share/skk/SKK-JISYO.L' },
   markerHenkan = '',
   markerHenkanSelect = '',
   registerConvertResult = true,
   sources = {
     'deno_kv',
-    'google_japanese_input',
-  },
+    'google_japanese_input'
+  }
 })
 
 -- For SKK server test.
@@ -109,7 +95,7 @@ vim.fn['skkeleton#config']({
 -- --------------------------------------------------------------------------
 vim.fn['skkeleton#register_kanatable']('rom', {
   jj = 'escape',
-  ['~'] = { '〜', '' },
+  ['~'] = { '〜', '' }
 })
 
 -- --------------------------------------------------------------------------
@@ -118,26 +104,8 @@ vim.fn['skkeleton#register_kanatable']('rom', {
 vim.api.nvim_create_autocmd('User', {
   pattern = 'skkeleton-enable-pre',
   group = myAuGroup,
-  callback = function()
-    if
-      (vim.fn.has('nvim') ~= 1 or vim.env.DISPLAY ~= '')
-      and vim.fn.has('clipboard') == 1
-    then
-      -- Copy to clipboard to use Vim as IME
-      -- TODO: configure Clipboard
-      vim.api.nvim_create_autocmd('ModeChanged', {
-        pattern = '*:n',
-        group = myAuGroup,
-        once = true,
-        callback = function()
-          vim.fn.setreg('*', vim.fn.getline('.'))
-          vim.fn.setreg('+', vim.fn.getreg('*'))
-        end,
-      })
-    end
-
-    local is_cmdline = vim.fn.exists('*cmdline#_get') == 1
-      and not vim.tbl_isempty(vim.fn['cmdline#_get']().pos)
+  callback = function ()
+    local is_cmdline = vim.fn.exists('*cmdline#_get') == 1 and not vim.tbl_isempty(vim.fn['cmdline#_get']().pos)
     local hl_name = is_cmdline and 'CmdlineCursor' or 'Cursor'
 
     if vim.fn.has('nvim') == 1 then
@@ -145,7 +113,7 @@ vim.api.nvim_create_autocmd('User', {
     else
       hl_cursor = vim.fn.hlget(hl_name)
     end
-  end,
+  end
 })
 
 -- --------------------------------------------------------------------------
@@ -154,7 +122,7 @@ vim.api.nvim_create_autocmd('User', {
 vim.api.nvim_create_autocmd('User', {
   pattern = 'skkeleton-mode-changed',
   group = myAuGroup,
-  callback = skkeleton_changed,
+  callback = skkeleton_changed
 })
 
 -- --------------------------------------------------------------------------
@@ -163,18 +131,14 @@ vim.api.nvim_create_autocmd('User', {
 vim.api.nvim_create_autocmd('User', {
   pattern = 'skkeleton-handled',
   group = myAuGroup,
-  callback = function()
+  callback = function ()
     if vim.g['skkeleton#mode'] == '' then
       return
     end
 
     -- Change the cursor color
     local phase = vim.g['skkeleton#state'].phase
-    if
-      phase == 'henkan'
-      or phase == 'input:okurinasi'
-      or phase == 'input:okuriari'
-    then
+    if phase == 'henkan' or phase == 'input:okurinasi' or phase == 'input:okuriari' then
       local hl = vim.deepcopy(hl_cursor)
       local color = '#a0f0a0'
       if vim.fn.has('nvim') == 1 then
@@ -186,7 +150,7 @@ vim.api.nvim_create_autocmd('User', {
     else
       skkeleton_changed()
     end
-  end,
+  end
 })
 
 -- --------------------------------------------------------------------------
@@ -198,33 +162,33 @@ vim.fn['skkeleton_state_popup#config']({
       hira = 'あ',
       kata = 'ア',
       hankata = 'ｶﾅ',
-      zenkaku = 'Ａ',
+      zenkaku = 'Ａ'
     },
     ['input:okurinasi'] = {
       hira = '▽',
       kata = '▽',
       hankata = '▽',
-      abbrev = 'ab',
+      abbrev = 'ab'
     },
     ['input:okuriari'] = {
       hira = '▽',
       kata = '▽',
-      hankata = '▽',
+      hankata = '▽'
     },
     henkan = {
       hira = '▼',
       kata = '▼',
       hankata = '▼',
-      abbrev = 'ab',
-    },
+      abbrev = 'ab'
+    }
   },
   opts = {
     relative = 'cursor',
     col = 0,
     row = 1,
     anchor = 'NW',
-    style = 'minimal',
-  },
+    style = 'minimal'
+  }
 })
 
 vim.fn['skkeleton_state_popup#enable']()

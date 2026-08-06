@@ -17,3 +17,7 @@ name = "catppuccin"
 lazy = false
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/catppuccin.nvim.dpp"
 
+[[plugins]]
+repo = "rebelot/kanagawa.nvim"
+lazy = false
+
