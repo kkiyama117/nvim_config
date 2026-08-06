@@ -11,6 +11,11 @@ local M = {}
 local function ddu_git_branch()
   vim.fn['ddu#start']({
     name = 'git_branch',
+    sources = {
+      {
+        name = 'git_branch',
+      },
+    },
     uiParams = {
       ff = {
         ignoreEmpty = true,
@@ -25,6 +30,11 @@ end
 local function ddu_git_log()
   vim.fn['ddu#start']({
     name = 'git_log',
+    sources = {
+      {
+        name = 'git_log',
+      },
+    },
     uiParams = {
       ff = {
         ignoreEmpty = true,
@@ -38,6 +48,11 @@ end
 local function ddu_git_stash()
   vim.fn['ddu#start']({
     name = 'git_stash',
+    sources = {
+      {
+        name = 'git_stash',
+      },
+    },
     uiParams = {
       ff = {
         ignoreEmpty = true,
@@ -51,6 +66,11 @@ end
 local function ddu_git_status()
   vim.fn['ddu#start']({
     name = 'git_status',
+    sources = {
+      {
+        name = 'git_status',
+      },
+    },
     sourceOptions = {
       git_status = {
         defaultAction = 'open',
