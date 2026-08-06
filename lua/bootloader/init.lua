@@ -14,7 +14,11 @@ local is_debug = vim.g['vimrc#is_debug']
 --- denops script) and the minimum dependency list. Values must stay in sync
 --- with the dpp-ext plugin configuration.
 local function set_dpp_global_value() -- {{{
-  vim.g['vimrc#dpp#minimum_deps'] = { 'Shougo/dpp.vim', 'Shougo/dpp-ext-lazy' }
+  vim.g['vimrc#dpp#minimum_deps'] = {
+    'Shougo/dpp.vim',
+    'Shougo/dpp-ext-lazy',
+    'vim-denops/denops.vim',
+  }
   -- vim.g.dpp_cache_home = vim.fs.joinpath(vim.g.xdg_cache_home, "dpp")
   vim.g['vimrc#dpp#cache_home'] =
     vim.fs.joinpath(vim.env.NVIM_CACHE_HOME, 'dpp')
@@ -55,7 +59,7 @@ end -- }}}
 --- Run the primary dpp startup sequence.
 ---
 --- 1. Set dpp global variables.
---- 2. Prepend minimum deps (`dpp.vim`, `dpp-ext-lazy`) to runtimepath.
+--- 2. Prepend minimum deps (`dpp.vim`, `dpp-ext-lazy`, `denops.vim`) to runtimepath.
 --- 3. Call `dpp#min#load_state`; on success trigger auto-update setup,
 ---    on non-zero result rebuild state via `bootloader/normal.make_state`,
 ---    on missing function fall back to `bootloader/fallback`.
@@ -108,6 +112,19 @@ local function startup()
           'vim-denops',
           'denops.vim'
         )
+        -- Ensure denops.vim is installed before trying to load it.
+        -- Without it, DenopsReady never fires and the F1 recovery chain
+        -- dead-ends: make_state (and its F3 fallback) is never reached.
+        if vim.fn.isdirectory(denops_path) == 0 then
+          vim.notify(
+            '[VIMRC#BOOTLOADER]: denops.vim not found, installing...',
+            vim.log.levels.WARN
+          )
+          require('bootloader/min/github_installer').install_from_remote({
+            repo = 'https://github.com/vim-denops/denops.vim',
+            dest = denops_path,
+          })
+        end
         vim.opt.runtimepath:prepend(denops_path)
         vim.cmd([[runtime! plugin/denops.vim]])
       end
@@ -116,6 +133,84 @@ local function startup()
         cache_github = vim.g['vimrc#dpp#cache_github'],
         dpp_script = vim.g['vimrc#dpp#denops_script'],
       })
+      -- In headless mode, setup_autocmd_load_state_failed skips the
+      -- DenopsReady autocord (no UI to avoid racing interactive sessions).
+      -- But if this is the only session, the state would never be rebuilt.
+      -- Start denops and call make_state directly instead.
+      if #vim.api.nvim_list_uis() == 0 then
+        vim.notify(
+          '[VIMRC#BOOTLOADER]: headless session, starting denops directly...',
+          vim.log.levels.WARN
+        )
+        vim.fn['denops#server#start']()
+        vim.wait(15000, function()
+          return vim.fn['denops#server#status']() == 'running'
+        end)
+        if vim.fn['denops#server#status']() == 'running' then
+          vim.notify(
+            '[VIMRC#BOOTLOADER]: denops ready, calling make_state...',
+            vim.log.levels.WARN
+          )
+          require('bootloader/dpp/make_state').run({
+            cache_home = vim.g['vimrc#dpp#cache_home'],
+            cache_github = vim.g['vimrc#dpp#cache_github'],
+            dpp_script = vim.g['vimrc#dpp#denops_script'],
+          })
+          -- Register installer-completion listener BEFORE waiting, so we
+          -- don't miss the Dpp:ext:installer:updateDone event.
+          local install_done = false
+          vim.api.nvim_create_autocmd('User', {
+            pattern = 'Dpp:ext:installer:updateDone',
+            group = vim.api.nvim_create_augroup(
+              'vimrc_boot_install',
+              { clear = true }
+            ),
+            once = true,
+            callback = function()
+              install_done = true
+            end,
+          })
+          -- Wait for state files to be written (async make_state completion)
+          local state_file = vim.fs.joinpath(
+            vim.g['vimrc#dpp#cache_home'],
+            'nvim',
+            'state.vim'
+          )
+          vim.wait(60000, function()
+            return vim.fn.filereadable(state_file) == 1
+          end)
+          if vim.fn.filereadable(state_file) == 1 then
+            vim.notify(
+              '[VIMRC#BOOTLOADER]: state rebuilt successfully',
+              vim.log.levels.INFO
+            )
+            -- Dpp:makeStatePost has fired and on_make_state_post triggered
+            -- the async installer for user plugins. Wait for it to finish.
+            local has_pending = false
+            pcall(function()
+              has_pending =
+                #vim.fn['dpp#sync_ext_action'](
+                  'installer',
+                  'getNotInstalled',
+                  vim.empty_dict()
+                ) > 0
+            end)
+            if has_pending then
+              vim.notify(
+                '[VIMRC#BOOTLOADER]: waiting for plugin install...',
+                vim.log.levels.WARN
+              )
+              vim.wait(120000, function()
+                return install_done
+              end)
+              vim.notify(
+                '[VIMRC#BOOTLOADER]: plugin install complete',
+                vim.log.levels.INFO
+              )
+            end
+          end
+        end
+      end
       require('bootloader/autocmds').setup_autocmd_make_state_post()
       vim.notify(
         '[VIMRC#BOOTLOADER]: set AutoCmds for recover',

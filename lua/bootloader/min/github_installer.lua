@@ -7,7 +7,8 @@ local is_debug = vim.g['vimrc#is_debug']
 
 --- Clone a remote Git repository into the dpp plugin cache.
 ---
---- Uses `git clone --filter blob:none` for a shallow blob-less checkout.
+--- Uses full clone (not `--filter blob:none`) because partial clones
+--- can leave files as missing/staged-deleted, breaking plugin loading.
 ---@param args {repo: string, dest: string} `repo`: clone URL; `dest`: target directory
 ---@return boolean `true` when clone succeeded
 local function install_from_remote(args)
@@ -21,8 +22,6 @@ local function install_from_remote(args)
   local git_clone_log = vim.fn.system({
     'git',
     'clone',
-    '--filter',
-    'blob:none',
     args.repo,
     args.dest,
   })

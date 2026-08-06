@@ -297,24 +297,36 @@ function M.on_make_state_post()
     return
   end
 
-  -- Default path: verify the rebuilt state is loadable, then restart.
+  -- Default path: verify the rebuilt state is loadable, then install
+  -- every not-installed plugin (the user plugins from deps/*.toml).
+  -- Previously this only asked to restart, leaving plugins uninstalled.
   vim.notify('dpp make_state() may be done successfully', vim.log.levels.WARN)
   if cache_home == nil then
     vim.notify(
-      '[VIMRC#BOOTLOADER#AutoCmd]: cache_home not set, skip restart',
+      '[VIMRC#BOOTLOADER#AutoCmd]: cache_home not set, skip install',
       vim.log.levels.ERROR
     )
     return
   end
   if load_state_live(cache_home) then
     vim.notify(
-      '[VIMRC#BOOTLOADER#AutoCmd]: state verified, asking to restart...',
+      '[VIMRC#BOOTLOADER#AutoCmd]: state verified, installing plugins...',
       vim.log.levels.WARN
     )
-    ask_restart('dpp state verified')
+    if
+      #vim.fn['dpp#sync_ext_action'](
+        'installer',
+        'getNotInstalled',
+        vim.empty_dict()
+      ) > 0
+    then
+      vim.fn['dpp#async_ext_action']('installer', 'install', vim.empty_dict())
+    else
+      ask_restart('dpp state rebuilt (nothing to install)')
+    end
   else
     vim.notify(
-      '[VIMRC#BOOTLOADER#AutoCmd]: state still broken after make_state, skip restart',
+      '[VIMRC#BOOTLOADER#AutoCmd]: state still broken after make_state, skip install',
       vim.log.levels.ERROR
     )
   end
