@@ -195,36 +195,23 @@ vim.keymap.set('n', '[DP]l', function ()
 end, { desc = 'Ddu: source of dpp' }
 )
 
+-- ==========================================================================
 -- Fuzzy finder mappings that start from `;`
-
+-- ==========================================================================
 -- Normal mapping
 
 -- buffers
 vim.keymap.set('n', ';b', function ()
   vim.fn['ddu#start']({
-    name = 'buffer'
+    name = 'buffer',
     -- TODO: Add actions of them
-  })
-end, { desc = 'Ddu: buffers' }
-)
-
--- outline (markdown)
-vim.keymap.set('n', ';d', function ()
-  vim.fn['ddu#start']({
-    name = 'outline',
     sources = {
       {
-        name = 'markdown'
-      }
-    },
-    uiParams = {
-      ff = {
-        ignoreEmpty = true,
-        displayTree = true
+        name = 'buffer'
       }
     }
   })
-end, { desc = 'Ddu: markdown outline' }
+end, { desc = 'Ddu: buffers' }
 )
 
 -- simple ripgrep with empty window
@@ -247,7 +234,7 @@ end, { desc = 'Ddu: empty' }
 )
 
 -- Ripgrep
-vim.keymap.set('n', ';fc', function ()
+vim.keymap.set('n', ';f', function ()
   vim.fn['ddu#start']({
     name = 'search',
     resume = false,
@@ -276,7 +263,7 @@ end, { desc = 'Ddu: ripgrep inside cwd' }
 )
 
 -- Ripgrep in manual path
-vim.keymap.set('n', ';fm', function ()
+vim.keymap.set('n', ';F', function ()
   vim.fn['ddu#start']({
     name = 'search',
     resume = false,
@@ -349,6 +336,25 @@ vim.keymap.set('n', ';l', function ()
 end, { desc = 'Ddu: line' }
 )
 
+-- outline (markdown)
+vim.keymap.set('n', ';m', function ()
+  vim.fn['ddu#start']({
+    name = 'outline',
+    sources = {
+      {
+        name = 'markdown'
+      }
+    },
+    uiParams = {
+      ff = {
+        ignoreEmpty = true,
+        displayTree = true
+      }
+    }
+  })
+end, { desc = 'Ddu: markdown outline' }
+)
+
 -- Command output
 vim.keymap.set('n', ';o', function ()
   vim.fn['ddu#start']({
@@ -386,6 +392,7 @@ end, { desc = 'Ddu: register' }
 )
 
 -- Visual mapping
+-- ==========================================================================
 -- yank line and use it as a input of ripgrep
 vim.keymap.set('x', ';gr', function ()
   vim.cmd('normal! y')
@@ -466,7 +473,9 @@ vim.keymap.set('x', ';r', function ()
 end, { expr = true, desc = 'Ddu: register (visual)' }
 )
 
+-- ==========================================================================
 -- AutoCmd for Filter window (keymap `<C-f>` and `<C-b>`)
+-- ==========================================================================
 vim.api.nvim_create_autocmd('User', {
   pattern = 'Ddu:uiOpenFilterWindow',
   group = augroup,

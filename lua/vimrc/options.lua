@@ -3,6 +3,14 @@ local is_debug = true
 -- local is_debug = vim.env.NVIM_DEBUG == 'true'
 
 -- APPEARANCE {{{
+-- Global statusline (one at the bottom of the whole window)
+-- https://github.com/rebelot/heirline.nvim#readme
+vim.opt.laststatus = 3
+
+-- No 'cmdheight'? No problem! (heirline cookbook: SearchCount/MacroRec/ShowCmd)
+-- Move the command line into the statusline.
+vim.opt.cmdheight = 0
+vim.opt.showcmdloc = 'statusline'
 -- SideBar {{{
 -- Number {{{
 vim.opt.number = true
@@ -292,4 +300,8 @@ vim.opt.termguicolors = true
 vim.opt.inccommand = 'nosplit'
 vim.opt.winblend = 30
 vim.opt.pumblend = 30
+
+-- ==========================================================================
+-- Clipboard
+-- ==========================================================================
 

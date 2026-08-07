@@ -36,11 +36,14 @@ repo = "stevearc/aerial.nvim"
 on_event = ["BufReadPost", "BufNewFile"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/aerial.nvim.dpp"
 
-# heirline.nvim - statusline
+# heirline.nvim - statusline (and its deps)
 [[plugins]]
 repo = "rebelot/heirline.nvim"
 on_event = ["UIEnter"]
 # All colorscheme should be read before heirline.
-depends = ["catppuccin"]
+depends = ["catppuccin", "nvim-web-devicons"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/heirline.nvim.dpp"
+
+[[plugins]]
+repo = "nvim-tree/nvim-web-devicons"
 

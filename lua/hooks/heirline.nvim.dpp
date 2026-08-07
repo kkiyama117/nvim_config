@@ -6,146 +6,261 @@
 -- lua_source {{{
 -- To setup, see `https://github.com/rebelot/heirline.nvim/blob/master/cookbook.md`
 local heirline = require("heirline")
--- TODO: get colors of colorscheme, e.x. kanagawa
---local colors = require ("kanagawa.colors").setup()
---heirline.load_colors(colors)
 
 -- Heirline components has nested structure like XML.
 -- So we need to create component blocks, and merge them into `statusline`.
--- --------------------------------------------------------------------------
--- components
--- --------------------------------------------------------------------------
+-- Each parts are defined in `hooks/heirline_components`
+local components = require("hooks/heirline_components")
+local colors = components.get_colors("catppuccin", vim.g["vimrc#colors"]).colors
+
 -- Buildins
 local conditions = require("heirline.conditions")
 local utils = require("heirline.utils")
 
 -- Custom one
 
-local ViMode = {
-    -- get vim current mode, this information will be required by the provider
-    -- and the highlight functions, so we compute it only once per component
-    -- evaluation and store it as a component attribute
-    init = function(self)
-        self.mode = vim.fn.mode(1) -- :h mode()
-    end,
-    -- Now we define some dictionaries to map the output of mode() to the
-    -- corresponding string and color. We can put these into `static` to compute
-    -- them at initialisation time.
-    static = {
-        -- change the strings if you like it vvvvverbose!
-        mode_names = { 
-            n = "N",
-            no = "N?",
-            nov = "N?",
-            noV = "N?",
-            ["no\22"] = "N?",
-            niI = "Ni",
-            niR = "Nr",
-            niV = "Nv",
-            nt = "Nt",
-            v = "V",
-            vs = "Vs",
-            V = "V_",
-            Vs = "Vs",
-            ["\22"] = "^V",
-            ["\22s"] = "^V",
-            s = "S",
-            S = "S_",
-            ["\19"] = "^S",
-            i = "I",
-            ic = "Ic",
-            ix = "Ix",
-            R = "R",
-            Rc = "Rc",
-            Rx = "Rx",
-            Rv = "Rv",
-            Rvc = "Rv",
-            Rvx = "Rv",
-            c = "C",
-            cv = "Ex",
-            r = "...",
-            rm = "M",
-            ["r?"] = "?",
-            ["!"] = "!",
-            t = "T",
-        },
-        mode_colors = {
-            n = "red" ,
-            i = "green",
-            v = "cyan",
-            V =  "cyan",
-            ["\22"] =  "cyan",
-            c =  "orange",
-            s =  "purple",
-            S =  "purple",
-            ["\19"] =  "purple",
-            R =  "orange",
-            r =  "orange",
-            ["!"] =  "red",
-            t =  "red",
-        }
-    },
-    -- We can now access the value of mode() that, by now, would have been
-    -- computed by `init()` and use it to index our strings dictionary.
-    -- note how `static` fields become just regular attributes once the
-    -- component is instantiated.
-    -- To be extra meticulous, we can also add some vim statusline syntax to
-    -- control the padding and make sure our string is always at least 2
-    -- characters long. Plus a nice Icon.
-    provider = function(self)
-        return " %2("..self.mode_names[self.mode].."%)"
-    end,
-    -- Same goes for the highlight. Now the foreground will change according to the current mode.
-    hl = function(self)
-        local mode = self.mode:sub(1, 1) -- get only the first mode character
-        return { fg = self.mode_colors[mode], bold = true, bg = "black" }
-    end,
-    -- Re-evaluate the component only on ModeChanged event!
-    -- Also allows the statusline to be re-evaluated when entering operator-pending mode
-    update = {
-        "ModeChanged",
-        pattern = "*:*",
-        callback = vim.schedule_wrap(function()
-            vim.cmd("redrawstatus")
-        end),
-    },
-}
--- FileName
-  local FileName = { 
-    hl = { fg="black", bg="gray" },
-    provider = function()
-      return vim.fn.bufname()
-    end,
-  }
+local ViMode = components.ViMode
+local FileName = components.FileName
+local Ruler = components.Ruler
 
--- Separator
-local Separator_1 = {
-    hl = { fg="blue", bg="lightblue" },
-    { 
-      hl = { fg = "lightblue", bg = "gray" },
-      provider = "\u{E0BC}",
+-- --------------------------------------------------------------------------
+-- layout helpers
+-- --------------------------------------------------------------------------
+local Align = { provider = "%=" }
+local Space = { provider = " " }
+
+-- --------------------------------------------------------------------------
+-- conditional statuslines (Lion's finesse style)
+-- https://github.com/rebelot/heirline.nvim/blob/master/cookbook.md#lions-finesse
+-- 1st level: match buftype/filetype/bufname (fallthrough = false)
+-- 2nd level: pick active vs inactive child (fallthrough = false)
+-- Skipped (plugins not installed): Snippets(ultisnips), Navic(nvim-navic),
+-- DAPMessages(nvim-dap), LSPMessages(lsp-status), UltTest(ultest)
+-- --------------------------------------------------------------------------
+local StatusLines = {
+  hl = function ()
+    if conditions.is_active() then
+      return "StatusLine"
+    else
+      return "StatusLineNC"
+    end
+  end,
+
+  -- A classic: mode-colored backgrounds (cookbook: A classic)
+  -- Statusline-global utility: any component can call `self:mode_color()`.
+  static = {
+    mode_colors_map = {
+      n = "red",
+      i = "green",
+      v = "cyan",
+      V = "cyan",
+      ["\22"] = "cyan",
+      c = "orange",
+      s = "purple",
+      S = "purple",
+      ["\19"] = "purple",
+      R = "orange",
+      r = "orange",
+      ["!"] = "red",
+      t = "green",
+    },
+    mode_color = function (self)
+      local mode = conditions.is_active() and vim.fn.mode() or "n"
+      return self.mode_colors_map[mode:sub(1, 1)]
+    end,
+  },
+
+  -- stop at the first branch whose buftype/filetype/bufname matches
+  fallthrough = false,
+
+  -- Special buffers: help, quickfix, nofile, prompt, git
+  {
+    condition = function ()
+      return conditions.buffer_matches({
+        buftype = { "nofile", "prompt", "help", "quickfix" },
+        filetype = { "^git.*", "fugitive" }
+      })
+    end,
+    fallthrough = false,
+    {
+      condition = conditions.is_active,
+      components.FileType,
+      Space,
+      components.Gin,
+      Space,
+      components.HelpFileName,
+      Align
+    },
+    {
+      components.FileType,
+      Space,
+      components.Gin,
+      Space,
+      Align
+    }
+  },
+
+  -- Terminal buffers
+  {
+    condition = function ()
+      return conditions.buffer_matches({ buftype = { "terminal" } })
+    end,
+    hl = { bg = "dark_red" },
+    fallthrough = false,
+    {
+      condition = conditions.is_active,
+      components.ViMode,
+      Space,
+      components.FileType,
+      Space,
+      components.TerminalName,
+      Align
+    },
+    {
+      components.FileType,
+      Space,
+      components.TerminalName,
+      Align
+    }
+  },
+
+  -- Default: regular buffers
+  {
+    fallthrough = false,
+    {
+      condition = conditions.is_active,
+      components.ViMode,
+      Space,
+      components.WorkDir,
+      Space,
+      components.Git,
+      Space,
+      components.Gin,
+      Space,
+      components.LSP.LSPDiagnostics,
+      Align,
+      components.LSP.LSPActive,
+      Space,
+      components.Spell,
+      Space,
+      components.SearchCount,
+      Space,
+      components.MacroRec,
+      Space,
+      components.ShowCmd,
+      Space,
+      components.FileType,
+      Space,
+      components.FileSize,
+      Space,
+      components.FileLastModified,
+      Space,
+      components.FileEncoding,
+      Space,
+      components.FileFormat,
+      Space,
+      -- surround the Ruler with the mode color (Airline style)
+      utils.surround({ "\u{E0B6}", "\u{E0B4}" }, function (self)
+        return self:mode_color()
+      end, { components.Ruler, hl = { fg = "black" } }),
+      Space,
+      components.ScrollBar
+    },
+    {
+      components.FileType,
+      Space,
+      Align
     }
   }
-
--- --------------------------------------------------------------------------
--- components
--- --------------------------------------------------------------------------
-local StatusLine = {
-  ViMode,
-  Separator_1,
-  FileName
 }
 
-local WinBar= nil
-local TabLine = nil
+-- --------------------------------------------------------------------------
+-- winbar (conditional)
+-- https://github.com/rebelot/heirline.nvim/blob/master/cookbook.md#winbar
+-- --------------------------------------------------------------------------
+local WinBars = {
+  fallthrough = false,
+  { -- A special winbar for terminals
+    condition = function ()
+      return conditions.buffer_matches({ buftype = { "terminal" } })
+    end,
+    utils.surround({ "\u{E0B6}", "\u{E0B4}" }, "dark_red", {
+      components.FileType,
+      Space,
+      components.TerminalName
+    })
+  },
+  { -- An inactive winbar for regular files
+    condition = function ()
+      return not conditions.is_active()
+    end,
+    utils.surround(
+      { "\u{E0B6}", "\u{E0B4}" }, "bright_bg",
+      {
+        hl = { fg = "gray", force = true },
+        components.FileName,
+        Space,
+        components.CloseButton
+      }
+    )
+  },
+  -- A winbar for regular files
+  utils.surround({ "\u{E0B6}", "\u{E0B4}" }, "bright_bg", { components.FileName, Space, components.CloseButton })
+}
+
+local TabLine = components.TabLine
 local StatusColumn = nil
 
 require('heirline').setup({
-  statusline = StatusLine,
-  winbar = WinBar,
+  statusline = StatusLines,
+  winbar = WinBars,
   tabline = TabLine,
   statuscolumn = StatusColumn,
-  opts = {},
+  opts = {
+    colors = colors,
+    -- if the callback returns true, the winbar will be disabled for that window
+    disable_winbar_cb = function (args)
+      return conditions.buffer_matches({
+        buftype = { "nofile", "prompt", "help", "quickfix" },
+        filetype = { "^git.*", "fugitive", "Trouble", "dashboard" }
+      }, args.buf)
+    end
+  }
+})
+
+-- TablinePicker keymap (cookbook: TablinePicker)
+-- Shows letter labels on the tabline; press the label key to jump to that buffer.
+vim.keymap.set("n", "gbp", function ()
+  local tabline = require("heirline").tabline
+  local buflist = tabline._buflist[1]
+  buflist._picker_labels = {}
+  buflist._show_picker = true
+  vim.cmd.redrawtabline()
+  local char = vim.fn.getcharstr()
+  local bufnr = buflist._picker_labels[char]
+  if bufnr then
+    vim.api.nvim_win_set_buf(0, bufnr)
+  end
+  buflist._show_picker = false
+  vim.cmd.redrawtabline()
+end)
+
+-- Don't list buffers that are meant to be wiped/deleted (cookbook: Hello Tabline)
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function ()
+    if vim.tbl_contains({ "wipe", "delete" }, vim.bo.bufhidden) then
+      vim.bo.buflisted = false
+    end
+  end
+})
+
+-- Theming (cookbook): re-evaluate colors when the colorscheme changes.
+-- The colorscheme hooks (catppuccin/tokyonight/nightfox) refresh
+-- `vim.g["vimrc#colors"]` first (registered at boot, before this hook).
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = function ()
+    utils.on_colorscheme(components.get_colors(vim.g.colors_name, vim.g["vimrc#colors"]).colors)
+  end
 })
 -- }}}
 
