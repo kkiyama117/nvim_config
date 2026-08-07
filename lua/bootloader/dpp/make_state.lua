@@ -121,6 +121,10 @@ function make_state(args)
         '[VIMRC#BOOTLOADER#make_state]: fallback rescue succeeded',
         vim.log.levels.INFO
       )
+      -- Re-add deps to runtimepath now that they are installed on disk.
+      -- Without this, dpp#make_state cannot find the protocol/ext handlers
+      -- and logs "Not found protocol: git" / "Not found ext: toml" etc.
+      load_normal_deps(args.cache_github)
     else
       vim.notify(
         '[VIMRC#BOOTLOADER#make_state]: fallback rescue failed',

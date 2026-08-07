@@ -86,11 +86,15 @@ local StatusLines = {
       condition = conditions.is_active,
       components.FileType,
       Space,
+      components.Gin,
+      Space,
       components.HelpFileName,
       Align
     },
     {
       components.FileType,
+      Space,
+      components.Gin,
       Space,
       Align
     }
@@ -130,6 +134,8 @@ local StatusLines = {
       components.WorkDir,
       Space,
       components.Git,
+      Space,
+      components.Gin,
       Space,
       components.LSP.LSPDiagnostics,
       Align,

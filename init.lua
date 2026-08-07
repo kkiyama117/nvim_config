@@ -22,7 +22,6 @@ vim.g['vimrc#augroup'] = vim.api.nvim_create_augroup('vimrc', { clear = true })
 
 -- ENVIRONMENT VARIABLES with neovim
 -- use `<sfile>:p:h`, then fallback stdpath.
--- Fucking EmmyLua can't understand it `vim.fn.stdpath("string")` must be `string`, so round it `ToString`
 local nvim_config_home =
   tostring(sfile and vim.fs.dirname(sfile) or vim.fn.stdpath('config'))
 local nvim_cache_home = vim.fs.joinpath(
