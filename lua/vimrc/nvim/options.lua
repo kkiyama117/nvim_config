@@ -108,38 +108,63 @@ end
 -- }}}
 
 -- nvim UI2 {{{
--- NOTE: Disabled.  The new `ui2` message handler in nvim 0.13-dev raises
--- `Invalid 'end_col': out of range` in `vim/_core/ui2/messages.lua:237`
--- when messages are shown (an extmark copied src->tgt gets an end_col
--- beyond the target line length).  Keeping `vim.g._ui2_enabled` falsy
--- makes `enable_ui2()` short-circuit and leaves the classic message UI.
--- To re-enable: remove the `false and` guard below (and this note).
+-- Route messages to the bottom-right corner window (`msg` target) so that,
+-- with 'cmdheight' = 0, message output (e.g. `print`) no longer replaces the
+-- statusline row.  That replacement made the statusline flicker on every
+-- message (the classic UI draws the message box over the statusline row and
+-- re-evaluates/redraws the statusline when the message is dismissed).
+--
+-- The old `Invalid 'end_col': out of range` error in
+-- `vim/_core/ui2/messages.lua:237` no longer reproduces on this nvim build
+-- (0.13.0-dev-1171+; tested with long/wrapped, multibyte, multiline and
+-- error messages).  To disable ui2 again, set `vim.g._ui2_enabled = true`.
+--
+-- NOTE: no `vim` treesitter parser is required; the ui2 cmdline window
+-- simply skips Ex-command highlighting when the parser is absent (and the
+-- previous treesitter precondition here prevented ui2 from ever enabling).
 vim.g._ui2_enabled = false
 
 local function enable_ui2()
-  if #vim.api.nvim_list_uis() == 0 or vim.g._ui2_enabled then
+  if vim.g._ui2_enabled or vim.g._ui2_unavailable then
     return true
   end
-  pcall(vim.treesitter.language.add, 'vim')
-  if not pcall(vim.treesitter.get_string_parser, '', 'vim') then
+  if #vim.api.nvim_list_uis() == 0 then
+    -- The UI (TUI) attaches after init; the caller retries on VimEnter.
     return false
   end
-  require('vim._core.ui2').enable({})
+  local ok = pcall(function()
+    require('vim._core.ui2').enable({ msg = { targets = 'msg' } })
+  end)
+  if not ok then
+    -- ui2 missing (e.g. nvim < 0.13): don't retry on every CursorHold.
+    vim.g._ui2_unavailable = true
+    return true
+  end
   vim.g._ui2_enabled = true
   return true
 end
 
--- Enable `UI2` if it can be used.
-if false and #vim.api.nvim_list_uis() > 0 and not enable_ui2() then
-  local group = vim.api.nvim_create_augroup('enable_ui2', { clear = true })
-  vim.api.nvim_create_autocmd({ 'VimEnter', 'CursorHold' }, {
-    group = group,
-    callback = function()
-      if enable_ui2() then
-        vim.api.nvim_del_augroup_by_id(group)
-      end
-    end,
-  })
-end
+-- Enable `UI2` after startup.vim finishes loading.  This file is sourced from
+-- startup.vim during dpp#min#load_state; enabling ui2 there fires FileType on
+-- ui2 windows, which retriggers dpp lazy-loading and causes E218 nesting.
+local group = vim.api.nvim_create_augroup('enable_ui2', { clear = true })
+vim.api.nvim_create_autocmd('VimEnter', {
+  group = group,
+  once = true,
+  callback = function()
+    if enable_ui2() then
+      return
+    end
+    -- Embed/headless: UI may attach after VimEnter.
+    vim.api.nvim_create_autocmd({ 'UIEnter', 'CursorHold' }, {
+      group = group,
+      callback = function()
+        if enable_ui2() then
+          vim.api.nvim_del_augroup_by_id(group)
+        end
+      end,
+    })
+  end,
+})
 -- }}}
 

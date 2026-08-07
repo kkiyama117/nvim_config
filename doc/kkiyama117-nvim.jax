@@ -1,23 +1,224 @@
-*kkiyama117-nvim.txt*	
+*kkiyama117-nvim.txt*	Personal Neovim configuration
 
 Author: kkiyama117
 License: NYSL
 
 ==============================================================================
-About
+About                                                       *kkiyama117-nvim*
 
-nvim config placed at ~/.config/nvim
+Personal Neovim configuration placed at `~/.config/nvim`.
 
-------------------------------------------------------------------------------
-commands                                            *kkiyama117-nvim-commands*
+Built around the Shougo ecosystem: >
+	dpp.vim ....... plugin manager (denops based, TOML plugin lists)
+	denops.vim .... Deno runtime bridge
+	ddc.vim ....... auto-completion (+ pum.vim, cmdline.vim)
+	ddu.vim ....... fuzzy finder / UI framework
+	ddt.vim ....... shell and terminal UI
+<
+Other pillars: kakehashi as the sole LSP client bridging every language
+server (|kkiyama117-nvim-lsp.txt|), heirline.nvim statusline/tabline
+(|kkiyama117-nvim-statusline.txt|), and skkeleton Japanese input.
 
-------------------------------------------------------------------------------
-lsp                                                     *kkiyama117-nvim-lsp*
+==============================================================================
+Contents                                           *kkiyama117-nvim-contents*
 
-------------------------------------------------------------------------------
-bootloader                                      *kkiyama117-nvim-bootloader*
+	REQUIREMENTS ......... |kkiyama117-nvim-requirements|
+	INSTALL .............. |kkiyama117-nvim-install|
+	DIRECTORY LAYOUT ..... |kkiyama117-nvim-layout|
+	PLUGIN MANAGEMENT .... |kkiyama117-nvim-dpp|
+	KEY MAPPINGS ......... |kkiyama117-nvim-mappings|
+	COLORSCHEME .......... |kkiyama117-nvim-colorscheme|
+	COMMANDS ............. |kkiyama117-nvim-commands-list|
+	SUB-DOCUMENTS ........ |kkiyama117-nvim-docs|
+
+==============================================================================
+Requirements                                   *kkiyama117-nvim-requirements*
+
+Required: >
+	git	plugin installs (dpp-protocol-git) and the bootloader's
+		recovery clones
+	deno	denops runtime (installed via mise)
+	mise	manages deno and the LSP server binaries
+		(~/.config/mise/config.toml) — mason.nvim is NOT used
+<
+Optional: >
+	kakehashi	LSP bridge server binary
+			(|kkiyama117-nvim-lsp.txt|); install with
+			`deno task install-external-bin kakehashi`
+			in scripts/install_external_bin/
+	tree-sitter	CLI for tree-sitter-manager.nvim
+	rg		ripgrep, used by ddu grep sources
+	mocword		ddc-source-mocword (needs $MOCWORD_DATA)
+	SKK dictionary	for skkeleton Japanese input
+	PlemolJP font	GUI font (neovide)
+<
+Environment variables:
+
+	$NVIM_CONFIG_HOME	set by init.lua to the config directory
+	$NVIM_CACHE_HOME	set by init.lua to $XDG_CACHE_HOME/nvim;
+				holds the dpp cache, undo/backup/swap and
+				logs
+	$NVIM_DEBUG		"true" enables debug mode: verbose logging
+				and notify/messages dumps under
+				$NVIM_CACHE_HOME/logs/
+	$GITHUB_API_TOKEN	raises the GitHub API rate limit of
+				dpp-ext-installer
+
+==============================================================================
+Install                                             *kkiyama117-nvim-install*
+
+1. Fetch: >
+	git clone https://github.com/kkiyama117/nvim_config.git ~/.config/nvim
+<
+2. Run: >
+	nvim
+<
+That is all. On first start `lua/bootloader` installs everything by
+itself: minimum deps (dpp.vim, dpp-ext-lazy, denops.vim), then the
+dpp-ext plugins, then all user plugins. Each layer has a fallback that
+clones missing repositories and rebuilds the plugin state, asking to
+restart when needed. See |kkiyama117-nvim-bootloader| for the full
+flow and its failure modes.
+
+==============================================================================
+Directory layout                                     *kkiyama117-nvim-layout*
+>
+	init.lua	entry point: sets $NVIM_CONFIG_HOME /
+			$NVIM_CACHE_HOME, minimal runtimepath, then
+			calls require('bootloader').startup()
+	lua/bootloader/	dpp bootstrap and recovery
+			(|kkiyama117-nvim-bootloader|)
+	lua/vimrc/	core vimrc modules (options, mappings, commands,
+			utils, ...), compiled into the dpp state as
+			inlineVimrcs; nvim/ and unix/ (or windows/)
+			subdirectories are platform variants
+	lua/hooks/	per-plugin dpp hook files (*.dpp) and
+			heirline_components/ (statusline modules)
+	deps/		dpp plugin lists (TOML); deps/nvim/ holds
+			nvim-only lists (lsp, treesitter, ui, ...)
+	denops/		TypeScript configs of dpp/ddc/ddu/ddt
+	after/		ftplugin/dpp.lua, lsp/kakehashi.lua,
+			tree-sitter queries
+	ftdetect/	custom `dpp` filetype for the hook files
+	syntax/		(lua base + hook marker highlighting)
+	plugins/	local development plugins, scanned by
+			dpp-ext-local
+	scripts/	install_external_bin Deno CLI: installs binaries
+			declared as `external_commands` in the TOMLs
+			from GitHub releases into ~/.local/bin
+	doc/		this documentation (doc/agents/ is for AI
+			agents only)
+<
+==============================================================================
+Plugin management                                       *kkiyama117-nvim-dpp*
+
+Plugins are managed by dpp.vim, configured in `denops/dpp.ts`.
+
+Plugin lists ~
+
+Every plugin is an entry in `deps/**/*.toml` (dpp-ext-toml). All TOMLs
+are loaded lazily except `dpp.toml` and `merge.toml`; individual
+entries opt out with `lazy = false` or trigger on `on_event` /
+`on_ft` / `on_cmd` / `on_map` / `on_source` / `depends`.
+
+Hook files ~
+
+Per-plugin configuration lives in `lua/hooks/<plugin>.dpp`, referenced
+from the TOML as `hooks_file`. A `.dpp` file is Lua split into dpp hook
+blocks by comment markers: >
+	-- lua_add {{{
+	...
+	-- }}}
+	-- lua_source {{{
+	...
+	-- }}}
+<
+The custom `dpp` filetype provides highlighting, tree-sitter lua
+injection, LSP support and marker folding for these files
+(|kkiyama117-nvim-lsp-dpp-filetype|).
+
+Inline vimrcs ~
+
+`lua/vimrc/*` (plus the platform subdirectories) are compiled into the
+dpp state as inlineVimrcs, so they load from the cached state, not as
+individual files.
+
+Updates ~
+
+Writing any config file under $NVIM_CONFIG_HOME triggers a
+BufWritePost watcher that installs missing plugins, rebuilds the state
+with `dpp#make_state()` and offers a restart. Manual full update: >
+	:DppUpdate
+<
+==============================================================================
+Key mappings                                       *kkiyama117-nvim-mappings*
+
+Defined in `lua/vimrc/mappings.lua`; plugin-dependent mappings live in
+the plugin's own `lua/hooks/*.dpp`. Conventions:
+
+- mapleader is <Space>, maplocalleader is `,`.
+- `ZZ ZQ M Q` and the arrow keys are disabled; `s`, `;`, `q` are
+  turned into prefixes; `;:` gives the original `:`.
+- <Leader> keys remap to named pseudo-key prefixes: >
+	<Leader>a	[AGENTIC]	agentic.nvim
+	<Leader>d	[DP]		ddu / ddt launchers
+	<Leader>g	[GIT]		vim-gin
+	<Leader>w	[WINDOW]	same as CTRL-W
+	<Leader>T	[TOGGLE]	option toggles:
+			a autoread, b background transparency
+			(|kkiyama117-nvim-background|), c conceal,
+			h hit-enter prompt, s spell, w wrap
+<
+- `;` is the ddu prefix (`;b` buffers, `;f` files, `;g*` git, ...);
+  `s` is reserved for ddu/ddt as well.
+- `q` is the quit/macro prefix: `qm`/`qM` are the only macro
+  registers, `qq` smart quit, `qt` tabclose, `qr` restart.
+- which-key pops up on <Leader>; `<Leader>?` shows it explicitly.
+
+==============================================================================
+Colorscheme interface                           *kkiyama117-nvim-colorscheme*
+
+`lua/vimrc/colorscheme.lua` declares a small contract that every
+colorscheme hook must fulfill, at source time and again on every
+|ColorScheme| event: >
+	g:vimrc#colors		the scheme's palette table
+	g:vimrc#color_bg	the scheme's default background color
+<
+Consumers: the heirline components
+(lua/hooks/heirline_components/colors.lua), cmdline.vim, and the
+background transparency toggle (|kkiyama117-nvim-background|).
+
+Candidates are listed in `deps/colorscheme.toml` (tokyonight,
+nightfox, catppuccin, kanagawa); catppuccin is the one whose hook
+actually calls `:colorscheme`.
+
+==============================================================================
+Commands                                      *kkiyama117-nvim-commands-list*
+
+:DppUpdate		force a full plugin update and state rebuild
+			(|kkiyama117-nvim-dpp|)
+
+Encoding / format commands from `lua/vimrc/commands.lua`:
+
+:Utf8 :Iso2022jp :Cp932 :Euc
+			reopen the current file with `++enc=...`
+:WUtf8 :WCp932		set 'fileencoding' for the next write
+:WUnix :WDos		write with `++ff=...` and reload
+
+See also |kkiyama117-nvim-commands.txt|.
+
+==============================================================================
+Sub-documents                                          *kkiyama117-nvim-docs*
+
+	|kkiyama117-nvim-commands.txt|	commands and the background
+					transparency toggle
+	|kkiyama117-nvim-lsp.txt|	kakehashi LSP bridge: files,
+					config layers, bridged servers
+	|kkiyama117-nvim-bootloader.txt|	bootstrap flow and the
+					F1/F2/F3 recovery paths
+	|kkiyama117-nvim-statusline.txt|	heirline: not-yet-implemented
+					cookbook sections and TODOs
 
 ==============================================================================
 
 vim:tw=78:ft=help:
-

@@ -4,7 +4,7 @@
 # FuncUndefined handler.
 # See https://github.com/kuuote/dotvim/blob/version5/conf/plug/ddu.toml#L99
 [[plugins]]
-repo = "shougo/ddu.vim"
+repo = "Shougo/ddu.vim"
 depends = ["denops.vim"]
 on_event = "DenopsReady"
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.dpp"
