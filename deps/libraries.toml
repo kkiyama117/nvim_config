@@ -1,0 +1,11 @@
+# lua
+[[plugins]]
+repo = "nvim-lua/plenary.nvim"
+
+# denops
+[[plugins]]
+repo = "vim-denops/denops.vim"
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/denops.vim.dpp"
+# At least, We must load until VimEnter
+# on_event = ["VimEnter"]
+

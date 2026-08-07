@@ -1,14 +1,24 @@
 # DO LIKE https://www.lazyvim.org/plugins/editor, but some plugins are
 # delegated to `denops`; see other `deps` toml files.
-# ---------------------------------------------------------------------------
-# Integrations with some softwares
-# ---------------------------------------------------------------------------
+
+# ===========================================================================
+# Git
+# ===========================================================================
+[[plugins]]
+repo = "lambdalisue/vim-gin"
+depends = "denops.vim"
+on_event = ["DenopsReady"]
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/vim-gin.dpp"
 
 # gitsigns.nvim - Git integration for buffers
 [[plugins]]
 repo = "lewis6991/gitsigns.nvim"
 on_event = ["BufReadPost", "BufNewFile"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/gitsigns.nvim.dpp"
+
+# ---------------------------------------------------------------------------
+# Integrations with some softwares
+# ---------------------------------------------------------------------------
 
 # TODO: merge it with other plugins via `multiple hooks`
 # TODO: think that we can use `ddu` with this plugin;
