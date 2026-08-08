@@ -52,6 +52,17 @@ vim.opt.runtimepath = {
   -- vim.fs.joinpath(nvim_config_home, "local/after"),
 }
 
+-- Denops fallback: if `deno` is not on PATH (e.g. stale mise env from a
+-- deno upgrade), point g:denops#deno at the mise `latest` symlink.
+-- Must be set before denops.vim loads.
+if vim.fn.executable('deno') == 0 then
+  local mise_deno =
+    vim.fs.joinpath(home_dir, '.local/share/mise/installs/deno/latest/bin/deno')
+  if vim.fn.executable(mise_deno) == 1 then
+    vim.g['denops#deno'] = mise_deno
+  end
+end
+
 -- call dpp.vim to load configs
 if vim.v.vim_did_enter ~= true then
   require('bootloader').startup()

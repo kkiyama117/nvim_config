@@ -24,7 +24,8 @@ end, { desc = 'Gin: amend commit' }
 
 -- Branch; Use `;gb` (ddu-source-git_branch) and `itemAction`
 vim.keymap.set('n', '[GIT]b', function ()
-  require('hooks.shared.ddu_git').ddu_git_branch()
+  -- require('hooks.shared.ddu_git').ddu_git_branch()
+  vim.cmd.GinBranch('++opener=tabnew')
 end, { desc = 'Ddu: git branch' }
 )
 
@@ -33,6 +34,12 @@ end, { desc = 'Ddu: git branch' }
 vim.keymap.set('n', '[GIT]c', function ()
   vim.cmd('Gin commit -v')
 end, { desc = 'Gin: commit (with editor)' }
+)
+
+-- Chaperon; solve git conflicts
+vim.keymap.set('n', '[GIT]C', function ()
+  vim.cmd.GinChaperon('++opener=tabnew')
+end, { desc = 'Gin: resolve conflicts' }
 )
 
 -- Diff
@@ -46,22 +53,33 @@ vim.keymap.set('n', '[GIT]D', function ()
 end, { desc = 'Gin: diff (staged)' }
 )
 
+-- Edit
+vim.keymap.set('n', '[GIT]e', function ()
+  -- TODO: use ddu as a source of suggestion
+  local input = vim.split(vim.fn["cmdline#input"]("GinEdit: ", '', 'path'), ',', { plain = true, trimempty = true })
+  if vim.tbl_isempty(input) then
+    return
+  end
+  vim.cmd.GinEdit(input)
+end, { desc = 'Gin: edit (path input)' }
+)
+
 -- Log (with graph): [GIT]l(or L)
 vim.keymap.set('n', '[GIT]l', function ()
   -- vim.cmd.GinLog('--all', '--graph', '--max-count=100', '--oneline', '--decorate')
-  require(hooks.shared.ddg_git).ddu_git_branch()
+  require("hooks.shared.ddu_git").ddu_git_log()
 end, { desc = 'Gin: log (all graph)' }
 )
 
--- git pull
 vim.keymap.set('n', '[GIT]p', function ()
   vim.cmd('!git pull origin @')
 end, { desc = 'Git: pull' }
 )
--- git push
-vim.keymap.set('n', '[GIT]P', function ()
-  vim.cmd('!git push origin @')
-end, { desc = 'Git: push origin' }
+
+-- Reflog: [GIT]r
+vim.keymap.set('n', '[GIT]r', function ()
+  vim.cmd.GinReflog("++opener=tabnew")
+end, { desc = 'Gin: Reflog' }
 )
 
 -- Gin status
@@ -74,9 +92,10 @@ end, { desc = 'Gin: status' }
 
 -- Git stash
 vim.keymap.set('n', '[GIT]S', function ()
+  -- vim.cmd.GinStash()
   require("hooks.shared.ddu_git").ddu_git_stash()
   vim.cmd('!git status -v')
-end, { desc = 'Git: status' }
+end, { desc = 'Git: stash' }
 )
 
 -- Open browser; If visualmode, select current line's URL

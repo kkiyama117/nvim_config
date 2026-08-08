@@ -48,16 +48,11 @@ Optional: >
 			in scripts/install_external_bin/
 	tree-sitter	CLI for tree-sitter-manager.nvim
 	rg		ripgrep, used by ddu grep sources
-	mocword		ddc-source-mocword (needs $MOCWORD_DATA)
 	SKK dictionary	for skkeleton Japanese input
-	PlemolJP font	GUI font (neovide)
+	any acp server	to call agentic.nvim (default is pi-acp)
 <
 Environment variables:
 
-	$NVIM_CONFIG_HOME	set by init.lua to the config directory
-	$NVIM_CACHE_HOME	set by init.lua to $XDG_CACHE_HOME/nvim;
-				holds the dpp cache, undo/backup/swap and
-				logs
 	$NVIM_DEBUG		"true" enables debug mode: verbose logging
 				and notify/messages dumps under
 				$NVIM_CACHE_HOME/logs/
@@ -94,8 +89,8 @@ Directory layout                                     *kkiyama117-nvim-layout*
 			subdirectories are platform variants
 	lua/hooks/	per-plugin dpp hook files (*.dpp) and
 			heirline_components/ (statusline modules)
-	deps/		dpp plugin lists (TOML); deps/nvim/ holds
-			nvim-only lists (lsp, treesitter, ui, ...)
+	deps/		dpp plugin lists (TOML), flat layout: lsp,
+			treesitter, ui, ddc, ddu, ddt, ...
 	denops/		TypeScript configs of dpp/ddc/ddu/ddt
 	after/		ftplugin/dpp.lua, lsp/kakehashi.lua,
 			tree-sitter queries
@@ -117,9 +112,10 @@ Plugins are managed by dpp.vim, configured in `denops/dpp.ts`.
 Plugin lists ~
 
 Every plugin is an entry in `deps/**/*.toml` (dpp-ext-toml). All TOMLs
-are loaded lazily except `dpp.toml` and `merge.toml`; individual
-entries opt out with `lazy = false` or trigger on `on_event` /
-`on_ft` / `on_cmd` / `on_map` / `on_source` / `depends`.
+are loaded lazily except `no_lazy.toml` (see `noLazyTomls` in
+denops/dpp.ts); individual entries opt out with `lazy = false` or
+trigger on `on_event` / `on_ft` / `on_cmd` / `on_map` / `on_source` /
+`depends`.
 
 Hook files ~
 
@@ -189,8 +185,8 @@ Consumers: the heirline components
 background transparency toggle (|kkiyama117-nvim-background|).
 
 Candidates are listed in `deps/colorscheme.toml` (tokyonight,
-nightfox, catppuccin, kanagawa); catppuccin is the one whose hook
-actually calls `:colorscheme`.
+nightfox, catppuccin, kanagawa); the tokyonight and catppuccin hooks
+each call `:colorscheme` (nightfox's call is commented out).
 
 ==============================================================================
 Commands                                      *kkiyama117-nvim-commands-list*
@@ -222,3 +218,4 @@ Sub-documents                                          *kkiyama117-nvim-docs*
 ==============================================================================
 
 vim:tw=78:ft=help:
+

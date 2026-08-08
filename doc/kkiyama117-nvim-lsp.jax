@@ -63,14 +63,14 @@ lua/vimrc/kakehashi_config.lua
 	vimrc-owned data: `bridged_servers`, per-server `filetypes()`, and
 	`languages()` (the init_options.languages bridge table).
 
-kakehashi/kakehashi.toml
-	Server-side config (enables + per-server settings). Symlinked from
-	the kakehashi server's standard user location
-	~/.config/kakehashi/kakehashi.toml, so shell CLIs such as
-	`kakehashi format` / `kakehashi diagnose` use the same config.
+~/.config/kakehashi/kakehashi.toml
+	Server-side config (enables + per-server settings). Lives at the
+	kakehashi server's standard user location and is chezmoi-managed
+	(NOT in this repo), so shell CLIs such as `kakehashi format` /
+	`kakehashi diagnose` use the same config.
 	See |kkiyama117-nvim-lsp-server-config|.
 
-deps/nvim/lsp.toml
+deps/lsp.toml
 	dpp plugin entries: nvim-lspconfig (with its own hooks_file),
 	kakehashi-lspconfig, and kakehashi.nvim (lazy on FileType;
 	`depends = ["kakehashi-lspconfig"]` guarantees the fragments are on
@@ -80,7 +80,7 @@ deps/nvim/lsp.toml
 lua/hooks/nvim-lspconfig.dpp
 	Per-server `vim.lsp.config` definitions (denols, emmylua_ls, vtsls,
 	`*` capabilities, diagnostics/format config). Never enabled directly;
-	their settings are mirrored into kakehashi/kakehashi.toml.
+	their settings are mirrored into ~/.config/kakehashi/kakehashi.toml.
 
 Generated at runtime under $NVIM_CACHE_HOME/kakehashi/ >
 	lsp.toml	concatenated fragments (see below)
@@ -97,13 +97,13 @@ cmd
 	(|kkiyama117-nvim-lsp-server-config|).
 
 filetypes
-	`config.filetypes()` from lua/kakehashi/config.lua: markdown family
+	`config.filetypes()` from lua/vimrc/kakehashi_config.lua: markdown family
 	(markdown, markdown_inline, quarto, rmd) plus each bridged server's
 	filetypes (incl. `dpp` via emmylua_ls).
 
 init_options.searchPaths
 	- ~/.local/share/kakehashi (server data dir)
-	- $NVIM_CONFIG_HOME/kakehashi (repo-owned parser + queries)
+	- ~/.config/kakehashi (chezmoi-managed parser + queries)
 	- the kakehashi.nvim plugin rtp entry (bundled queries)
 
 init_options.languages
@@ -134,7 +134,7 @@ deep-merged — see src/config/merge.rs of the kakehashi server):
 	`vim.fn.exepath()` so mise-installed binaries are found even when
 	nvim was launched without mise on PATH.
 <
-2. kakehashi.toml (repo) >
+2. kakehashi.toml (~/.config/kakehashi, chezmoi-managed) >
 	Fragments ship with `enabled = false`; this file sets
 	`enabled = true` for exactly the bridged servers, and carries the
 	per-server settings (denols lint/root markers, emmylua
@@ -164,9 +164,9 @@ Server          Filetypes                              Notes >
 	                typescript, typescriptreact
 <
 
-Keep `bridged_servers` in lua/kakehashi/config.lua in sync with the
-`enabled` entries in kakehashi/kakehashi.toml and the mise installs in
-~/.config/mise/config.toml.
+Keep `bridged_servers` in lua/vimrc/kakehashi_config.lua in sync with
+the `enabled` entries in ~/.config/kakehashi/kakehashi.toml and the
+mise installs in ~/.config/mise/config.toml.
 
 ==============================================================================
 DPP FILETYPE                                *kkiyama117-nvim-lsp-dpp-filetype*
@@ -176,11 +176,11 @@ DPP FILETYPE                                *kkiyama117-nvim-lsp-dpp-filetype*
 - kakehashi attaches via `filetypes()` (dpp is listed under
   emmylua_ls's filetypes).
 - The custom tree-sitter parser at
-  $NVIM_CONFIG_HOME/kakehashi/parser/dpp.so parses hook blocks; the
-  queries (kakehashi/queries/dpp/injections.scm) inject each block's
-  content as lua, and the injected virtual documents are bridged to
-  emmylua_ls — the only path that reaches emmylua (it keys documents by
-  URI extension).
+  ~/.config/kakehashi/parser/dpp.so parses hook blocks; the queries
+  (after/queries/dpp/injections.scm) inject each block's content as
+  lua, and the injected virtual documents are bridged to emmylua_ls —
+  the only path that reaches emmylua (it keys documents by URI
+  extension).
 - Tree-sitter keeps highlighting: semantic tokens are disabled for dpp
   buffers ONLY, in on_attach. after/ftplugin/dpp.lua starts tree-sitter
   (lua parser + luadoc injections) and sets up folding.
@@ -230,12 +230,13 @@ MAINTENANCE                                  *kkiyama117-nvim-lsp-maintenance*
 Adding a server: >
 	1. Install the binary via mise.
 	2. Add the name to `bridged_servers` in
-	   lua/kakehashi/config.lua (and `server_filetypes`).
+	   lua/vimrc/kakehashi_config.lua (and `server_filetypes`).
 	3. Add `[languageServers.<name>] enabled = true` (and settings) to
-	   kakehashi/kakehashi.toml.
+	   ~/.config/kakehashi/kakehashi.toml.
 	4. A fragment `lsp/<name>.toml` must exist in kakehashi-lspconfig;
 	   if not, write the server table yourself into
-	   kakehashi/kakehashi.toml (cmd, languages, workspaceMarkers).
+	   ~/.config/kakehashi/kakehashi.toml (cmd, languages,
+	   workspaceMarkers).
 <
 
 Updating plugins: >
@@ -246,9 +247,9 @@ Notes:
 
 - Editing any file under $NVIM_CONFIG_HOME (lua/toml/dpp) triggers dpp's
   BufWritePost watcher: state rebuild (and install for toml changes).
-- On a fresh clone, recreate the symlink:
-  ~/.config/kakehashi/kakehashi.toml -> kakehashi/kakehashi.toml
-  (the client warns when it is missing).
+- On a fresh clone, ~/.config/kakehashi/kakehashi.toml is
+  chezmoi-managed: run `chezmoi apply` (the client warns when it is
+  missing).
 
 vim:tw=78:ft=help:
 

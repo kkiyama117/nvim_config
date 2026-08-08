@@ -41,7 +41,7 @@ import * as vars from "@denops/std/variable";
 import { basename, join } from "@std/path";
 
 // consts
-import { nvimCacheHome, nvimConfigHome } from "./consts.ts";
+import { home, nvimCacheHome, nvimConfigHome } from "./consts.ts";
 import { gatherGlobs } from "./dpp/utils.ts";
 
 // --------------------------------------------------------------------------
@@ -111,7 +111,7 @@ export class Config extends BaseConfig {
     // Collect Plugins defined in Toml
     // ----------------------------------------------------------------------
     // avoid lazy loading
-    const noLazyTomls = ["merge.toml", "dpp.toml"];
+    const noLazyTomls = ["no_lazy.toml"];
 
     const [tomlExt, tomlOptions, tomlParams]: [
       TomlExt | undefined,
@@ -182,15 +182,14 @@ export class Config extends BaseConfig {
     if (localExt) {
       const action = localExt.actions.local;
 
-      // Dev plugins live under $NVIM_CONFIG_HOME/plugins (own git repos,
-      // e.g. the kakehashi.nvim fork); the cache-local dir is kept for
-      // scratch plugins. `directory` is expanded by the ext via
-      // dpp#util#_expand, so $VARs work here (unlike toml `path`).
       const localPlugins: Plugin[] = [];
-      for (const directory of [
-        dppCacheLocal,
-        join(nvimConfigHome, "plugins"),
-      ]) {
+      for (
+        const directory of [
+          dppCacheLocal,
+          join(home, "programs", "nvim_plugins"),
+          join(nvimConfigHome, "plugins"),
+        ]
+      ) {
         const found = await action.callback({
           denops: args.denops,
           context,

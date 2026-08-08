@@ -66,10 +66,18 @@ local function find_plugin_path(pattern)
   end
 end
 
---- Resolve a fragment `cmd` line's first binary via vim.fn.exepath.
---- Matches the machine-generated single-line form `cmd = ["deno", "lsp"]`;
---- leaves the line untouched when the binary is not found (kakehashi then
---- inherits PATH, same as a bare name).
+--- Resolve a fragment `cmd` line's first binary via vim.fn.exepath,
+--- falling back to the mise shims dir (~/.local/share/mise/shims) when
+--- the binary is not on PATH. The running environment can carry a stale
+--- `mise activate` PATH (e.g. a tool upgraded after the environment was
+--- started, like tombi 1.2.6 -> 1.2.7, or ZDOTDIR pointing at a config
+--- dir without .zshenv so the shims line never runs), and kakehashi
+--- spawns children with that inherited PATH. The shims dir always exists
+--- and dispatches the current mise version, so it is the durable
+--- fallback. Matches the machine-generated single-line form
+--- `cmd = ["deno", "lsp"]`; leaves the line untouched when neither
+--- PATH nor the shims dir resolve the binary (kakehashi then inherits
+--- PATH, same as a bare name).
 ---@param line string
 ---@return string
 local function resolve_cmd_line(line)
@@ -79,7 +87,13 @@ local function resolve_cmd_line(line)
   end
   local resolved = vim.fn.exepath(binary)
   if resolved == '' or resolved == binary then
-    return line
+    local mise_shims = vim.fs.joinpath(
+      vim.env.HOME or '~', '.local', 'share', 'mise', 'shims', binary)
+    if vim.fn.executable(mise_shims) == 1 then
+      resolved = mise_shims
+    else
+      return line
+    end
   end
   return head .. '"' .. resolved .. '"' .. rest
 end
@@ -215,11 +229,12 @@ return {
     end
   end,
   on_attach = function(client, bufnr)
-    -- dpp: treesitter owns highlighting (lua parser + luadoc injections,
-    -- started in after/ftplugin/dpp.lua). kakehashi's tokens for dpp are
-    -- only host markers (injected lua tokens depend on emmylua's slow
-    -- analysis), so the token-based takeover below would leave the buffer
-    -- uncolored. Prefer treesitter to LSP semantic tokens:
+    -- dpp: treesitter owns highlighting (lua parser for `-- lua_*` files,
+    -- vim parser for `" hook_*` files — started in after/ftplugin/dpp.lua).
+    -- kakehashi's tokens for dpp are only host markers (injected lua tokens
+    -- depend on emmylua's slow analysis), so the token-based takeover below
+    -- would leave the buffer uncolored. Prefer treesitter to LSP semantic
+    -- tokens:
     -- https://blog.atusy.net/2025/07/15/prefer-luadoc-to-luals-semantictokens
     if vim.bo[bufnr].filetype == 'dpp' then
       vim.lsp.semantic_tokens.enable(false, {

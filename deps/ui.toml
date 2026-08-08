@@ -1,10 +1,8 @@
 # TODO: Do below.
-# folke/noice.nvim (with Dark-powered software UI)
 # folke/todo-comments.nvim
-
-# ---------------------------------------------------------------------------
-# UI
-# ---------------------------------------------------------------------------
+# ===========================================================================
+# Notification and output
+# ===========================================================================
 
 # Notify (basic); float popup window
 [[plugins]]
@@ -29,6 +27,9 @@ repo = "j-hui/fidget.nvim"
 lazy = false
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/fidget.nvim.dpp"
 
+# ===========================================================================
+# side line
+# ===========================================================================
 # aerial.nvim - code outline / symbols
 # TODO: Add config
 [[plugins]]
@@ -36,6 +37,9 @@ repo = "stevearc/aerial.nvim"
 on_event = ["BufReadPost", "BufNewFile"]
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/aerial.nvim.dpp"
 
+# ===========================================================================
+# Statusline / WinBar
+# ===========================================================================
 # heirline.nvim - statusline (and its deps)
 [[plugins]]
 repo = "rebelot/heirline.nvim"

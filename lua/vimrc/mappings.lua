@@ -1,6 +1,7 @@
 -- TODO: Add Inclement command and replace `<C-a>` and `<C-x>`
 
 local vimrc = require('vimrc.utils')
+local is_debug = vim.env.NVIM_DEBUG == 'true'
 -- =========================================================================
 -- Keys defined by `options`
 -- =========================================================================
@@ -197,6 +198,12 @@ vim.keymap.set('n', '<Leader>q', function()
   vimrc.diagnostics_to_location_list()
 end, { silent = true }) -- }}}
 
+-- Task runners
+-- `<Leader>`=[RUNNER] {{{
+vim.keymap.set({ 'n' }, '<Leader>r', '[RUNNER]', { remap = true })
+vim.keymap.set({ 'n' }, '[RUNNER]', '<Nop>')
+-- }}}
+
 -- Window move
 -- `<Leader>w`=[WINDOW] (alias for <C-w>) -- {{{
 vim.keymap.set({ 'n' }, '<Leader>w', '[WINDOW]', { remap = true })
@@ -324,6 +331,59 @@ vim.api.nvim_create_autocmd('RecordingEnter', {
   end, -- }}}
 })
 -- }}}
+
+-- smart buf close
+vim.keymap.set('n', 'qb', function()
+  vim.cmd('enew')
+  vim.cmd('bdelete #')
+  if is_debug then
+    vim.notify('[VIMRC]: Buffer closed', vim.log.levels.INFO)
+  end
+end, { desc = 'close current buffer' })
+
+-- Close all buffers except the current one and modified ones
+vim.keymap.set('n', 'qB', function()
+  local current_buf = vim.api.nvim_get_current_buf()
+  local buffers_to_keep = {}
+  local closed = {}
+
+  -- Snapshot names before deletion: a deleted buffer is no longer valid
+  -- for `nvim_buf_get_name()`.
+  local all = vim.api.nvim_list_bufs()
+  local names = {}
+  for _, buf in ipairs(all) do
+    names[buf] = vim.api.nvim_buf_get_name(buf)
+    if vim.api.nvim_buf_get_option(buf, 'modified') or buf == current_buf then
+      table.insert(buffers_to_keep, buf)
+    end
+  end
+
+  -- then close them
+  for _, buf in ipairs(all) do
+    if not vim.tbl_contains(buffers_to_keep, buf) then
+      if pcall(vim.api.nvim_buf_delete, buf, { force = false }) then
+        local name = names[buf]
+        if name == '' then
+          name = string.format('[No Name] %d', buf)
+        end
+        table.insert(closed, name)
+      end
+    end
+  end
+  if is_debug then
+    if #closed > 0 then
+      vim.notify(
+        ('[VIMRC]: closed %d buffer(s): %s'):format(
+          #closed,
+          table.concat(closed, ', ')
+        ),
+        vim.log.levels.INFO
+      )
+    end
+  end
+end, { desc = 'close all buffer except not saved and changed' })
+-- }}}
+
 -- smart quit {{{
 -- normal smart quit
 vim.keymap.set('n', 'qq', function() -- {{{
@@ -376,27 +436,6 @@ vim.keymap.set('n', 'qw', ':<C-u>w<CR>qq', { desc = 'smart exit with saving' })
 -- }}}
 -- s | ? {{{
 -- check `$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.dpp` for other keymaps start from `s`
--- }}}
--- }}}
-
--- ==========================================================================
--- MAPPINGS REFERENCE
--- ==========================================================================
--- Files that set plugin dependent custom mappings {{{
--- $NVIM_CONFIG_HOME/lua/hooks/agentic.nvim.dpp
--- $NVIM_CONFIG_HOME/lua/hooks/ddc.vim.dpp
--- $NVIM_CONFIG_HOME/lua/hooks/ddu.vim.dpp
--- $NVIM_CONFIG_HOME/lua/hooks/ddu-ui-ff.dpp
--- $NVIM_CONFIG_HOME/lua/hooks/ddu-ui-filer.dpp
--- $NVIM_CONFIG_HOME/lua/hooks/skkeleton.dpp
--- }}}
-
--- BUFFER-LOCAL MAPPINGS (FileType) {{{
--- ddu-ff {{{
--- lua/hooks/ddu-ui-ff.dpp
--- }}}
--- ddu-filer {{{
--- lua/hooks/ddu-ui-filer.dpp
 -- }}}
 -- }}}
 

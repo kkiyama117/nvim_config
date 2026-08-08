@@ -237,3 +237,11 @@ group = "ddu"
 repo = "4513ECHO/ddu-kind-url"
 group = "ddu"
 
+# ---------------------------------------------------------------------------
+# Multiple Hooks
+# ---------------------------------------------------------------------------
+# DDU AND VIM-GIN
+[[multiple_hooks]]
+plugins = ["ddu.vim", "vim-gin"]
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/shared/ddu_gin.dpp"
+

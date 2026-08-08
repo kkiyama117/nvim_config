@@ -1,0 +1,12 @@
+-- lua_add {{{
+vim.keymap.set('n', "[RUNNER]<space>", function ()
+  vim.cmd.OverseerRun()
+end, { desc = "Task runner" })
+vim.keymap.set('n', "[RUNNER]t", function ()
+  vim.cmd.OverseerToggle()
+end, { desc = "Task runner" })
+-- }}}
+
+-- lua_source {{{
+-- }}}
+

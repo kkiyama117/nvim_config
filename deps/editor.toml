@@ -29,6 +29,16 @@ repo = "folke/which-key.nvim"
 on_event = "UIEnter"
 hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/which-key.nvim.dpp"
 
+# ---------------------------------------------------------------------------
+# Task runner
+# ---------------------------------------------------------------------------
+# overseer.nvim - task runner and job management
+[[plugins]]
+repo = "stevearc/overseer.nvim"
+on_event = "VimEnter"
+on_map = { n = ["[RUNNER]"] }
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/overseer.nvim.dpp"
+
 # NVIM inside NVIM
 [[plugins]]
 repo = "lambdalisue/vim-guise"

@@ -286,30 +286,6 @@ vim.keymap.set('n', ';F', function ()
 end, { desc = 'Ddu: ripgrep' }
 )
 
--- GIT branch
-vim.keymap.set('n', ';gb', function ()
-  require('hooks.shared.ddu_git').ddu_git_branch()
-end, { desc = 'Ddu: git branch' }
-)
-
--- GIT log
-vim.keymap.set('n', ';gl', function ()
-  require('hooks.shared.ddu_git').ddu_git_log()
-end, { desc = 'Ddu: git log' }
-)
-
--- GIT status
-vim.keymap.set('n', ';gs', function ()
-  require('hooks.shared.ddu_git').ddu_git_status()
-end, { desc = 'Ddu: git status' }
-)
-
--- GIT stash
-vim.keymap.set('n', ';gS', function ()
-  require('hooks.shared.ddu_git').ddu_git_stash()
-end, { desc = 'Ddu: git stash list' }
-)
-
 -- help
 vim.keymap.set('n', ';h', function ()
   vim.fn['ddu#start']({

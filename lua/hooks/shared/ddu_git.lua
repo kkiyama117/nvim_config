@@ -1,11 +1,3 @@
--- Shared function for ddu-source-git_*
--- Merge `;g` (ddu.vim.lua) and `[GIT]` (vim-gin.lua)
---
--- NOTE: no `exists('*ddu#start')` guard here: that check is always 0
--- until ddu#start has been called once (autoload functions are lazy),
--- and the ddu#start call itself triggers dpp-ext-lazy's FuncUndefined
--- handler which loads ddu.vim on demand.  A guard would warn even when
--- everything is fine and block that auto-load.
 local M = {}
 
 local function ddu_git_branch()
