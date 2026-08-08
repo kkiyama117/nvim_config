@@ -98,6 +98,11 @@ group = "ddu"
 repo = "kuuote/ddu-source-git_status"
 group = "ddu"
 
+# Gin actions (for after/ftplugin/gin-log.lua)
+[[plugins]]
+repo = "kkiyama117/ddu-source-gin_action"
+group = "ddu"
+
 # help
 [[plugins]]
 repo = "Matsui54/ddu-source-help"
