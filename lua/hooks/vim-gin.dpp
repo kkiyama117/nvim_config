@@ -22,9 +22,8 @@ vim.keymap.set('n', '[GIT]am', function ()
 end, { desc = 'Gin: amend commit' }
 )
 
--- Branch; Use `;gb` (ddu-source-git_branch) and `itemAction`
+-- Branch;
 vim.keymap.set('n', '[GIT]b', function ()
-  -- require('hooks.shared.ddu_git').ddu_git_branch()
   vim.cmd.GinBranch('++opener=tabnew')
 end, { desc = 'Ddu: git branch' }
 )
@@ -66,8 +65,7 @@ end, { desc = 'Gin: edit (path input)' }
 
 -- Log (with graph): [GIT]l(or L)
 vim.keymap.set('n', '[GIT]l', function ()
-  -- vim.cmd.GinLog('--all', '--graph', '--max-count=100', '--oneline', '--decorate')
-  require("hooks.shared.ddu_git").ddu_git_log()
+  vim.cmd.GinLog('--all', '--graph', '--max-count=100', '--oneline', '--decorate')
 end, { desc = 'Gin: log (all graph)' }
 )
 
@@ -83,18 +81,14 @@ end, { desc = 'Gin: Reflog' }
 )
 
 -- Gin status
--- Status; Use `;gs` (ddu-source-git_status) and `itemAction`
 vim.keymap.set('n', '[GIT]s', function ()
-  -- vim.cmd.GinStatus()
-  require("hooks.shared.ddu_git").ddu_git_status()
+  vim.cmd.GinStatus()
 end, { desc = 'Gin: status' }
 )
 
 -- Git stash
 vim.keymap.set('n', '[GIT]S', function ()
-  -- vim.cmd.GinStash()
-  require("hooks.shared.ddu_git").ddu_git_stash()
-  vim.cmd('!git status -v')
+  vim.cmd.GinStash()
 end, { desc = 'Git: stash' }
 )
 
