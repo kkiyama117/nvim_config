@@ -204,6 +204,13 @@ vim.keymap.set({ 'n' }, '<Leader>r', '[RUNNER]', { remap = true })
 vim.keymap.set({ 'n' }, '[RUNNER]', '<Nop>')
 -- }}}
 
+-- Test framework
+-- See "$NVIM_CONFIG_HOME/lua/hooks/neotest.dpp" to check the mappings using `[TEST]`
+-- `<Leader>t`=[TEST] {{{
+vim.keymap.set({ 'n' }, '<Leader>t', '[TEST]', { remap = true })
+vim.keymap.set({ 'n' }, '[TEST]', '<Nop>')
+-- }}}
+
 -- Window move
 -- `<Leader>w`=[WINDOW] (alias for <C-w>) -- {{{
 vim.keymap.set({ 'n' }, '<Leader>w', '[WINDOW]', { remap = true })
@@ -214,6 +221,11 @@ vim.keymap.set({ 'n' }, '[WINDOW]', '<C-w>', { remap = true })
 -- `<Leader>d`=[DP]{{{
 vim.keymap.set({ 'n' }, '<Leader>d', '[DP]', { remap = true })
 vim.keymap.set({ 'n' }, '[DP]', '<Nop>')
+-- }}}
+
+-- `<Leader>D`=[DAP]{{{
+vim.keymap.set({ 'n' }, '<Leader>D', '[DAP]', { remap = true })
+vim.keymap.set({ 'n' }, '[DAP]', '<Nop>')
 -- }}}
 
 -- `<Leader>T`=[TOGGLE]{{{

@@ -94,6 +94,11 @@ export class Config extends BaseConfig {
       protocolParams: {
         git: { enablePartialClone: true },
       },
+      // neotest-deno's doc defines the same *neotest.config* tag as
+      // nvim-neotest/neotest, which makes :helptags fail with E154.
+      // Skip merging its doc (a near-copy of neotest's) into .dpp/doc.
+      skipMergeFilenamePattern:
+        "^tags(?:-\\w\\w)?$|^package.json$|^neotest-deno\\.txt$",
     });
 
     const [context, options] = await args.contextBuilder.get(args.denops);
@@ -309,6 +314,9 @@ export class Config extends BaseConfig {
       },
       ddu: {
         on_source: "ddu.vim",
+      },
+      neotest: {
+        on_source: "neotest",
       },
     };
     const result: ConfigReturn = {

@@ -20,7 +20,8 @@ git clone https://github.com/kkiyama117/nvim_config.git ~/.config/nvim
 - 2: Run
 
 ```bash
-# `lua/bootloader` called and install deps of setup.
+# `my_nvim_bootloader` (local plugin in ~/programs/nvim_plugins) is called
+# and installs deps of setup.
 # bootloader has 3 layers; minimum deps (Layer 1), dpp-ext plugins (Layer 2),
 # and whole plugins and configs (Layer 3).
 # Each layer run `fallback` if something failed. Installing missing plugins,

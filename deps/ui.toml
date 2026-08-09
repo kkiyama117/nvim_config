@@ -1,15 +1,8 @@
-# TODO: Do below.
 # folke/todo-comments.nvim
-# ===========================================================================
-# Notification and output
-# ===========================================================================
 
-# Notify (basic); float popup window
-[[plugins]]
-repo = "rcarriga/nvim-notify"
-lazy = false
-hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-notify.dpp"
-
+# ===========================================================================
+# Whole UI
+# ===========================================================================
 # Notify (external)
 # TODO: It may conflict with `Dark-powered UI`;
 #       So we need to check it.
@@ -17,11 +10,28 @@ hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-notify.dpp"
 # repo = "folke/noice.nvim"
 # depends = ["nvim-notify", "nui.nvim"]
 # on_event = ["UIEnter"]
-# [[plugins]]
-# repo = "MunifTanjim/nui.nvim"
-# on_event = ["UIEnter"]
 
-# Notifications
+# ===========================================================================
+# Cmdline
+# ===========================================================================
+# cmdline.vim — render the command line in a floating window
+[[plugins]]
+repo = "Shougo/cmdline.vim"
+on_source = ["ddu.vim"]
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/cmdline.vim.dpp"
+
+# ===========================================================================
+# Popup
+# ===========================================================================
+# Notify (basic); float popup window
+[[plugins]]
+repo = "rcarriga/nvim-notify"
+lazy = false
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/nvim-notify.dpp"
+
+# ===========================================================================
+# messages
+# ===========================================================================
 [[plugins]]
 repo = "j-hui/fidget.nvim"
 lazy = false

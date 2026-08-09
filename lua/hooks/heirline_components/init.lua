@@ -24,6 +24,6 @@ M.FileFormat = require('hooks/heirline_components/file_format')
 M.CloseButton = require('hooks/heirline_components/close_button')
 M.TabLine = require('hooks/heirline_components/tabline')
 M.LSP = require('hooks/heirline_components/lsp')
+M.Overseer = require('hooks/heirline_components/overseer')
 
 return M
-

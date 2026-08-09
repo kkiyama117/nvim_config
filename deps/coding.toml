@@ -1,5 +1,23 @@
 # Faster coding with features such as snippets, autocompletion, and more.
 
+# ---------------------------------------------------------------------------
+# Quickfix plugins
+# ---------------------------------------------------------------------------
+#
+[[plugins]]
+repo = "thinca/vim-qfreplace"
+on_ft = ["qf"]
+
+[plugins.ftplugin]
+qf = '''
+  nnoremap <buffer> r <Cmd>Qfreplace<CR>
+'''
+
+[[plugins]]
+repo = "itchyny/vim-qfedit"
+# on_event = ["BufReadPost", "BufNewFile"]
+on_ft = ["qf"]
+
 # ===========================================================================
 # Input engines / Japanese
 # ===========================================================================

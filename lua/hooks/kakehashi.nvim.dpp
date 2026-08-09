@@ -8,8 +8,10 @@
 -- that file (it would recurse).
 --
 -- kakehashi is the sole Neovim LSP client; bridged servers (denols,
--- emmylua_ls, gopls, pyright, rust_analyzer, tombi, vtsls) run as its
--- children. Server binaries are installed by mise, NOT mason.nvim.
+-- emmylua_ls, gopls, pyright, tombi, vtsls) run as its children
+-- (rust_analyzer is NOT bridged — rustaceanvim owns the rust client;
+-- see deps/testing.toml). Server binaries are installed by mise,
+-- NOT mason.nvim.
 
 vim.lsp.enable('kakehashi')
 -- }}}

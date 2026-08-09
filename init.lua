@@ -63,9 +63,17 @@ if vim.fn.executable('deno') == 0 then
   end
 end
 
+-- Local plugin `my_nvim_bootloader`: must be on runtimepath BEFORE dpp
+-- loads (it bootstraps dpp itself). dpp.ts also scans
+-- `~/programs/nvim_plugins` via dpp-ext-local, so the same path is kept
+-- in sync in the compiled state.
+vim.opt.runtimepath:prepend(
+  vim.fs.joinpath(home_dir, 'programs', 'nvim_plugins', 'my_nvim_bootloader')
+)
+
 -- call dpp.vim to load configs
 if vim.v.vim_did_enter ~= true then
-  require('bootloader').startup()
+  require('my_nvim_bootloader').startup()
 end
 
 vim.cmd('filetype plugin indent on')

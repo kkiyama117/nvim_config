@@ -1,0 +1,9 @@
+-- lua_source {{{
+-- mason.nvim: LSP/DAP installer (codelldb, …).
+--
+-- Loaded eagerly (lazy = false in deps/lsp.toml): mason-registry must
+-- be requireable when rustaceanvim evaluates its DAP adapter, and
+-- setup() sets $MASON, which after/lsp/kakehashi.lua's resolve_cmd_line
+-- reads for the bin dir.
+require('mason').setup()
+-- }}}

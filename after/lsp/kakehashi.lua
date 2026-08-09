@@ -67,17 +67,19 @@ local function find_plugin_path(pattern)
 end
 
 --- Resolve a fragment `cmd` line's first binary via vim.fn.exepath,
---- falling back to the mise shims dir (~/.local/share/mise/shims) when
---- the binary is not on PATH. The running environment can carry a stale
---- `mise activate` PATH (e.g. a tool upgraded after the environment was
---- started, like tombi 1.2.6 -> 1.2.7, or ZDOTDIR pointing at a config
---- dir without .zshenv so the shims line never runs), and kakehashi
---- spawns children with that inherited PATH. The shims dir always exists
---- and dispatches the current mise version, so it is the durable
---- fallback. Matches the machine-generated single-line form
---- `cmd = ["deno", "lsp"]`; leaves the line untouched when neither
---- PATH nor the shims dir resolve the binary (kakehashi then inherits
---- PATH, same as a bare name).
+--- falling back to the mise shims dir (~/.local/share/mise/shims) and
+--- then the mason.nvim bin dir ($MASON/bin) when the binary is not on
+--- PATH. The running environment can carry a stale `mise activate` PATH
+--- (e.g. a tool upgraded after the environment was started, like tombi
+--- 1.2.6 -> 1.2.7, or ZDOTDIR pointing at a config dir without .zshenv
+--- so the shims line never runs), and kakehashi spawns children with that
+--- inherited PATH. The shims dir always exists and dispatches the current
+--- mise version, so it is the durable fallback for mise-installed
+--- servers; mason-installed servers (codelldb etc. — see deps/lsp.toml)
+--- live in $MASON/bin, which is not on PATH either. Matches the
+--- machine-generated single-line form `cmd = ["deno", "lsp"]`; leaves
+--- the line untouched when none of PATH / mise shims / mason bin resolve
+--- the binary (kakehashi then inherits PATH, same as a bare name).
 ---@param line string
 ---@return string
 local function resolve_cmd_line(line)
@@ -92,7 +94,16 @@ local function resolve_cmd_line(line)
     if vim.fn.executable(mise_shims) == 1 then
       resolved = mise_shims
     else
-      return line
+      -- mason.nvim install root: $MASON (set by mason.setup()) or the
+      -- default stdpath('data')/mason. Binaries are symlinked into bin/.
+      local mason_root = vim.env.MASON
+        or vim.fs.joinpath(vim.fn.stdpath('data'), 'mason')
+      local mason_bin = vim.fs.joinpath(mason_root, 'bin', binary)
+      if vim.fn.executable(mason_bin) == 1 then
+        resolved = mason_bin
+      else
+        return line
+      end
     end
   end
   return head .. '"' .. resolved .. '"' .. rest

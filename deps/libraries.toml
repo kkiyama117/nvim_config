@@ -1,3 +1,6 @@
+# ===========================================================================
+# BASIC
+# ===========================================================================
 # lua
 [[plugins]]
 repo = "nvim-lua/plenary.nvim"
@@ -16,4 +19,10 @@ hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/denops.vim.dpp"
 [[plugins]]
 repo = "kkiyama117/denops-shared-server-pueue.vim"
 on_event = "VimEnter"
+
+# ===========================================================================
+# UI
+# ===========================================================================
+[[plugins]]
+repo = "MunifTanjim/nui.nvim"
 

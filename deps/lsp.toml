@@ -3,6 +3,22 @@
 repo = "b0o/SchemaStore.nvim"
 on_event = "FileType"
 
+# mason.nvim - LSP/DAP installer
+#   Installs LSP servers and DAP adapters (codelldb, …) into
+#   ~/.local/share/nvim/mason. kakehashi bridges servers installed by
+#   mise (see ~/.config/mise/config.toml); mason-installed servers are
+#   resolved by after/lsp/kakehashi.lua via the $MASON/bin fallback in
+#   resolve_cmd_line. rustaceanvim auto-detects mason-installed codelldb
+#   for DAP (see lua/hooks/rustaceanvim.dpp).
+#   Eager (lazy = false): deps/*.toml defaults to lazy, and a lazy plugin
+#   with no on_* trigger never loads — mason-registry must be requireable
+#   when rustaceanvim evaluates its DAP adapter, and setup() sets $MASON
+#   for resolve_cmd_line.
+[[plugins]]
+repo = "williamboman/mason.nvim"
+lazy = false
+hooks_file = "$NVIM_CONFIG_HOME/lua/hooks/mason.nvim.dpp"
+
 # nvim-lspconfig - LSP client configurations
 #   Holds the per-server vim.lsp.config definitions that the kakehashi
 #   bridge inherits (see lua/hooks/nvim-lspconfig.dpp).
@@ -37,9 +53,10 @@ on_event = "FileType"
 #   holds the dpp parser/queries/grammar)
 #   — the --config-file model, like atusy's dotfiles.
 #   kakehashi is the sole Neovim LSP client; bridged servers (denols,
-#   emmylua_ls, gopls, pyright, rust_analyzer, tombi, vtsls) run as its
-#   children. LSP server binaries are installed by mise, not mason.nvim
-#   (see ~/.config/mise/config.toml).
+#   emmylua_ls, gopls, pyright, tombi, vtsls) run as its children
+#   (rust_analyzer is NOT bridged — rustaceanvim owns the rust client;
+#   see deps/testing.toml). LSP server binaries are installed by mise,
+#   not mason.nvim (see ~/.config/mise/config.toml).
 [[plugins]]
 repo = "atusy/kakehashi.nvim"
 on_source = "nvim-lspconfig"

@@ -15,7 +15,6 @@ M.bridged_servers = {
   'emmylua_ls',
   'gopls',
   'pyright',
-  'rust_analyzer',
   'tombi',
   'vtsls',
 }
@@ -28,7 +27,6 @@ M.host_bridge_languages = {
   'javascript',
   'lua',
   'python',
-  'rust',
   'toml',
   'typescript',
 }
@@ -63,7 +61,6 @@ M.server_filetypes = {
   },
   gopls = { 'go', 'gomod', 'gowork', 'gotmpl' },
   pyright = { 'python' },
-  rust_analyzer = { 'rust' },
   tombi = { 'toml' },
   vtsls = {
     'javascript',
@@ -170,11 +167,6 @@ function M.languages()
             priorities = { 'pyright' },
             maxFanOut = 1,
           },
-        },
-      },
-      rust = {
-        aggregation = {
-          ['_'] = { priorities = { 'rust_analyzer' } },
         },
       },
       typescript = {

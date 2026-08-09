@@ -1,0 +1,69 @@
+-- lua_add {{{
+if vim.env.NVIM_DEBUG == 'true' then
+  vim.notify("Neotest added")
+end
+-- }}}
+
+-- lua_source {{{
+-- Adapters are loaded via `on_source = "neotest"` (deps/testing.toml), so
+-- they are on the runtimepath before this hook runs.
+require("neotest").setup({
+  adapters = {
+    require("neotest-python")({ runner = "pytest" }),
+    require("neotest-plenary"),
+    require("neotest-go"),
+    require("rustaceanvim.neotest"),
+    require("neotest-deno"),
+    require("neotest-bash"),
+  },
+})
+
+-- Keymaps from LazyVim:
+-- https://www.lazyvim.org/keymaps#neotest
+-- `<Leader>t`=[TEST] (defined in `lua/vimrc/mappings.lua`)
+vim.keymap.set('n', "[TEST]a", function ()
+  require("neotest").run.attach()
+end, { desc = "Attach to Test (Neotest)" }
+)
+vim.keymap.set('n', "[TEST]t", function ()
+  require("neotest").run.run(vim.fn.expand("%"))
+end, { desc = "Run File (Neotest)" }
+)
+vim.keymap.set('n', "[TEST]T", function ()
+  require("neotest").run.run(vim.uv.cwd())
+end, { desc = "Run All Test Files (Neotest)" }
+)
+vim.keymap.set('n', "[TEST]r", function ()
+  require("neotest").run.run()
+end, { desc = "Run Nearest (Neotest)" }
+)
+vim.keymap.set('n', "[TEST]l", function ()
+  require("neotest").run.run_last()
+end, { desc = "Run Last (Neotest)" }
+)
+vim.keymap.set('n', "[TEST]s", function ()
+  require("neotest").summary.toggle()
+end, { desc = "Toggle Summary (Neotest)" }
+)
+vim.keymap.set('n', "[TEST]o", function ()
+  require("neotest").output.open({ enter = true, auto_close = true })
+end, { desc = "Show Output (Neotest)" }
+)
+vim.keymap.set('n', "[TEST]O", function ()
+  require("neotest").output_panel.toggle()
+end, { desc = "Toggle Output Panel (Neotest)" }
+)
+vim.keymap.set('n', "[TEST]S", function ()
+  require("neotest").run.stop()
+end, { desc = "Stop (Neotest)" }
+)
+vim.keymap.set('n', "[TEST]w", function ()
+  require("neotest").watch.toggle(vim.fn.expand("%"))
+end, { desc = "Toggle Watch (Neotest)" }
+)
+-- Debug Nearest (requires nvim-dap)
+vim.keymap.set('n', "[TEST]d", function ()
+  require("neotest").run.run({ strategy = "dap" })
+end, { desc = "Debug Nearest (Neotest)" }
+)
+-- }}}
