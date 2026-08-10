@@ -243,6 +243,30 @@ vim.keymap.set('n', ';f', function ()
         name = 'rg'
       }
     },
+    sourceParams = {
+      rg = {
+        input = vim.fn.escape(vim.fn['cmdline#input']('Pattern: ', vim.fn.expand('<cword>')), ' ')
+      }
+    },
+    uiParams = {
+      ff = {
+        ignoreEmpty = true
+      }
+    }
+  })
+end, { desc = 'Ddu: ripgrep' }
+)
+
+-- Ripgrep in manual path
+vim.keymap.set('n', ';F', function ()
+  vim.fn['ddu#start']({
+    name = 'search',
+    resume = false,
+    sources = {
+      {
+        name = 'rg'
+      }
+    },
     uiParams = {
       ff = {
         ignoreEmpty = true
@@ -260,30 +284,6 @@ vim.keymap.set('n', ';f', function ()
     }
   })
 end, { desc = 'Ddu: ripgrep inside cwd' }
-)
-
--- Ripgrep in manual path
-vim.keymap.set('n', ';F', function ()
-  vim.fn['ddu#start']({
-    name = 'search',
-    resume = false,
-    sources = {
-      {
-        name = 'rg'
-      }
-    },
-    sourceParams = {
-      rg = {
-        input = vim.fn.escape(vim.fn['cmdline#input']('Pattern: ', vim.fn.expand('<cword>')), ' ')
-      }
-    },
-    uiParams = {
-      ff = {
-        ignoreEmpty = true
-      }
-    }
-  })
-end, { desc = 'Ddu: ripgrep' }
 )
 
 -- help
