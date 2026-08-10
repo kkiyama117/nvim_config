@@ -15,6 +15,7 @@ M.bridged_servers = {
   'emmylua_ls',
   'gopls',
   'pyright',
+  'quint',
   'tombi',
   'vtsls',
 }
@@ -27,6 +28,7 @@ M.host_bridge_languages = {
   'javascript',
   'lua',
   'python',
+  'qnt',
   'toml',
   'typescript',
 }
@@ -61,6 +63,7 @@ M.server_filetypes = {
   },
   gopls = { 'go', 'gomod', 'gowork', 'gotmpl' },
   pyright = { 'python' },
+  quint = { 'qnt' },
   tombi = { 'toml' },
   vtsls = {
     'javascript',

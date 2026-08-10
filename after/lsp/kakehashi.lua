@@ -130,8 +130,23 @@ local function build_lsp_toml()
 
   local lines = {}
   local lsp_dir = vim.fs.joinpath(lspconfig_path, 'lsp')
+  -- Repo-owned fragments for servers kakehashi-lspconfig does not ship
+  -- (e.g. quint). Checked as a fallback when the upstream lsp/ dir lacks
+  -- a fragment, so bridged_servers entries never warn as missing.
+  local custom_dir = vim.fs.joinpath(
+    vim.env.NVIM_CONFIG_HOME or vim.fn.stdpath('config'),
+    'after',
+    'lsp',
+    'fragments'
+  )
   for _, name in ipairs(config.bridged_servers) do
     local fragment = vim.fs.joinpath(lsp_dir, name .. '.toml')
+    if vim.fn.filereadable(fragment) ~= 1 then
+      local custom = vim.fs.joinpath(custom_dir, name .. '.toml')
+      if vim.fn.filereadable(custom) == 1 then
+        fragment = custom
+      end
+    end
     if vim.fn.filereadable(fragment) == 1 then
       vim.list_extend(
         lines,
