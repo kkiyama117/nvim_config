@@ -56,7 +56,7 @@ return {
             ["!"] = "\u{F070E}   ", --[[           󰜎   x : 未使用（StatusLineが表示されない）; シェルまたは外部コマンド実行中 ]]
         },
         -- NOTE: the mode color is inherited from the StatusLines `static`
-        -- (see lua/hooks/heirline.nvim.dpp): `self:mode_color()`.
+        -- (see rvpm heirline hooks): `self:mode_color()`.
     },
     -- We can now access the value of mode() that, by now, would have been
     -- computed by `init()` and use it to index our icons dictionary.

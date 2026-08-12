@@ -8,7 +8,7 @@ function homeDir(): string {
 
 function printHelp(): void {
   const names = listSpecs().map((spec) => spec.name).join(", ");
-  console.log(`Install binaries listed in dpp external_commands.
+  console.log(`Install binaries for Neovim external-command gates.
 
 Usage:
   deno task install-external-bin <name> [options]

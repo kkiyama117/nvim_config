@@ -8,7 +8,7 @@
 -- searched last, so it overrides nvim-lspconfig's builtin
 -- lsp/kakehashi.lua (later files win in the force-extend merge).
 -- `vim.lsp.enable('kakehashi')` is called from
--- lua/hooks/kakehashi.nvim.dpp — NOT here (enable resolves this file,
+-- rvpm kakehashi.nvim hook — NOT here (enable resolves this file,
 -- which would recurse).
 --
 -- Replaces the kkiyama117/kakehashi.nvim fork's plugin/kakehashi.lua
@@ -18,7 +18,7 @@
 --   * lua/kakehashi/config.lua (vimrc-owned) — bridged_servers, filetypes,
 --     and the `languages` init_options table;
 --   * kakehashi-lspconfig TOML fragments + ~/.config/kakehashi/kakehashi.toml
---     (chezmoi-managed; ~/.config/kakehashi also holds the dpp parser,
+--     (chezmoi-managed; ~/.config/kakehashi also holds parser + queries,
 --     queries, and grammar source) + a generated
 --     library.toml, passed to the kakehashi binary via --config-file (the
 --     dotfiles model). No inherit_nvim_lsp_config, no didChangeConfiguration:
@@ -203,7 +203,7 @@ end
 
 local home = vim.env.HOME or '~'
 
--- Standard user config location (chezmoi-managed; also holds the dpp
+-- Standard user config location (chezmoi-managed; also holds parser +
 -- parser/queries/grammar moved out of this repo).
 local kakehashi_toml = vim.fs.joinpath(
   vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(home, '.config'),
@@ -235,7 +235,7 @@ local init_options = {
   end, {
     -- ~/.local/share/kakehashi (server data dir)
     vim.fs.joinpath(home, '.local', 'share', 'kakehashi'),
-    -- ~/.config/kakehashi: dpp parser + queries (chezmoi-managed)
+    -- ~/.config/kakehashi: parser + queries (chezmoi-managed)
     vim.fs.dirname(kakehashi_toml),
     -- The plugin's own rtp entry (bundled queries)
     find_plugin_path('kakehashi%.nvim$'),
@@ -255,21 +255,6 @@ return {
     end
   end,
   on_attach = function(client, bufnr)
-    -- dpp: treesitter owns highlighting (lua parser for `-- lua_*` files,
-    -- vim parser for `" hook_*` files — started in after/ftplugin/dpp.lua).
-    -- kakehashi's tokens for dpp are only host markers (injected lua tokens
-    -- depend on emmylua's slow analysis), so the token-based takeover below
-    -- would leave the buffer uncolored. Prefer treesitter to LSP semantic
-    -- tokens:
-    -- https://blog.atusy.net/2025/07/15/prefer-luadoc-to-luals-semantictokens
-    if vim.bo[bufnr].filetype == 'dpp' then
-      vim.lsp.semantic_tokens.enable(false, {
-        bufnr = bufnr,
-        client_id = client.id,
-      })
-      return
-    end
-
     -- Let kakehashi own highlighting once semantic tokens arrive
     -- (scripts/minimal_init.lua, kakehashi README Quick Start).
     vim.api.nvim_create_autocmd('LspTokenUpdate', {

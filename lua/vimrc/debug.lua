@@ -3,7 +3,7 @@
 -- Saves nvim logs to `$NVIM_CACHE_HOME/logs` when debug mode is enabled
 -- (`vim.g['vimrc#is_debug']`, set from `NVIM_DEBUG=true` in init.lua).
 --
--- Sourced via dpp inline vimrcs (`lua/vimrc/*`), so it guards itself and
+-- Sourced via rvpm loader; guards itself and
 -- no-ops in normal mode.
 
 if not vim.g['vimrc#is_debug'] then
@@ -18,7 +18,7 @@ vim.o.verbose = 3
 vim.o.verbosefile = vim.fs.joinpath(log_dir, 'verbose.log')
 
 -- 2. Tee `vim.notify` to a file (nvim-notify swallows messages otherwise).
---    The nvim-notify hook (`lua/hooks/nvim-notify.dpp`) re-wraps after
+--    The nvim-notify hook re-wraps after
 --    `vim.notify = plugin` replaces this early wrapper.
 vim.notify = require('vimrc.utils').wrap_notify_with_log(log_dir)
 

@@ -12,3 +12,12 @@ bak/
 # Deno/Denops files
 **/deno.lock
 
+# Pi agent harness
+.pi/
+
+# nightfox
+nightfox/
+
+# rvpm plugin configs (local)
+rvpm/plugins/
+

@@ -73,7 +73,7 @@ vim.keymap.set({ 'n', 'x' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set({ 'n', 'x' }, ',', '<Nop>', { silent = true })
 -- `s` is used for some useful shortcut. Use `cl` instead `s`.
 vim.keymap.set({ 'n', 'x' }, 's', '<Nop>', { silent = true })
--- convert `;` and `:`, with `cmdline.nvim`. See @lua/hooks/ddc.vim.dpp
+-- convert `;` and `:`, with `cmdline.nvim`. See rvpm ddc.vim hooks.
 vim.keymap.set({ 'n' }, ';', '<Nop>', { silent = true })
 vim.keymap.set({ 'n' }, ':', '<Nop>', { silent = true })
 vim.keymap.set({ 'n' }, ';:', ':', { silent = true, desc = 'normal :' })
@@ -186,7 +186,7 @@ vim.keymap.set({ 'n' }, '[AGENTIC]', '<Nop>')
 -- }}}
 
 -- Git
--- See "$NVIM_CONFIG_HOME/lua/hooks/vim-gin.dpp" to check the mappings using `[GIT]`
+-- See rvpm vim-gin hooks for mappings using `[GIT]`
 -- `<Leader>g`=[GIT] {{{
 vim.keymap.set({ 'n' }, '<Leader>g', '[GIT]', { remap = true })
 vim.keymap.set({ 'n' }, '[GIT]', '<Nop>')
@@ -205,7 +205,7 @@ vim.keymap.set({ 'n' }, '[RUNNER]', '<Nop>')
 -- }}}
 
 -- Test framework
--- See "$NVIM_CONFIG_HOME/lua/hooks/neotest.dpp" to check the mappings using `[TEST]`
+-- See rvpm neotest hooks for mappings using `[TEST]`
 -- `<Leader>t`=[TEST] {{{
 vim.keymap.set({ 'n' }, '<Leader>t', '[TEST]', { remap = true })
 vim.keymap.set({ 'n' }, '[TEST]', '<Nop>')
@@ -447,7 +447,7 @@ vim.keymap.set('n', 'qw', ':<C-u>w<CR>qq', { desc = 'smart exit with saving' })
 -- }}}
 -- }}}
 -- s | ? {{{
--- check `$NVIM_CONFIG_HOME/lua/hooks/ddu.vim.dpp` for other keymaps start from `s`
+-- check rvpm ddu.vim hooks for other keymaps starting with `s`
 -- }}}
 -- }}}
 

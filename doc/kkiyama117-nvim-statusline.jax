@@ -8,8 +8,8 @@ About
 
 Statusline (heirline.nvim) help. This file documents the sections of the
 heirline cookbook that are NOT yet implemented in this vimrc, together
-with a TODO list. The implemented sections live in
-lua/hooks/heirline.nvim.dpp and lua/hooks/heirline_components/*.lua and
+with a TODO list. The implemented sections live in rvpm heirline hooks and
+lua/hooks/heirline_components/*.lua and
 are NOT repeated here.
 
 Contents: >

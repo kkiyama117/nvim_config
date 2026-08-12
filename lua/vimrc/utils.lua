@@ -192,7 +192,7 @@ end
 -- Returns the wrapper; assign it to `vim.notify`.
 -- In debug mode this is called twice:
 --   1. `lua/vimrc/debug.lua` (early; wraps the default notify)
---   2. `lua/hooks/nvim-notify.dpp` (after `vim.notify = plugin`)
+--   2. rvpm nvim-notify hook (after `vim.notify = plugin`)
 local function notify_level_name(level)
   for name, lv in pairs(vim.log.levels) do
     if lv == level then
