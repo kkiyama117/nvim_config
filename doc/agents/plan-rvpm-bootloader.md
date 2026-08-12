@@ -439,4 +439,22 @@ See that directory's `README.md` for the flow and the shared rules.
 | P4 | Hook conversion: 35 `.dpp` → per-plugin Lua files + `lua/hooks/shared/*.lua` | — |
 | P5 | New `init.lua`; delete the rtp surgery; measure with `rvpm profile` vs current `--startuptime` | P3, P4 |
 | P6 | Delete the local bootloader clone. Precondition (a) **done**: `specs/*.qnt` committed and pushed as `0c93369`, verified present on `kkiyama117/my_nvim_bootloader`; the remote is now a complete archive. Precondition (b) still open: `init.lua` must have dropped `require('my_nvim_bootloader').startup()` first, or Neovim loads zero plugins | P5 |
-| P7 | Cutover cleanup: delete `deps/*.toml`, `denops/dpp.ts`, `lua/hooks/*.dpp`; update `AGENTS.md` plugin-manager row, `README.md` install steps, and the `.dpp` tooling (D4) | P5 |
+| P7 | Cutover cleanup: delete `deps/*.toml`, `denops/dpp.ts`, `lua/hooks/*.dpp`; update docs; `.dpp` editor tooling removed (D4) | P5 |
+
+## Migration completed (2026-08-13)
+
+dpp.vim → rvpm migration finished on branch `temp`.
+
+| Metric | Value |
+|--------|-------|
+| Plugins migrated | 137 dpp entries → 129 rvpm (`rvpm/config.toml`) |
+| Startup (dpp baseline) | 81.6 ms (`nvim --headless --startuptime`) |
+| Startup (rvpm) | 64.7 ms |
+| rvpm profile | 37.6 ms total |
+| Phases | P1–P7 complete |
+| Bootloader | local clone deleted (P6); GitHub archive kept |
+| dpp cache | `~/.cache/nvim/dpp/` retained per user request (P7) |
+
+Rollback path (`deps/`, hooks, `denops/dpp.ts`) removed in P7 except the
+external dpp plugin cache above.
+

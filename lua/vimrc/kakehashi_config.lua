@@ -54,12 +54,6 @@ M.server_filetypes = {
   },
   emmylua_ls = {
     'lua',
-    -- dpp: dpp.vim hooks files (*.dpp) attach kakehashi via this entry
-    -- (filetypes() collection). The emmylua bridge itself runs on the
-    -- injected lua virtual documents (Route 2, languages.dpp.bridge.lua),
-    -- not on the host document (emmylua keys by URI extension, so host
-    -- .dpp docs are ignored anyway). See .agents/issues/dpp-filetype.md.
-    'dpp',
   },
   gopls = { 'go', 'gomod', 'gowork', 'gotmpl' },
   pyright = { 'python' },
@@ -126,39 +120,9 @@ function M.languages()
     }
   end
 
-  -- dpp (dpp.vim hooks file, *.dpp): custom tree-sitter-dpp grammar
-  -- (Route 2, .agents/issues/dpp-filetype.md D1b) parses hook blocks;
-  -- queries/dpp/injections.scm injects each block's content lines as lua
-  -- (wrapper lines `lua << EOF` / `EOF` excluded), and the injected
-  -- virtual documents (kakehashi-virtual-uri-*.lua) are bridged to
-  -- emmylua_ls — the only path that reaches emmylua, which keys
-  -- documents by URI extension.
-  --
-  -- viml-format blocks (`" hook_* {{{` / `" target_filetype {{{`) inject
-  -- vim (the vim grammar parses the `lua << EOF` heredoc wrapper natively
-  -- and injects the body as lua for kakehashi's own features). No bridge
-  -- is configured for the vim layer: kakehashi only opens virtual
-  -- documents on servers that handle the injection language, and no
-  -- bridged server handles vim — the nested lua therefore does not reach
-  -- emmylua (viml-format dpp files get no LSP features; lua-format ones
-  -- keep the emmylua bridge above).
-  local xdg_config = vim.env.XDG_CONFIG_HOME
-    or vim.fs.joinpath(vim.env.HOME or '~', '.config')
-  languages.dpp = {
-    parser = vim.fs.joinpath(xdg_config, 'kakehashi', 'parser', 'dpp.so'),
-    bridge = {
-      lua = {
-        aggregation = {
-          ['_'] = { priorities = { 'emmylua_ls' } },
-        },
-      },
-    },
-  }
-
   languages.markdown = {
     bridge = {
-      -- emmylua_ls (not lua-language-server); see the vimrc's
-      -- lua/hooks/nvim-lspconfig.dpp.
+      -- emmylua_ls (not lua-language-server); see rvpm nvim-lspconfig hooks.
       lua = {
         aggregation = {
           ['_'] = { priorities = { 'emmylua_ls' } },

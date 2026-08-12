@@ -1,5 +1,5 @@
 export interface BinSpec {
-  /** Command name used in dpp `external_commands`. */
+  /** Command name used in rvpm `cond` / executable gates. */
   name: string;
   /** GitHub repository in `owner/repo` form. */
   repo: string;

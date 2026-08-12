@@ -9,7 +9,7 @@ About                                                       *kkiyama117-nvim*
 Personal Neovim configuration placed at `~/.config/nvim`.
 
 Built around the Shougo ecosystem: >
-	dpp.vim ....... plugin manager (denops based, TOML plugin lists)
+	rvpm .......... plugin manager (Rust CLI, ahead-of-time loader.lua)
 	denops.vim .... Deno runtime bridge
 	ddc.vim ....... auto-completion (+ pum.vim, cmdline.vim)
 	ddu.vim ....... fuzzy finder / UI framework
@@ -25,7 +25,7 @@ Contents                                           *kkiyama117-nvim-contents*
 	REQUIREMENTS ......... |kkiyama117-nvim-requirements|
 	INSTALL .............. |kkiyama117-nvim-install|
 	DIRECTORY LAYOUT ..... |kkiyama117-nvim-layout|
-	PLUGIN MANAGEMENT .... |kkiyama117-nvim-dpp|
+	PLUGIN MANAGEMENT .... |kkiyama117-nvim-rvpm|
 	KEY MAPPINGS ......... |kkiyama117-nvim-mappings|
 	COLORSCHEME .......... |kkiyama117-nvim-colorscheme|
 	COMMANDS ............. |kkiyama117-nvim-commands-list|
@@ -35,11 +35,11 @@ Contents                                           *kkiyama117-nvim-contents*
 Requirements                                   *kkiyama117-nvim-requirements*
 
 Required: >
-	git	plugin installs (dpp-protocol-git) and the bootloader's
-		recovery clones
+	git	plugin installs (rvpm sync clones from GitHub)
 	deno	denops runtime (installed via mise)
 	mise	manages deno and the LSP server binaries
 		(~/.config/mise/config.toml) — mason.nvim is NOT used
+	rvpm	plugin manager CLI
 <
 Optional: >
 	kakehashi	LSP bridge server binary
@@ -56,8 +56,6 @@ Environment variables:
 	$NVIM_DEBUG		"true" enables debug mode: verbose logging
 				and notify/messages dumps under
 				$NVIM_CACHE_HOME/logs/
-	$GITHUB_API_TOKEN	raises the GitHub API rate limit of
-				dpp-ext-installer
 
 ==============================================================================
 Install                                             *kkiyama117-nvim-install*
@@ -65,92 +63,65 @@ Install                                             *kkiyama117-nvim-install*
 1. Fetch: >
 	git clone https://github.com/kkiyama117/nvim_config.git ~/.config/nvim
 <
-2. Run: >
+2. Link rvpm config and sync plugins: >
+	sh ~/.config/nvim/scripts/rvpm-link.sh
+	export RVPM_NO_AUTOUPDATE=1   " optional
+	rvpm sync
+<
+3. Run: >
 	nvim
 <
-That is all. On first start `lua/bootloader` installs everything by
-itself: minimum deps (dpp.vim, dpp-ext-lazy, denops.vim), then the
-dpp-ext plugins, then all user plugins. Each layer has a fallback that
-clones missing repositories and rebuilds the plugin state, asking to
-restart when needed. See |kkiyama117-nvim-bootloader| for the full
-flow and its failure modes.
+See |kkiyama117-nvim-rvpm| for plugin list and hook layout.
 
 ==============================================================================
 Directory layout                                     *kkiyama117-nvim-layout*
 >
-	init.lua	entry point: sets $NVIM_CONFIG_HOME /
-			$NVIM_CACHE_HOME, minimal runtimepath, then
-			calls require('bootloader').startup()
-	lua/bootloader/	dpp bootstrap and recovery
-			(|kkiyama117-nvim-bootloader|)
+	init.lua	entry point: env vars, guarded dofile(loader)
+	rvpm/		rvpm config root (symlinked from
+			~/.config/rvpm/nvim): config.toml, before.lua,
+			after.lua, per-plugin hooks under plugins/
 	lua/vimrc/	core vimrc modules (options, mappings, commands,
-			utils, ...), compiled into the dpp state as
-			inlineVimrcs; nvim/ and unix/ (or windows/)
+			utils, ...); nvim/ and unix/ (or windows/)
 			subdirectories are platform variants
-	lua/hooks/	per-plugin dpp hook files (*.dpp) and
-			heirline_components/ (statusline modules)
-	deps/		dpp plugin lists (TOML), flat layout: lsp,
-			treesitter, ui, ddc, ddu, ddt, ...
-	denops/		TypeScript configs of dpp/ddc/ddu/ddt
-	after/		ftplugin/dpp.lua, lsp/kakehashi.lua,
-			tree-sitter queries
-	ftdetect/	custom `dpp` filetype for the hook files
-	syntax/		(lua base + hook marker highlighting)
-	plugins/	local development plugins, scanned by
-			dpp-ext-local
+	lua/hooks/	shared hook modules (heirline_components/, …)
+	denops/		TypeScript configs for ddc/ddu/ddt
+	after/		lsp/kakehashi.lua, tree-sitter queries
 	scripts/	install_external_bin Deno CLI: installs binaries
-			declared as `external_commands` in the TOMLs
-			from GitHub releases into ~/.local/bin
+			for rvpm `cond` gates into ~/.local/bin
 	doc/		this documentation (doc/agents/ is for AI
 			agents only)
 <
 ==============================================================================
-Plugin management                                       *kkiyama117-nvim-dpp*
+Plugin management                                      *kkiyama117-nvim-rvpm*
 
-Plugins are managed by dpp.vim, configured in `denops/dpp.ts`.
+Plugins are managed by rvpm. The plugin list lives in
+`rvpm/config.toml`; rvpm sync clones into
+`~/.cache/rvpm/nvim/plugins/` and generates `loader.lua`.
 
-Plugin lists ~
+Plugin list ~
 
-Every plugin is an entry in `deps/**/*.toml` (dpp-ext-toml). All TOMLs
-are loaded lazily except `no_lazy.toml` (see `noLazyTomls` in
-denops/dpp.ts); individual entries opt out with `lazy = false` or
-trigger on `on_event` / `on_ft` / `on_cmd` / `on_map` / `on_source` /
-`depends`.
+Every plugin is a `[[plugins]]` entry in `rvpm/config.toml` (129
+plugins after migration). Lazy loading uses `on_event`, `on_ft`,
+`on_cmd`, `on_map`, `on_source`, and `depends`. Set `lazy = false` for
+eager plugins.
 
-Hook files ~
+Per-plugin hooks ~
 
-Per-plugin configuration lives in `lua/hooks/<plugin>.dpp`, referenced
-from the TOML as `hooks_file`. A `.dpp` file is Lua split into dpp hook
-blocks by comment markers: >
-	-- lua_add {{{
-	...
-	-- }}}
-	-- lua_source {{{
-	...
-	-- }}}
-<
-The custom `dpp` filetype provides highlighting, tree-sitter lua
-injection, LSP support and marker folding for these files
-(|kkiyama117-nvim-lsp-dpp-filetype|).
-
-Inline vimrcs ~
-
-`lua/vimrc/*` (plus the platform subdirectories) are compiled into the
-dpp state as inlineVimrcs, so they load from the cached state, not as
-individual files.
+Configuration lives under
+`rvpm/plugins/github.com/<owner>/<repo>/{init,before,after}.lua`.
+Shared modules remain in `lua/hooks/shared/` and are required from
+plugin hooks.
 
 Updates ~
 
-Writing any config file under $NVIM_CONFIG_HOME triggers a
-BufWritePost watcher that installs missing plugins, rebuilds the state
-with `dpp#make_state()` and offers a restart. Manual full update: >
-	:DppUpdate
-<
+Run `rvpm sync` after editing `rvpm/config.toml` or hook files. rvpm
+regenerates `loader.lua` automatically.
+
 ==============================================================================
 Key mappings                                       *kkiyama117-nvim-mappings*
 
 Defined in `lua/vimrc/mappings.lua`; plugin-dependent mappings live in
-the plugin's own `lua/hooks/*.dpp`. Conventions:
+rvpm per-plugin hook files. Conventions:
 
 - mapleader is <Space>, maplocalleader is `,`.
 - `ZZ ZQ M Q` and the arrow keys are disabled; `s`, `;`, `q` are
@@ -184,15 +155,12 @@ Consumers: the heirline components
 (lua/hooks/heirline_components/colors.lua), cmdline.vim, and the
 background transparency toggle (|kkiyama117-nvim-background|).
 
-Candidates are listed in `deps/colorscheme.toml` (tokyonight,
-nightfox, catppuccin, kanagawa); the tokyonight and catppuccin hooks
-each call `:colorscheme` (nightfox's call is commented out).
+Candidates are listed in `rvpm/config.toml` (tokyonight, nightfox,
+catppuccin, kanagawa); the tokyonight and catppuccin hooks each call
+`:colorscheme` (nightfox's call is commented out).
 
 ==============================================================================
 Commands                                      *kkiyama117-nvim-commands-list*
-
-:DppUpdate		force a full plugin update and state rebuild
-			(|kkiyama117-nvim-dpp|)
 
 Encoding / format commands from `lua/vimrc/commands.lua`:
 
@@ -210,12 +178,9 @@ Sub-documents                                          *kkiyama117-nvim-docs*
 					transparency toggle
 	|kkiyama117-nvim-lsp.txt|	kakehashi LSP bridge: files,
 					config layers, bridged servers
-	|kkiyama117-nvim-bootloader.txt|	bootstrap flow and the
-					F1/F2/F3 recovery paths
 	|kkiyama117-nvim-statusline.txt|	heirline: not-yet-implemented
 					cookbook sections and TODOs
 
 ==============================================================================
 
 vim:tw=78:ft=help:
-

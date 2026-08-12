@@ -17,16 +17,11 @@ TODO: write it down and make `doc` of `Install`
 git clone https://github.com/kkiyama117/nvim_config.git ~/.config/nvim
 ```
 
-- 2: Run
+- 2: Sync plugins and run
 
 ```bash
-# `my_nvim_bootloader` (local plugin in ~/programs/nvim_plugins) is called
-# and installs deps of setup.
-# bootloader has 3 layers; minimum deps (Layer 1), dpp-ext plugins (Layer 2),
-# and whole plugins and configs (Layer 3).
-# Each layer run `fallback` if something failed. Installing missing plugins,
-# try to run `dpp#make_state`, and run `:restart` to apply configs.
-
+export RVPM_NO_AUTOUPDATE=1   # optional: skip auto-update check
+rvpm sync
 nvim
 ```
 

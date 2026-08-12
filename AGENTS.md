@@ -12,8 +12,8 @@ New config and documents of `neovim`.
 
 | Item | description |
 |------|-------|
-| Plugin manager | [dpp.vim](https://github.com/Shougo/dpp.vim) (Shougo family, denops.vim based) |
-| External runtime | [deno](https://deno.land/) (for denops, via mise) |
+| Plugin manager | [rvpm](https://github.com/yukimemi/rvpm) (Rust CLI, ahead-of-time `loader.lua`) |
+| External runtime | [deno](https://deno.land/) (for denops plugins, via mise; not used by the plugin manager) |
 | Japanese input | [skkeleton](https://github.com/vim-skk/skkeleton) |
 
 

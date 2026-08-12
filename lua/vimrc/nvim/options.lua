@@ -59,7 +59,7 @@ vim.api.nvim_create_autocmd(
 -- }}}
 
 -- Disable Treesitter by default; re-enabled when tree-sitter-manager.nvim is sourced.
--- If dpp load_state fails, the plugin never loads and Treesitter stays off,
+-- If plugin load fails, Treesitter may stay off,
 -- avoiding "No parser for language" errors from built-in ftplugins.
 -- Preserve the ORIGINAL start first: the tree-sitter-manager hook wraps this
 -- (vim.g['vimrc#treesitter_start_orig']), not the no-op below — otherwise
@@ -145,8 +145,8 @@ local function enable_ui2()
 end
 
 -- Enable `UI2` after startup.vim finishes loading.  This file is sourced from
--- startup.vim during dpp#min#load_state; enabling ui2 there fires FileType on
--- ui2 windows, which retriggers dpp lazy-loading and causes E218 nesting.
+-- startup.vim during plugin load; enabling ui2 there fires FileType on
+-- ui2 windows, which retriggers lazy-loading and causes E218 nesting.
 local group = vim.api.nvim_create_augroup('enable_ui2', { clear = true })
 vim.api.nvim_create_autocmd('VimEnter', {
   group = group,

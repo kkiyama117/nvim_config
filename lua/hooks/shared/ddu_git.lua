@@ -83,4 +83,3 @@ M.ddu_git_stash = ddu_git_stash
 M.ddu_git_status = ddu_git_status
 
 return M
-

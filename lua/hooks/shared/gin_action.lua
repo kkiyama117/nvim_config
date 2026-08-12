@@ -14,11 +14,11 @@
 local M = {}
 
 function M.setup()
-  vim.keymap.set("n", "a", function()
+  vim.keymap.set('n', 'a', function()
     -- Collect `<Plug>(gin-action-*)` mappings like gin#action#list() does.
     local items = {}
-    for _, m in ipairs(vim.api.nvim_buf_get_keymap(0, "n")) do
-      local name = (m.lhs or ""):match("^<Plug>%(gin%-action%-(.-)%)$")
+    for _, m in ipairs(vim.api.nvim_buf_get_keymap(0, 'n')) do
+      local name = (m.lhs or ''):match('^<Plug>%(gin%-action%-(.-)%)$')
       if name ~= nil then
         table.insert(items, {
           word = name,
@@ -27,19 +27,19 @@ function M.setup()
       end
     end
     if vim.tbl_isempty(items) then
-      vim.notify("No <Plug>(gin-action-*) mappings found", vim.log.levels.WARN)
+      vim.notify('No <Plug>(gin-action-*) mappings found', vim.log.levels.WARN)
       return
     end
     table.sort(items, function(x, y)
       return x.word < y.word
     end)
-    local split = vim.fn.has("nvim") == 1 and "floating" or "horizontal"
-    vim.fn["ddu#start"]({
-      name = "gin_action",
+    local split = vim.fn.has('nvim') == 1 and 'floating' or 'horizontal'
+    vim.fn['ddu#start']({
+      name = 'gin_action',
       sources = {
         {
-          name = "gin_action",
-          options = { defaultAction = "do" },
+          name = 'gin_action',
+          options = { defaultAction = 'do' },
           params = { items = items },
         },
       },
@@ -49,7 +49,7 @@ function M.setup()
         },
       },
     })
-  end, { buffer = true, nowait = true, desc = "Gin: choose action (ddu)" })
+  end, { buffer = true, nowait = true, desc = 'Gin: choose action (ddu)' })
 end
 
 return M

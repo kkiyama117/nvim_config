@@ -1,3 +1,5 @@
+Status: obsolete (superseded by plan-rvpm-bootloader.md, dpp removed in P7)
+
 # PLAN: Bridge lua heredoc bodies in viml-format dpp blocks to emmylua
 
 Status: planned (not implemented)

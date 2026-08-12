@@ -20,7 +20,7 @@ Contents: >
 	CLIENT CONFIG
 	SERVER CONFIG
 	BRIDGED SERVERS
-	DPP FILETYPE
+	DPP FILETYPE (obsolete)
 	HIGHLIGHTING HANDOFF
 	DIAGNOSTICS
 	MAINTENANCE
@@ -32,7 +32,7 @@ OVERVIEW                                    *kkiyama117-nvim-lsp-overview*
 - kakehashi (https://github.com/atusy/kakehashi) is a Rust LSP server that
   speaks LSP to nvim and forwards to downstream language servers, bridging
   them into a single client.
-- The nvim-side plugin is upstream atusy/kakehashi.nvim (installed by dpp,
+- The nvim-side plugin is upstream atusy/kakehashi.nvim (installed by rvpm;
   see |kkiyama117-nvim-lsp-files|).
 - kakehashi-lspconfig (atusy/kakehashi-lspconfig) is NOT a Neovim plugin:
   it ships `lsp/*.toml` fragments (converted from nvim-lspconfig) that
@@ -53,8 +53,8 @@ after/lsp/kakehashi.lua
 	over nvim-lspconfig's builtin lsp/kakehashi.lua). Builds the
 	--config-file stack and returns the `vim.lsp.Config` table.
 
-lua/hooks/kakehashi.nvim.dpp
-	dpp hooks_file (|kkiyama117-nvim|). Only calls
+rvpm/plugins/github.com/atusy/kakehashi.nvim/before.lua
+	rvpm hook. Only calls
 	`vim.lsp.enable('kakehashi')` — enable eagerly resolves the config,
 	which triggers the after/lsp load, so it must NOT be called inside
 	after/lsp/kakehashi.lua (that would recurse).
@@ -70,14 +70,13 @@ lua/vimrc/kakehashi_config.lua
 	`kakehashi diagnose` use the same config.
 	See |kkiyama117-nvim-lsp-server-config|.
 
-deps/lsp.toml
-	dpp plugin entries: nvim-lspconfig (with its own hooks_file),
-	kakehashi-lspconfig, and kakehashi.nvim (lazy on FileType;
-	`depends = ["kakehashi-lspconfig"]` guarantees the fragments are on
-	rtp when the client config resolves; `external_commands =
-	["kakehashi"]`).
+rvpm/config.toml
+	lists kakehashi.nvim, kakehashi-lspconfig, and nvim-lspconfig.
+	kakehashi.nvim is lazy on FileType with
+	`depends = ["kakehashi-lspconfig"]` and
+	`cond = "vim.fn.executable('kakehashi') == 1"`.
 
-lua/hooks/nvim-lspconfig.dpp
+rvpm/plugins/github.com/neovim/nvim-lspconfig/before.lua
 	Per-server `vim.lsp.config` definitions (denols, emmylua_ls, vtsls,
 	`*` capabilities, diagnostics/format config). Never enabled directly;
 	their settings are mirrored into ~/.config/kakehashi/kakehashi.toml.
@@ -99,7 +98,7 @@ cmd
 filetypes
 	`config.filetypes()` from lua/vimrc/kakehashi_config.lua: markdown family
 	(markdown, markdown_inline, quarto, rmd) plus each bridged server's
-	filetypes (incl. `dpp` via emmylua_ls).
+	filetypes (lua via emmylua_ls).
 
 init_options.searchPaths
 	- ~/.local/share/kakehashi (server data dir)
@@ -110,15 +109,14 @@ init_options.languages
 	`config.languages()`: host-bridge (`bridge._self`) for go,
 	javascript, lua, python, rust, toml, typescript; markdown/quarto/rmd
 	aggregation priorities; pull-only diagnostics sealing
-	(|kkiyama117-nvim-lsp-diagnostics|); the `dpp` route
-	(|kkiyama117-nvim-lsp-dpp-filetype|).
+	(|kkiyama117-nvim-lsp-diagnostics|).
 
 on_init
 	Sets `semanticTokensProvider.range = false` to prefer full/delta
 	token requests.
 
 on_attach
-	Highlighting handoff with the dpp exception
+	Highlighting handoff
 	(|kkiyama117-nvim-lsp-handoff|).
 
 ==============================================================================
@@ -153,7 +151,7 @@ BRIDGED SERVERS                            *kkiyama117-nvim-lsp-servers*
 Server          Filetypes                              Notes >
 	denols          javascript, javascriptreact,          markers deno.json,
 	                typescript, typescriptreact           deno.jsonc, deps.ts
-	emmylua_ls      lua, dpp                              LuaJIT, globals
+	emmylua_ls      lua                                   LuaJIT, globals
 	                                                      vim; workspace.library
 	                                                      generated at runtime
 	gopls           go, gomod, gowork, gotmpl
@@ -169,38 +167,20 @@ the `enabled` entries in ~/.config/kakehashi/kakehashi.toml and the
 mise installs in ~/.config/mise/config.toml.
 
 ==============================================================================
-DPP FILETYPE                                *kkiyama117-nvim-lsp-dpp-filetype*
+DPP FILETYPE (obsolete)                     *kkiyama117-nvim-lsp-dpp-filetype*
 
-`*.dpp` files (dpp.vim hooks files) are handled specially:
-
-- kakehashi attaches via `filetypes()` (dpp is listed under
-  emmylua_ls's filetypes).
-- The custom tree-sitter parser at
-  ~/.config/kakehashi/parser/dpp.so parses hook blocks; the queries
-  (after/queries/dpp/injections.scm) inject each block's content as
-  lua, and the injected virtual documents are bridged to emmylua_ls —
-  the only path that reaches emmylua (it keys documents by URI
-  extension).
-- Tree-sitter keeps highlighting: semantic tokens are disabled for dpp
-  buffers ONLY, in on_attach. after/ftplugin/dpp.lua starts tree-sitter
-  (lua parser + luadoc injections) and sets up folding.
-- Rationale: kakehashi's tokens for dpp are only host markers; injected
-  lua tokens depend on emmylua's slow analysis, so the token-based
-  takeover would leave the buffer uncolored.
+Removed in the rvpm migration (P7). The custom `dpp` filetype, tree-sitter
+grammar, and kakehashi bridge for `*.dpp` hook files no longer apply.
+Per-plugin configuration now lives in rvpm hook Lua files.
 
 ==============================================================================
 HIGHLIGHTING HANDOFF                        *kkiyama117-nvim-lsp-handoff*
 
-For every non-dpp buffer, kakehashi owns highlighting once semantic
-tokens arrive: on the first LspTokenUpdate, syntax is turned OFF and
-tree-sitter is stopped for that buffer. >
+kakehashi owns highlighting once semantic tokens arrive: on the first
+LspTokenUpdate, syntax is turned OFF and tree-sitter is stopped for that
+buffer. >
 
 	on_attach = function(client, bufnr)
-	  if vim.bo[bufnr].filetype == 'dpp' then
-	    vim.lsp.semantic_tokens.enable(false, { bufnr = bufnr,
-	      client_id = client.id })
-	    return
-	  end
 	  vim.api.nvim_create_autocmd('LspTokenUpdate', {
 	    buffer = bufnr,
 	    once = true,
@@ -240,13 +220,13 @@ Adding a server: >
 <
 
 Updating plugins: >
-	:DppUpdate
+	rvpm sync
 <
 
 Notes:
 
-- Editing any file under $NVIM_CONFIG_HOME (lua/toml/dpp) triggers dpp's
-  BufWritePost watcher: state rebuild (and install for toml changes).
+- After editing `rvpm/config.toml` or hook files, run `rvpm sync` to
+  regenerate loader.lua.
 - On a fresh clone, ~/.config/kakehashi/kakehashi.toml is
   chezmoi-managed: run `chezmoi apply` (the client warns when it is
   missing).

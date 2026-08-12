@@ -17,11 +17,6 @@ import { shellHistoryPaths } from "./consts.ts";
 
 type Params = Record<string, unknown>;
 
-type DppAction = {
-  path: string;
-  __name: string;
-};
-
 export class Config extends BaseConfig {
   override config(args: ConfigArguments): Promise<void> {
     // TODO: Check what `setAlias` does
@@ -267,26 +262,6 @@ export class Config extends BaseConfig {
         },
         command_args: {
           defaultAction: "execute",
-        },
-        dpp: {
-          defaultAction: "cd",
-          actions: {
-            update: {
-              description: "Update the plugins",
-              callback: async (args: ActionArguments<Params>) => {
-                const names = args.items.map((item) =>
-                  (item.action as DppAction).__name
-                );
-                await args.denops.call(
-                  "dpp#async_ext_action",
-                  "installer",
-                  "update",
-                  { names },
-                );
-                return Promise.resolve(ActionFlags.None);
-              },
-            },
-          },
         },
         ddt_shell_history: {
           defaultAction: "execute",
