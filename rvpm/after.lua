@@ -1,2 +1,0 @@
--- Global after hook — rvpm loader phase 9 (after all plugins load).
--- P4 may add shared teardown or diagnostics here if needed.
